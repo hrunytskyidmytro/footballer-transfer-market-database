@@ -10,7 +10,7 @@ router.get('/', (req, res, next) => {
 
 router.get('/:fid', footballersControllers.getFootballerById);
 
-router.post('/newfootballer', );
+router.post('/newfootballer', footballersControllers.createFootballer);
 
 router.patch('/:fid', );
 

@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require('uuid');
 const HttpError = require('../models/http-error');
 
 const ARR_FOOTBALLERS = [
@@ -6,6 +7,7 @@ const ARR_FOOTBALLERS = [
         name: 'Cristiano',
         surname: 'Ronaldo',
         dateofbirth: '2001-12-12',
+        country: 'Portugal',
         nationality: 'portuguese',
         positiononthefield: 'attacker',
         club: 'Al-Nasr'
@@ -29,4 +31,24 @@ const getFootballerById = (req, res, next) => {
     res.send({ footballer }); // => { footballer } => { footballer: footballer }
 };
 
+const createFootballer = (req, res, next) => {
+    const { name, surname, dateofbirth, country, nationality, positiononthefield, club } = req.body;
+
+    const createdFootballer = {
+        id: uuidv4(),
+        name,
+        surname,
+        dateofbirth,
+        country,
+        nationality,
+        positiononthefield,
+        club
+    };
+
+    ARR_FOOTBALLERS.push(createdFootballer);
+
+    res.status(201).json({ footballer: createdFootballer });
+}; 
+
 exports.getFootballerById = getFootballerById;
+exports.createFootballer = createFootballer;
