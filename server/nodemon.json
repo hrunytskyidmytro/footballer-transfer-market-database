@@ -1,0 +1,7 @@
+{
+    "env": {
+        "DB_USER": "Dmytro",
+        "DB_PASSWORD": "bMi45reNF8wrctQO",
+        "DB_NAME": "transfer-market"
+    }
+}

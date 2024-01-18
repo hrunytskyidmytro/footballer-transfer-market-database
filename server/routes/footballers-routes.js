@@ -16,7 +16,7 @@ router.post(
         check('surname')
             .not()
             .isEmpty(),
-        check('dateofbirth')
+        check('birthDate')
             .not()
             .isEmpty(),
         check('nationality')
@@ -26,6 +26,9 @@ router.post(
             .not()
             .isEmpty(),
         check('club')
+            .not()
+            .isEmpty(),
+        check('creator')
             .not()
             .isEmpty()
     ], 
@@ -41,7 +44,7 @@ router.patch(
         check('surname')
             .not()
             .isEmpty(),
-        check('dateofbirth')
+        check('birthDate')
             .not()
             .isEmpty(),
         check('nationality')
