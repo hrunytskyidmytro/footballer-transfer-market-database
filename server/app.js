@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const footballersRouters = require('./routes/footballers-routes');
 const usersRouters = require('./routes/users-routes');
@@ -29,6 +30,13 @@ app.use((error, req, res, next) => {
     res.json({ message: error.message || 'An unknown error occurred!' });
 });
 
-app.listen(5001, () => {
-    console.log('Server is running!');
-});
+mongoose
+    .connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@sandbox.itlcrlu.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`)
+    .then(() => {
+        app.listen(5001, () => {
+            console.log('Server is running!');
+        });
+    })
+    .catch(err => {
+        console.log(err.message);
+    });
