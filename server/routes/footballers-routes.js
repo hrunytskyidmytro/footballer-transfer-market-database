@@ -1,19 +1,62 @@
 const express = require('express');
+const { check } = require('express-validator');
 
-const footballersControllers = require('../controllers/footballers-controllers');
+const footballersController = require('../controllers/footballers-controllers');
 
 const router = express.Router();
 
-router.get('/', (req, res, next) => {
-    res.json({ message: 'Footballers page!' });
-});
+router.get('/:fid', footballersController.getFootballerById);
 
-router.get('/:fid', footballersControllers.getFootballerById);
+router.post(
+    '/', 
+    [
+        check('name')
+            .not()
+            .isEmpty(),
+        check('surname')
+            .not()
+            .isEmpty(),
+        check('dateofbirth')
+            .not()
+            .isEmpty(),
+        check('nationality')
+            .not()
+            .isEmpty(),
+        check('position')
+            .not()
+            .isEmpty(),
+        check('club')
+            .not()
+            .isEmpty()
+    ], 
+    footballersController.createFootballer
+);
 
-router.post('/newfootballer', footballersControllers.createFootballer);
+router.patch(
+    '/:fid', 
+    [
+        check('name')
+            .not()
+            .isEmpty(),
+        check('surname')
+            .not()
+            .isEmpty(),
+        check('dateofbirth')
+            .not()
+            .isEmpty(),
+        check('nationality')
+            .not()
+            .isEmpty(),
+        check('position')
+            .not()
+            .isEmpty(),
+        check('club')
+            .not()
+            .isEmpty()
+    ], 
+    footballersController.updateFootballer
+);
 
-router.patch('/:fid', footballersControllers.updateFootballer);
-
-router.delete('/:fid', footballersControllers.deleteFootballer);
+router.delete('/:fid', footballersController.deleteFootballer);
 
 module.exports = router;
