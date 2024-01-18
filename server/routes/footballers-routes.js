@@ -12,8 +12,8 @@ router.get('/:fid', footballersControllers.getFootballerById);
 
 router.post('/newfootballer', footballersControllers.createFootballer);
 
-router.patch('/:fid', );
+router.patch('/:fid', footballersControllers.updateFootballer);
 
-router.delete('/:fid', );
+router.delete('/:fid', footballersControllers.deleteFootballer);
 
 module.exports = router;
