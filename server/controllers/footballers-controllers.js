@@ -1,4 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
+const { validationResult } = require('express-validator');
+
 const HttpError = require('../models/http-error');
 
 let ARR_FOOTBALLERS = [
@@ -7,10 +9,10 @@ let ARR_FOOTBALLERS = [
         name: 'Cristiano',
         surname: 'Ronaldo',
         dateofbirth: '2001-12-12',
-        country: 'Portugal',
         nationality: 'portuguese',
         position: 'attacker',
-        club: 'Al-Nasr'
+        club: 'Al-Nasr',
+        creator: 'u1'
     }
 ];
 
@@ -32,14 +34,22 @@ const getFootballerById = (req, res, next) => {
 };
 
 const createFootballer = (req, res, next) => {
-    const { name, surname, dateofbirth, country, nationality, position, club } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        console.log(errors);
+        next(new HttpError(
+            'Invalid inputs passed, please check your data.',
+            422
+        ));
+    }
+
+    const { name, surname, dateofbirth, nationality, position, club } = req.body;
 
     const createdFootballer = {
         id: uuidv4(),
         name,
         surname,
         dateofbirth,
-        country,
         nationality,
         position,
         club
@@ -51,7 +61,16 @@ const createFootballer = (req, res, next) => {
 }; 
 
 const updateFootballer = (req, res, next) => {
-    const { name, surname, dateofbirth, country, nationality, position, club } = req.body;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        console.log(errors);
+        throw new HttpError(
+            'Invalid inputs passed, please check your data.',
+            422
+        );
+    }
+
+    const { name, surname, dateofbirth, nationality, position, club } = req.body;
     const footballerId = req.params.fid;
 
     const updatedFootballer = { ...ARR_FOOTBALLERS.find(f => f.id === footballerId) };
@@ -59,7 +78,6 @@ const updateFootballer = (req, res, next) => {
     updatedFootballer.name = name;
     updatedFootballer.surname = surname;
     updatedFootballer.dateofbirth = dateofbirth;
-    updatedFootballer.country = country;
     updatedFootballer.nationality = nationality;
     updatedFootballer.position = position;
     updatedFootballer.club = club;
@@ -71,6 +89,14 @@ const updateFootballer = (req, res, next) => {
 
 const deleteFootballer = (req, res, next) => {
     const footballerId = req.params.fid;
+
+    if (!ARR_FOOTBALLERS.find(f => f.id === footballerId)) {
+        throw new HttpError(
+            'Could not find a footballer for that id.',
+            404
+        );
+    }
+
     ARR_FOOTBALLERS = ARR_FOOTBALLERS.filter(f => f.id !== footballerId);
 
     res.status(200).json({ message: 'Deleted footballer.' });

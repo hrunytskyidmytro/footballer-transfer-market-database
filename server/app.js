@@ -1,17 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const usersRouters = require('./routes/users-routes');
 const footballersRouters = require('./routes/footballers-routes');
+const usersRouters = require('./routes/users-routes');
 const HttpError = require('./models/http-error');
 
 const app = express();
 
 app.use(bodyParser.json());
 
-app.use(usersRouters);
-
 app.use('/api/footballers', footballersRouters); // => /api/footballers...
+
+app.use('/api/users', usersRouters); // => /api/users...
 
 app.use((req, res, next) => {
     const error = new HttpError(
