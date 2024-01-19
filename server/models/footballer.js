@@ -17,7 +17,8 @@ const footballerSchema = new Schema({
     },
     birthDate: {
         type: Date,
-        required: true
+        required: true,
+        default: Date.now
     },
     position: {
         type: String,
@@ -35,7 +36,14 @@ const footballerSchema = new Schema({
         type: mongoose.Types.ObjectId,
         required: true,
         ref: 'User'
-    }
+    },
+    transfers: [
+        {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: 'Transfer'
+        }
+    ]
 });
 
 module.exports = mongoose.model('Footballer', footballerSchema);
