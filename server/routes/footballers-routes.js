@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.get('/:fid', footballersController.getFootballerById);
 
+router.get('/user/:fid', footballersController.getFootballersByUserId);
+
 router.post(
     '/', 
     [
