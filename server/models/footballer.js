@@ -32,10 +32,10 @@ const footballerSchema = new Schema({
         required: true
     },
     creator: {
-        type: String,
-        required: true
+        type: mongoose.Types.ObjectId,
+        required: true,
+        ref: 'User'
     }
 });
-
 
 module.exports = mongoose.model('Footballer', footballerSchema);
