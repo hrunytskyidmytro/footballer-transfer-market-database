@@ -24,10 +24,6 @@ const footballerSchema = new Schema({
         type: String,
         required: true
     },
-    club: {
-        type: String,
-        required: true
-    },
     image: {
         type: String,
         required: true
@@ -37,9 +33,16 @@ const footballerSchema = new Schema({
         required: true,
         ref: 'User'
     },
+    clubs: [
+        {
+            type: mongoose.Types.ObjectId,
+            required: true,
+            ref: 'Club'
+        }
+    ],
     transfers: [
         {
-            type: Schema.Types.ObjectId,
+            type: mongoose.Types.ObjectId,
             required: true,
             ref: 'Transfer'
         }

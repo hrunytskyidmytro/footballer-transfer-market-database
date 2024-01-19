@@ -27,9 +27,6 @@ router.post(
         check('position')
             .not()
             .isEmpty(),
-        check('club')
-            .not()
-            .isEmpty(),
         check('creator')
             .not()
             .isEmpty()
@@ -53,9 +50,6 @@ router.patch(
             .not()
             .isEmpty(),
         check('position')
-            .not()
-            .isEmpty(),
-        check('club')
             .not()
             .isEmpty()
     ], 

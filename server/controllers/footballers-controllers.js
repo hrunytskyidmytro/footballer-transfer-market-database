@@ -70,7 +70,7 @@ const createFootballer = async (req, res, next) => {
         ));
     }
 
-    const { name, surname, birthDate, nationality, position, club, creator } = req.body;
+    const { name, surname, birthDate, nationality, position, creator } = req.body;
 
     const createdFootballer = new Footballer({
         name,
@@ -78,9 +78,9 @@ const createFootballer = async (req, res, next) => {
         nationality,
         birthDate,
         position,
-        club,
         image: 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg',
         creator,
+        clubs: [],
         transfers: []
     });
 
@@ -134,7 +134,7 @@ const updateFootballer = async (req, res, next) => {
         );
     }
 
-    const { name, surname, birthDate, nationality, position, club } = req.body;
+    const { name, surname, birthDate, nationality, position } = req.body;
     const footballerId = req.params.fid;
 
     let footballer;
@@ -153,7 +153,6 @@ const updateFootballer = async (req, res, next) => {
     footballer.birthDate = birthDate;
     footballer.nationality = nationality;
     footballer.position = position;
-    footballer.club = club;
 
     try {
         await footballer.save();
