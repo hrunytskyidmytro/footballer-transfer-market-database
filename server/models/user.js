@@ -23,11 +23,13 @@ const userSchema = new Schema({
         enum: ['admin', 'user'],
         default: 'user' 
     },
-    footballers: [{
-        type: mongoose.Types.ObjectId,
-        required: true,
-        ref: 'Footballer'
-    }]
+    footballers: [
+        {
+            type: mongoose.Types.ObjectId,
+            required: true,
+            ref: 'Footballer'
+        }
+    ]
 });
 
 userSchema.plugin(uniqueValidator);
