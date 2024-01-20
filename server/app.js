@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const footballersRouters = require('./routes/footballers-routes');
 const usersRouters = require('./routes/users-routes');
 const transfersRoutes = require('./routes/transfers-routes');
-const clubsRoutes = require('./routes/clubs-routers');
+const clubsRoutes = require('./routes/clubs-routes');
 const adminsRoutes = require('./routes/admins-routes');
 const HttpError = require('./models/http-error');
 
