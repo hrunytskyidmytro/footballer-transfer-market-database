@@ -195,21 +195,6 @@ const deleteClub = async (req, res, next) => {
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
-
-        //const transfers = await Transfer.find({ $or: [{ fromClub: clubId }, { toClub: clubId }] });
-
-        // for (const transfer of transfers) {
-        //     if (transfer.fromClub.toString() === clubId) {
-        //         await transfer.deleteOne({ session: sess }); 
-        //     }
-
-        //     if (transfer.toClub.toString() === clubId) {
-        //         await transfer.deleteOne({ session: sess });
-        //     }
-
-        //     await transfer.save({ session: sess });
-        // }
-
         await club.deleteOne({ session: sess });
         footballer.clubs.pull(club);
         await footballer.save({ session: sess });

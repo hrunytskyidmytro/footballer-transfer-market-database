@@ -57,6 +57,14 @@ const createTransfer = async (req, res, next) => {
 
     const { footballer, fromClub, toClub, transferFee, transferDate, transferType } = req.body;
 
+    if (fromClub === toClub) {
+        const error = new HttpError(
+            'Source and destination clubs cannot be the same.',
+            422
+        );
+        return next(error);
+    }
+
     let footballerForTransfer;
     try {
         footballerForTransfer = await Footballer.findById(footballer);
@@ -95,6 +103,7 @@ const createTransfer = async (req, res, next) => {
         await footballerForTransfer.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
+        console.log(err.message);
         const error = new HttpError(
             'Creating transfer failed, please try again.',
             500
@@ -136,6 +145,7 @@ const updateTransfer = async (req, res, next) => {
     try {
         await transfer.save();
     } catch (err) {
+        console.log(err.message);
         const error = new HttpError(
             'Something went wrong, could not update transfer.',
             500
@@ -176,6 +186,7 @@ const deleteTransfer = async (req, res, next) => {
         await transfer.footballer.save({ session: sess });
         await sess.commitTransaction();
     } catch (err) {
+        console.log(err.message);
         const error = new HttpError(
             'Something went wrong, could not delete transfer.',
             500
