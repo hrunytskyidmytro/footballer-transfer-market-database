@@ -9,47 +9,4 @@ router.get('/', transfersController.getTransfers);
 
 router.get('/:tid', transfersController.getTransferById);
 
-router.post(
-    '/',
-    [
-        check('footballer')
-            .not()
-            .isEmpty(),
-        check('fromClub')
-            .not()
-            .isEmpty(),
-        check('toClub')
-            .not()
-            .isEmpty(),
-        check('transferFee')
-            .not()
-            .isEmpty(),
-        check('transferDate')
-            .not()
-            .isEmpty(),
-        check('transferType')
-            .not()
-            .isEmpty()
-    ], 
-    transfersController.createTransfer
-);
-
-router.patch(
-    '/:tid',
-    [
-        check('transferFee')
-            .not()
-            .isEmpty(),
-        check('transferDate')
-            .not()
-            .isEmpty(),
-        check('transferType')
-            .not()
-            .isEmpty()
-    ],  
-    transfersController.updateTransfer
-);
-
-router.delete('/:tid', transfersController.deleteTransfer);
-
 module.exports = router;
