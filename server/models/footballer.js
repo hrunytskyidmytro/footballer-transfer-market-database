@@ -17,7 +17,6 @@ const footballerSchema = new Schema({
     },
     birthDate: {
         type: Date,
-        required: true,
         default: Date.now
     },
     position: {

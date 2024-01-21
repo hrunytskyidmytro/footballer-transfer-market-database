@@ -20,7 +20,7 @@ const getTransfers = async (req, res, next) => {
 };
 
 const getTransferById = async (req, res, next) => {
-    const transferId = req.params.fid;
+    const transferId = req.params.tid;
 
     let transfer;
     try {

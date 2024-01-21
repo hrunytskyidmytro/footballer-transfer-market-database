@@ -3,20 +3,19 @@ const { check } = require('express-validator');
 
 const adminsController = require('../controllers/admins-controllers');
 
+const checkAdmin = require('../middleware/check-admin');
+
 const router = express.Router();
 
-router.get('/user/:fid', adminsController.getFootballersByUserId);
+router.get('/footballers/user/:fid', adminsController.getFootballersByUserId);
 
 router.post(
-    '/', 
+    '/footballer/new', 
     [
         check('name')
             .not()
             .isEmpty(),
         check('surname')
-            .not()
-            .isEmpty(),
-        check('birthDate')
             .not()
             .isEmpty(),
         check('nationality')
@@ -24,24 +23,18 @@ router.post(
             .isEmpty(),
         check('position')
             .not()
-            .isEmpty(),
-        check('creator')
-            .not()
             .isEmpty()
     ], 
     adminsController.createFootballer
 );
 
 router.patch(
-    '/:fid', 
+    '/footballer/:fid', 
     [
         check('name')
             .not()
             .isEmpty(),
         check('surname')
-            .not()
-            .isEmpty(),
-        check('birthDate')
             .not()
             .isEmpty(),
         check('nationality')
@@ -54,27 +47,12 @@ router.patch(
     adminsController.updateFootballer
 );
 
-router.delete('/:fid', adminsController.deleteFootballer);
+router.delete('/footballer/:fid', adminsController.deleteFootballer);
 
 router.post(
-    '/',
+    '/transfer/new',
     [
-        check('footballer')
-            .not()
-            .isEmpty(),
-        check('fromClub')
-            .not()
-            .isEmpty(),
-        check('toClub')
-            .not()
-            .isEmpty(),
         check('transferFee')
-            .not()
-            .isEmpty(),
-        check('transferDate')
-            .not()
-            .isEmpty(),
-        check('transferType')
             .not()
             .isEmpty()
     ], 
@@ -82,11 +60,12 @@ router.post(
 );
 
 router.patch(
-    '/:tid',
+    '/transfer/:tid',
     [
         check('transferFee')
             .not()
-            .isEmpty(),
+            .isEmpty()
+            .isInt(),
         check('transferDate')
             .not()
             .isEmpty(),
@@ -97,10 +76,10 @@ router.patch(
     adminsController.updateTransfer
 );
 
-router.delete('/:tid', adminsController.deleteTransfer);
+router.delete('/transfer/:tid', adminsController.deleteTransfer);
 
 router.post(
-    '/:fid', 
+    '/club/new/footballer/:fid', 
     [
         check('name')
             .not()
@@ -113,7 +92,7 @@ router.post(
 );
 
 router.patch(
-    '/:cid', 
+    '/club/:cid', 
     [
         check('name')
             .not()
@@ -125,8 +104,8 @@ router.patch(
     adminsController.updateClub
 );
 
-router.delete('/:cid', adminsController.deleteClub);
+router.delete('/club/:cid', adminsController.deleteClub);
 
-router.get('/', adminsController.getUsers);
+router.get('/users', adminsController.getUsers);
 
 module.exports = router;

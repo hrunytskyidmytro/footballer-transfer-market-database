@@ -7,7 +7,7 @@ const Club = require('../models/club');
 const getClubs = async (req, res, next) => {
     let clubs;
     try {
-        clubs = await User.find({});
+        clubs = await Club.find({});
     } catch (err) {
         const error = new HttpError(
             'Fetching clubs failed, please try again later.',

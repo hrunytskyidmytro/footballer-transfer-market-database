@@ -31,6 +31,8 @@ const getFootballersByUserId = async (req, res, next) => {
             )
       );
     }
+
+    console.log(userWithFootballers);
   
     res.json({
       footballers: userWithFootballers.footballers.map(footballer =>
@@ -42,7 +44,7 @@ const getFootballersByUserId = async (req, res, next) => {
 const createFootballer = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log(errors.array());
+        console.log(errors);
         return next(new HttpError(
             'Invalid inputs passed, please check your data.',
             422
@@ -50,6 +52,25 @@ const createFootballer = async (req, res, next) => {
     }
 
     const { name, surname, birthDate, nationality, position, creator } = req.body;
+
+    let existingFootballer;
+    try {
+        existingFootballer = await Footballer.findOne({ $or: [{ name }, { surname }] });
+    } catch (err) {
+        const error = new HttpError(
+            'Creating footballer failed, please try again.',
+            500
+        );
+        return next(error);
+    }
+
+    if (existingFootballer) {
+        const error = new HttpError(
+            'Footballer with the same name or surname already exists.',
+            422
+        );
+        return next(error);
+    }
 
     const createdFootballer = new Footballer({
         name,
@@ -105,6 +126,7 @@ const createFootballer = async (req, res, next) => {
 const updateFootballer = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log(errors);
         return next(
             new HttpError(
                 'Invalid inputs passed, please check your data.',
@@ -191,7 +213,7 @@ const deleteFootballer = async (req, res, next) => {
 const createTransfer = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log(errors.array());
+        console.log(errors);
         return next(new HttpError(
             'Invalid inputs passed, please check your data.',
             422
@@ -226,8 +248,6 @@ const createTransfer = async (req, res, next) => {
         );
         return next(error);
     }
-
-    console.log(footballerForTransfer);
     
     const createdTransfer = new Transfer({
         footballer,
@@ -260,7 +280,7 @@ const createTransfer = async (req, res, next) => {
 const updateTransfer = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log(errors.array());
+        console.log(errors);
         return next(new HttpError(
             'Invalid inputs passed, please check your data.',
             422
@@ -345,7 +365,7 @@ const deleteTransfer = async (req, res, next) => {
 const createClub = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log(errors.array());
+        console.log(errors);
         return next(new HttpError(
             'Invalid inputs passed, please check your data.',
             422
@@ -405,6 +425,7 @@ const createClub = async (req, res, next) => {
 const updateClub = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log(errors);
         return next(
             new HttpError(
                 'Invalid inputs passed, please check your data.',
@@ -415,8 +436,6 @@ const updateClub = async (req, res, next) => {
 
     const { name, country } = req.body;
     const clubId = req.params.cid;
-
-    console.log(clubId);
 
     let club;
     try {
