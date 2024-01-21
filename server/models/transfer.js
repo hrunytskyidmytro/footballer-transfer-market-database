@@ -24,13 +24,12 @@ const transferSchema = new Schema({
     },
     transferDate: {
         type: Date,
-        default: Date.now,
-        required: true
+        default: Date.now
     },
     transferType: {
         type: String,
-        required: true,
-        enum: ['internal', 'international', 'loan', 'free', 'swap', 'youth']
+        enum: ['internal', 'international', 'loan', 'free', 'swap', 'youth'],
+        default: 'internal'
     }   
 });
 
