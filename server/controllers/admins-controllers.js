@@ -10,7 +10,7 @@ const User = require('../models/user');
 //Footballer
 
 const getFootballersByUserId = async (req, res, next) => {
-    const footballerId = req.params.fid;
+    const footballerId = req.params.fid; // change this to userId | const userId = req.params.uid
   
     let userWithFootballers;
     try {
