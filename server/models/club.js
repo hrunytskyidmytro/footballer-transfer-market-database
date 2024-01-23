@@ -1,20 +1,20 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
 const clubSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    country: {
-        type: String,
-        required: true
-    },
-    image: {
-        type: String,
-        required: true
-    }
+  name: {
+    type: String,
+    required: true,
+  },
+  country: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+    required: true,
+  },
 });
 
-module.exports = mongoose.model('Club', clubSchema);
+module.exports = mongoose.model("Club", clubSchema);
