@@ -1,6 +1,7 @@
 import React from "react";
 
 import Card from "../../shared/components/UIElements/Card";
+import Button from '../../shared/components/FormElements/Button';
 import FootballlerItem from "./FootballerItem";
 import "./FootballersList.css";
 
@@ -10,7 +11,7 @@ const FootballlersList = (props) => {
       <div className="footballers-list center">
         <Card>
           <h2>No footballers found. Maybe create one?</h2>
-          <button>Share Footballer</button>
+          <Button to="/footballers/new">Share Footballer</Button>
         </Card>
       </div>
     );
