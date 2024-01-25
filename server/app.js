@@ -1,9 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
-const footballersRouters = require("./routes/footballers-routes");
-const usersRouters = require("./routes/users-routes");
+const footballersRoutes = require("./routes/footballers-routes");
+const usersRoutes = require("./routes/users-routes");
 const transfersRoutes = require("./routes/transfers-routes");
 const clubsRoutes = require("./routes/clubs-routes");
 const adminsRoutes = require("./routes/admins-routes");
@@ -13,9 +14,23 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.use("/api/footballers", footballersRouters); // => /api/footballers...
+app.use(cors());
 
-app.use("/api/users", usersRouters); // => /api/users...
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
+
+  next();
+});
+
+app.use("/api/footballers", footballersRoutes); // => /api/footballers...
+
+app.use("/api/users", usersRoutes); // => /api/users...
 
 app.use("/api/transfers", transfersRoutes); // => /api/transfers...
 
@@ -32,6 +47,7 @@ app.use((error, req, res, next) => {
   if (res.headerSent) {
     return next(error);
   }
+  console.log("Error details:", error);
   res.status(error.code || 500);
   res.json({ message: error.message || "An unknown error occurred!" });
 });

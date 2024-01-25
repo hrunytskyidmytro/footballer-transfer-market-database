@@ -1,7 +1,7 @@
 import React from "react";
 
 import Card from "../../shared/components/UIElements/Card";
-import Button from '../../shared/components/FormElements/Button';
+import Button from "../../shared/components/FormElements/Button";
 import FootballlerItem from "./FootballerItem";
 import "./FootballersList.css";
 
@@ -32,6 +32,7 @@ const FootballlersList = (props) => {
           creatorId={footballer.creator}
           clubs={footballer.clubs}
           transfers={footballer.transfers}
+          onDelete={props.onDeleteFootballer}
         />
       ))}
     </ul>
