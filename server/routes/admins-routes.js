@@ -7,7 +7,7 @@ const checkAdmin = require("../middleware/check-admin");
 
 const router = express.Router();
 
-router.get("/footballers/user/:fid", adminsController.getFootballersByUserId);
+router.get("/footballers/user/:uid", adminsController.getFootballersByUserId);
 
 router.post(
   "/footballer/new",

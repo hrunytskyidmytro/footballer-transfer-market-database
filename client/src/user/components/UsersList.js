@@ -22,7 +22,7 @@ const UsersList = (props) => {
           key={user.id}
           id={user.id}
           name={user.name}
-          footballerCount={user.footballers}
+          footballerCount={user.footballers.length}
         />
       ))}
     </ul>

@@ -10,11 +10,11 @@ const User = require("../models/user");
 //Footballer
 
 const getFootballersByUserId = async (req, res, next) => {
-  const footballerId = req.params.fid; // change this to userId | const userId = req.params.uid
+  const userId = req.params.uid;
 
   let userWithFootballers;
   try {
-    userWithFootballers = await User.findById(footballerId).populate(
+    userWithFootballers = await User.findById(userId).populate(
       "footballers"
     );
   } catch (err) {
