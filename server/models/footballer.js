@@ -25,7 +25,7 @@ const footballerSchema = new Schema({
   },
   image: {
     type: String,
-    required: true,
+    required: true, 
   },
   creator: {
     type: mongoose.Types.ObjectId,

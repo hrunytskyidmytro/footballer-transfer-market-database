@@ -5,6 +5,7 @@ import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_DATE,
@@ -39,6 +40,10 @@ const NewFootballer = () => {
         value: "",
         isValid: false,
       },
+      image: {
+        value: null,
+        isValid: false,
+      },
     },
     false
   );
@@ -48,19 +53,20 @@ const NewFootballer = () => {
   const footballerSubmitHandler = async (event) => {
     event.preventDefault();
     try {
+      const formData = new FormData();
+      formData.append("name", formState.inputs.name.value);
+      formData.append("surname", formState.inputs.surname.value);
+      formData.append("nationality", formState.inputs.nationality.value);
+      formData.append("birthDate", formState.inputs.birthDate.value);
+      formData.append("position", formState.inputs.position.value);
+      formData.append("creator", auth.userId);
+      formData.append("image", formState.inputs.image.value);
       await sendRequest(
         "http://localhost:5001/api/footballers",
         "POST",
-        JSON.stringify({
-          name: formState.inputs.name.value,
-          surname: formState.inputs.surname.value,
-          nationality: formState.inputs.nationality.value,
-          birthDate: formState.inputs.birthDate.value,
-          position: formState.inputs.position.value,
-          creator: auth.userId,
-        }),
+        formData,
         {
-          "Content-Type": "application/json",
+          Authorization: 'Bearer ' + auth.token
         }
       );
       history.push("/");
@@ -116,6 +122,11 @@ const NewFootballer = () => {
           validators={[VALIDATOR_REQUIRE()]}
           errorText="Please enter a valid position."
           onInput={inputHandler}
+        />
+        <ImageUpload
+          id="image"
+          onInput={inputHandler}
+          errorText="PLease provide an image."
         />
         <Button type="submit" disabled={!formState.isValid}>
           ADD FOOTBALLER

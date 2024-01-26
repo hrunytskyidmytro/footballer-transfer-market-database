@@ -28,14 +28,17 @@ const FootballlerItem = (props) => {
       await sendRequest(
         `http://localhost:5001/api/footballers/${props.id}`,
         "DELETE",
-        null
+        null,
+        {
+          Authorization: 'Bearer ' + auth.token
+        }
       );
       props.onDelete(props.id);
     } catch (err) {}
   };
 
   return (
-    <React.Fragment>
+    <>
       <ErrorModal error={error} onClear={clearError} />
       <Modal
         show={showConfirmModal}
@@ -62,7 +65,7 @@ const FootballlerItem = (props) => {
         <Card className="footballer-item__content">
           {isLoading && <LoadingSpinner asOverlay />}
           <div className="footballer-item__image">
-            <img src={props.image} alt={props.name} />
+            <img src={`http://localhost:5001/${props.image}`} alt={props.name} />
           </div>
           <div className="footballer-item__info">
             <h2>{props.name}</h2>
@@ -84,7 +87,7 @@ const FootballlerItem = (props) => {
           </div>
         </Card>
       </li>
-    </React.Fragment>
+    </>
   );
 };
 
