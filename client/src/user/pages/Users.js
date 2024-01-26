@@ -12,7 +12,9 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const responseData = await sendRequest("http://localhost:5001/api/users");
+        const responseData = await sendRequest(
+          "http://localhost:5001/api/users"
+        );
 
         setLoadedUsers(responseData.users);
       } catch (err) {}

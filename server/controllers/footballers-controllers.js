@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 
@@ -35,9 +37,7 @@ const getFootballersByUserId = async (req, res, next) => {
 
   let userWithFootballers;
   try {
-    userWithFootballers = await User.findById(userId).populate(
-      "footballers"
-    );
+    userWithFootballers = await User.findById(userId).populate("footballers");
   } catch (err) {
     const error = new HttpError(
       "Fetching footballers failed, please try again later.",
@@ -99,8 +99,7 @@ const createFootballer = async (req, res, next) => {
     nationality,
     birthDate,
     position,
-    image:
-      "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg",
+    image: req.file.path,
     creator,
     clubs: [],
     transfers: [],
@@ -166,6 +165,14 @@ const updateFootballer = async (req, res, next) => {
     return next(error);
   }
 
+  if (footballer.creator.toString() !== req.userData.userId) {
+    const error = new HttpError(
+      "You are not allowed to edit this footballer.",
+      3
+    );
+    return next(error);
+  }
+
   footballer.name = name;
   footballer.surname = surname;
   footballer.birthDate = birthDate;
@@ -204,6 +211,16 @@ const deleteFootballer = async (req, res, next) => {
     return next(error);
   }
 
+  if (footballer.creator.id !== req.userData.userId) {
+    const error = new HttpError(
+      "You are not allowed to delete this footballer.",
+      403
+    );
+    return next(error);
+  }
+
+  const imagePath = footballer.image;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -212,12 +229,17 @@ const deleteFootballer = async (req, res, next) => {
     await footballer.creator.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Something went wrong, could not delete footballer.",
       500
     );
     return next(error);
   }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: "Deleted footballer." });
 };

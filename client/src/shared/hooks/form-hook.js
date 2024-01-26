@@ -51,7 +51,7 @@ export const useForm = (initialInputs, initialFormValidity) => {
     dispatch({
       type: "SET_DATA",
       inputs: inputData,
-      formisValid: formValidity,
+      formIsValid: formValidity,
     });
   }, []);
 
