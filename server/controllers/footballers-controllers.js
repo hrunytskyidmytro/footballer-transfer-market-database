@@ -70,7 +70,7 @@ const createFootballer = async (req, res, next) => {
     );
   }
 
-  const { name, surname, birthDate, nationality, position, creator } = req.body;
+  const { name, surname, birthDate, nationality, position } = req.body;
 
   let existingFootballer;
   try {
@@ -100,14 +100,14 @@ const createFootballer = async (req, res, next) => {
     birthDate,
     position,
     image: req.file.path,
-    creator,
+    creator: req.userData.userId,
     clubs: [],
     transfers: [],
   });
 
   let user;
   try {
-    user = await User.findById(creator);
+    user = await User.findById(req.userData.userId);
   } catch (err) {
     console.log(err.message);
     const error = new HttpError(
