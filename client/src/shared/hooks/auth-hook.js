@@ -6,27 +6,37 @@ export const useAuth = () => {
   const [token, setToken] = useState(false);
   const [tokenExpirationDate, setTokenExpirationDate] = useState();
   const [userId, setUserId] = useState(false);
+  const [role, setRole] = useState(false);
 
-  const login = useCallback((uid, token, expirationDate) => {
+  const login = useCallback((uid, token, userRole, expirationDate) => {
     setToken(token);
     setUserId(uid);
+    setRole(userRole);
+
     const tokenExpirationDate =
       expirationDate || new Date(new Date().getTime() + 1000 * 60 * 60);
-    setTokenExpirationDate(tokenExpirationDate);
-    localStorage.setItem(
-      "userData",
-      JSON.stringify({
-        userId: uid,
-        token: token,
-        expiration: tokenExpirationDate.toISOString(),
-      })
-    );
+    setTokenExpirationDate(tokenExpirationDate); // new Date (was changed)
+
+    try {
+      localStorage.setItem(
+        "userData",
+        JSON.stringify({
+          userId: uid,
+          token: token,
+          role: userRole,
+          expiration: tokenExpirationDate.toISOString(),
+        })
+      );
+    } catch (err) {
+      console.error("LocalStorage Error:", err);
+    }
   }, []);
 
   const logout = useCallback(() => {
     setToken(null);
     setTokenExpirationDate(null);
     setUserId(null);
+    setRole(null);
     localStorage.removeItem("userData");
   }, []);
 
@@ -50,10 +60,11 @@ export const useAuth = () => {
       login(
         storedData.userId,
         storedData.token,
+        storedData.role,
         new Date(storedData.expiration)
       );
     }
   }, [login]);
 
-  return { token, login, logout, userId };
+  return { token, login, logout, userId, role };
 };
