@@ -105,6 +105,8 @@ const createFootballer = async (req, res, next) => {
     transfers: [],
   });
 
+  console.log(req.userData);
+
   let user;
   try {
     user = await User.findById(req.userData.userId);

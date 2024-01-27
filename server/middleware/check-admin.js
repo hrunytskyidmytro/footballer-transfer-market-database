@@ -10,7 +10,7 @@ const checkAdmin = async (req, res, next) => {
     user = await User.findById(userId);
 
     if (!user) {
-      const error = new HttpError("Could not find user for provided id1.", 404);
+      const error = new HttpError("Could not find user for provided id.", 404);
       return next(error);
     }
 

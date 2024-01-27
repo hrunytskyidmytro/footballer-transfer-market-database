@@ -52,6 +52,12 @@ const NewFootballer = () => {
 
   const footballerSubmitHandler = async (event) => {
     event.preventDefault();
+
+    if (auth.role !== "admin") {
+      console.log("You do not have permission to perform this action.");
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("name", formState.inputs.name.value);
@@ -65,7 +71,7 @@ const NewFootballer = () => {
         "POST",
         formData,
         {
-          Authorization: 'Bearer ' + auth.token
+          Authorization: "Bearer " + auth.token,
         }
       );
       history.push("/");
