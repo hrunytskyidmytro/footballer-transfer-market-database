@@ -59,7 +59,6 @@ const NewFootballer = () => {
       formData.append("nationality", formState.inputs.nationality.value);
       formData.append("birthDate", formState.inputs.birthDate.value);
       formData.append("position", formState.inputs.position.value);
-      formData.append("creator", auth.userId);
       formData.append("image", formState.inputs.image.value);
       await sendRequest(
         "http://localhost:5001/api/footballers",
