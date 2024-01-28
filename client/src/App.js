@@ -10,6 +10,7 @@ import Users from "./user/pages/Users";
 import NewFootballer from "./footballers/pages/NewFootballer";
 import UpdateFootballer from "./footballers/pages/UpdateFootballer";
 import UserFootballers from "./footballers/pages/UserFootballers";
+import AdminDashboard from "./admin/dashboard/AdminDashboard";
 import Auth from "./user/pages/Auth";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import { AuthContext } from "./shared/context/auth-context";
@@ -23,6 +24,11 @@ const App = () => {
   if (token) {
     routes = (
       <Switch>
+        {role === "admin" && <Redirect from="/" to="/admins" exact />}
+        <Route path="/admins">
+          <AdminDashboard />
+        </Route>
+
         <Route path="/" exact>
           <Users />
         </Route>

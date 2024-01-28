@@ -80,6 +80,7 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
+
         auth.login(responseData.userId, responseData.token, responseData.role);
       } catch (err) {}
     } else {
