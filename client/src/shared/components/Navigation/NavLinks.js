@@ -13,12 +13,12 @@ const NavLinks = (props) => {
           ALL USERS
         </NavLink>
       </li>
-      {auth.isLoggedIn && (
+      {auth.isLoggedIn && auth.role === 'admin' && (
         <li>
           <NavLink to={`/${auth.userId}/footballers`}>MY FOOTBALLERS</NavLink>
         </li>
       )}
-      {auth.isLoggedIn && (
+      {auth.isLoggedIn && auth.role === 'admin' && (
         <li>
           <NavLink to="/footballers/new">NEW FOOTBALLER</NavLink>
         </li>
