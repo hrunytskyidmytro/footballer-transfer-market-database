@@ -2,10 +2,10 @@ import React from "react";
 
 import Card from "../../shared/components/UIElements/Card";
 import Button from "../../shared/components/FormElements/Button";
-import FootballlerItem from "./FootballerItem";
+import FootballerItem from "./FootballerItem";
 import "./FootballersList.css";
 
-const FootballlersList = (props) => {
+const FootballersList = (props) => {
   if (props.items.length === 0) {
     return (
       <div className="footballers-list center">
@@ -20,7 +20,7 @@ const FootballlersList = (props) => {
   return (
     <ul className="footballers-list">
       {props.items.map((footballer) => (
-        <FootballlerItem
+        <FootballerItem
           key={footballer.id}
           id={footballer.id}
           image={footballer.image}
@@ -39,4 +39,4 @@ const FootballlersList = (props) => {
   );
 };
 
-export default FootballlersList;
+export default FootballersList;

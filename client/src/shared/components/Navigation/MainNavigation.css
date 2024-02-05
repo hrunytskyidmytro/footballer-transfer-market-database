@@ -43,3 +43,8 @@
       display: block;
     }
   }
+
+  .main-navigation__home-page:hover {
+    background-color: #aeff18; 
+    color: #24088a; 
+  }
