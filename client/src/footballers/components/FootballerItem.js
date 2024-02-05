@@ -9,7 +9,7 @@ import { AuthContext } from "../../shared/context/auth-context";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import "./FootballerItem.css";
 
-const FootballlerItem = (props) => {
+const FootballerItem = (props) => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -91,4 +91,4 @@ const FootballlerItem = (props) => {
   );
 };
 
-export default FootballlerItem;
+export default FootballerItem;
