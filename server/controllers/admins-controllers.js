@@ -9,6 +9,21 @@ const User = require("../models/user");
 
 //Footballer
 
+const getFootballers = async (req, res, next) => {
+  let footballers;
+  try {
+    footballers = await Footballer.find({});
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching footballers failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({ footballers: footballers.map((footballer) => footballer.toObject({ getters: true })) });
+};
+
 const getFootballersByUserId = async (req, res, next) => {
   const userId = req.params.uid;
 
@@ -522,6 +537,7 @@ const getUsers = async (req, res, next) => {
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
+exports.getFootballers = getFootballers;
 exports.getFootballersByUserId = getFootballersByUserId;
 exports.createFootballer = createFootballer;
 exports.updateFootballer = updateFootballer;

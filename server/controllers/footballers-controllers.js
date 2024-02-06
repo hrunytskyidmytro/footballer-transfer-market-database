@@ -7,6 +7,21 @@ const HttpError = require("../models/http-error");
 const Footballer = require("../models/footballer");
 const User = require("../models/user");
 
+const getFootballers = async (req, res, next) => {
+  let footballers;
+  try {
+    footballers = await Footballer.find({});
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching footballers failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({ footballers: footballers.map((footballer) => footballer.toObject({ getters: true })) });
+};
+
 const getFootballerById = async (req, res, next) => {
   const footballerId = req.params.fid; // { fid: 'f1' }
 
@@ -246,6 +261,7 @@ const deleteFootballer = async (req, res, next) => {
   res.status(200).json({ message: "Deleted footballer." });
 };
 
+exports.getFootballers = getFootballers;
 exports.getFootballerById = getFootballerById;
 exports.getFootballersByUserId = getFootballersByUserId;
 exports.createFootballer = createFootballer;

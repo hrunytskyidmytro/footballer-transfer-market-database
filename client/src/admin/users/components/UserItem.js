@@ -4,19 +4,16 @@ import { Space } from "antd";
 
 import "./UserItem.css";
 
-const FootballerItem = (props) => {
+const UserItem = (props) => {
   return (
     <Space direction="vertical">
       {/* <Link to={`/${props.id}/footballers`}>{props.name}</Link> */}
       <span>{props.name}</span>
-      <span>{props.nationality}</span>
-      <span>{props.birthDate}</span>
-      <span>{props.position}</span>
-      <span>{props.image}</span>
-      <span>{props.clubs}</span>
-      <span>{props.transfers}</span>
+      <span>{props.email}</span>
+      <span>{props.role}</span>
+      <span>{props.footballerCount}</span>
     </Space>
   );
 };
 
-export default FootballerItem;
+export default UserItem;

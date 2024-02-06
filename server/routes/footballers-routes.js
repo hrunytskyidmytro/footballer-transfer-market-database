@@ -7,6 +7,8 @@ const checkAuth = require("../middleware/check-auth");
 
 const router = express.Router();
 
+router.get("/footballers", footballersController.getFootballers);
+
 router.get("/:fid", footballersController.getFootballerById);
 
 router.get("/user/:uid", footballersController.getFootballersByUserId);
