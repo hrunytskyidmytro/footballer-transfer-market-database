@@ -5,21 +5,21 @@ import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 
-const Users = () => {
+const Clubs = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [loadedUsers, setLoadedUsers] = useState();
+  const [loadedClubs, setLoadedClubs] = useState();
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchClubs = async () => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5001/api/admins/users"
+          "http://localhost:5001/api/admins/clubs"
         );
 
-        setLoadedUsers(responseData.users);
+        setLoadedClubs(responseData.clubs);
       } catch (err) {}
     };
-    fetchUsers();
+    fetchClubs();
   }, [sendRequest]);
 
   const items = [
@@ -39,51 +39,43 @@ const Users = () => {
 
   const columns = [
     {
-      title: "User",
+      title: "Name",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
+      title: "Country",
+      dataIndex: "country",
+      key: "country",
     },
     {
-      title: "Role",
-      dataIndex: "role",
-      key: "role",
-    },
-    {
-      title: "Footballer Count",
-      dataIndex: "footballerCount",
-      key: "footballerCount",
-      defaultSortOrder: "descend",
-      sorter: (a, b) => a.footballerCount - b.footballerCount,
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
     },
     {
       key: "action",
       render: (_) => (
         <Space size="middle">
-          <Dropdown.Button
-            menu={{
-              items,
-              onClick: onMenuClick,
-            }}
-          >
-            Actions
-          </Dropdown.Button>
-        </Space>
+        <Dropdown.Button
+          menu={{
+            items,
+            onClick: onMenuClick,
+          }}
+        >
+          Actions
+        </Dropdown.Button>
+      </Space>
       ),
     },
   ];
 
-  const data = loadedUsers
-    ? loadedUsers.map((user) => ({
-        key: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        footballerCount: user.footballers.length,
+  const data = loadedClubs
+    ? loadedClubs.map((club) => ({
+        key: club.id,
+        name: club.name,
+        country: club.country,
+        image: club.image,
       }))
     : [];
 
@@ -95,11 +87,11 @@ const Users = () => {
           <LoadingSpinner />
         </div>
       )}
-      {!isLoading && loadedUsers && (
+      {!isLoading && loadedClubs && (
         <Table columns={columns} dataSource={data} pagination={true} />
       )}
     </React.Fragment>
   );
 };
 
-export default Users;
+export default Clubs;

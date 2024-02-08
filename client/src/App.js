@@ -6,10 +6,10 @@ import {
   Switch,
 } from "react-router-dom";
 
-import NewFootballer from "./footballers/pages/NewFootballer";
 import UpdateFootballer from "./footballers/pages/UpdateFootballer";
 import UserFootballers from "./footballers/pages/UserFootballers";
 import AdminDashboard from "./admin/dashboard/components/AdminDashboard";
+import NewFootballer from "../../client/src/admin/footballers/pages/NewFootballer";
 import Auth from "./user/pages/Auth";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import { AuthContext } from "./shared/context/auth-context";
@@ -23,28 +23,36 @@ const App = () => {
   if (token) {
     routes = (
       <Switch>
-        {role === "admin" && (
+        {/* {role === "admin" && (
           <>
             <Redirect from="/" to="/admins" exact />
             <Route path="/admins" exact>
               <AdminDashboard />
             </Route>
           </>
+        )} */}
+        {role === "admin" && (
+          <>
+            <Redirect from="/" to="/admins/users" exact />
+            <Route path="/admins" component={AdminDashboard} />
+            <Route path="/admins/footballers/new" component={NewFootballer} />
+          </>
         )}
 
-        <Route path="/" exact>
+        <Route path="/auth" exact>
+          <Auth />
           {/* <Users /> */}
         </Route>
-        <Route path="/:userId/footballers">
+        {/* <Route path="/:userId/footballers">
           <UserFootballers />
-        </Route>
-        <Route path="/footballers/new" exact>
+        </Route> */}
+        {/* <Route path="/footballers/new" exact>
           <NewFootballer />
-        </Route>
-        <Route path="/footballers/:footballerId">
+        </Route> */}
+        {/* <Route path="/footballers/:footballerId">
           <UpdateFootballer />
-        </Route>
-        <Redirect to="/" />
+        </Route> */}
+        <Redirect to="/auth" />
       </Switch>
     );
   } else {

@@ -9,10 +9,12 @@ const router = express.Router();
 
 router.get("/footballers", adminsController.getFootballers);
 
+router.get("/footballers/:fid", adminsController.getFootballerById);
+
 router.get("/footballers/user/:uid", adminsController.getFootballersByUserId);
 
 router.post(
-  "/footballer/new",
+  "/footballers/new",
   [
     check("name").not().isEmpty(),
     check("surname").not().isEmpty(),
@@ -23,7 +25,7 @@ router.post(
 );
 
 router.patch(
-  "/footballer/:fid",
+  "/footballers/:fid",
   [
     check("name").not().isEmpty(),
     check("surname").not().isEmpty(),
@@ -33,16 +35,18 @@ router.patch(
   adminsController.updateFootballer
 );
 
-router.delete("/footballer/:fid", adminsController.deleteFootballer);
+router.delete("/footballers/:fid", adminsController.deleteFootballer);
+
+router.get("/transfers", adminsController.getTransfers);
 
 router.post(
-  "/transfer/new",
+  "/transfers/new",
   [check("transferFee").not().isEmpty()],
   adminsController.createTransfer
 );
 
 router.patch(
-  "/transfer/:tid",
+  "/transfers/:tid",
   [
     check("transferFee").not().isEmpty().isInt(),
     check("transferDate").not().isEmpty(),
@@ -51,21 +55,25 @@ router.patch(
   adminsController.updateTransfer
 );
 
-router.delete("/transfer/:tid", adminsController.deleteTransfer);
+router.delete("/transfers/:tid", adminsController.deleteTransfer);
+
+router.get("/clubs", adminsController.getClubs);
+
+router.get("/clubs/:cid", adminsController.getClubById);
 
 router.post(
-  "/club/new/footballer/:fid",
+  "/clubs/new/footballer/:fid",
   [check("name").not().isEmpty(), check("country").not().isEmpty()],
   adminsController.createClub
 );
 
 router.patch(
-  "/club/:cid",
+  "/clubs/:cid",
   [check("name").not().isEmpty(), check("country").not().isEmpty()],
   adminsController.updateClub
 );
 
-router.delete("/club/:cid", adminsController.deleteClub);
+router.delete("/clubs/:cid", adminsController.deleteClub);
 
 router.get("/users", adminsController.getUsers);
 

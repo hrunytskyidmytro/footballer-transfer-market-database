@@ -1,19 +1,19 @@
 import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
 
-import Input from "../../shared/components/FormElements/Input";
-import Button from "../../shared/components/FormElements/Button";
-import ErrorModal from "../../shared/components/UIElements/ErrorModal";
-import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
-import ImageUpload from "../../shared/components/FormElements/ImageUpload";
+import Input from "../../../shared/components//FormElements/Input";
+import Button from "../../../shared/components/FormElements/Button";
+import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
+import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
+import ImageUpload from "../../../shared/components/FormElements/ImageUpload";
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_DATE,
-} from "../../shared/util/validators";
-import { useForm } from "../../shared/hooks/form-hook";
-import { useHttpClient } from "../../shared/hooks/http-hook";
-import { AuthContext } from "../../shared/context/auth-context";
-import "./FootballerForm.css";
+} from "../../../shared/util/validators";
+import { useForm } from "../../../shared/hooks/form-hook";
+import { useHttpClient } from "../../../shared/hooks/http-hook";
+import { AuthContext } from "../../../shared/context/auth-context";
+// import "./FootballerForm.css";
 
 const NewFootballer = () => {
   const auth = useContext(AuthContext);
@@ -59,6 +59,7 @@ const NewFootballer = () => {
     }
 
     try {
+      console.log("Form data:", formState.inputs);
       const formData = new FormData();
       formData.append("name", formState.inputs.name.value);
       formData.append("surname", formState.inputs.surname.value);
@@ -66,10 +67,19 @@ const NewFootballer = () => {
       formData.append("birthDate", formState.inputs.birthDate.value);
       formData.append("position", formState.inputs.position.value);
       formData.append("image", formState.inputs.image.value);
+      console.log("Form data:", formData);
       await sendRequest(
-        "http://localhost:5001/api/footballers",
+        "http://localhost:5001/api/admins/footballers/new",
         "POST",
         formData,
+        // {
+        //   name: formState.inputs.name.value,
+        //   surname: formState.inputs.surname.value,
+        //   nationality: formState.inputs.nationality.value,
+        //   birthDate: formState.inputs.birthDate.value,
+        //   position: formState.inputs.surname.value,
+        //   image: formState.inputs.surname.value,
+        // },
         {
           Authorization: "Bearer " + auth.token,
         }
@@ -81,7 +91,7 @@ const NewFootballer = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      <form className="footballer-form" onSubmit={footballerSubmitHandler}>
+      <form onSubmit={footballerSubmitHandler}>
         {isLoading && <LoadingSpinner asOverlay />}
         <Input
           id="name"
