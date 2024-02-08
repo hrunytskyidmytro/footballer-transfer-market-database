@@ -21,7 +21,38 @@ const getFootballers = async (req, res, next) => {
     return next(error);
   }
 
-  res.json({ footballers: footballers.map((footballer) => footballer.toObject({ getters: true })) });
+  res.json({
+    footballers: footballers.map((footballer) =>
+      footballer.toObject({ getters: true })
+    ),
+  });
+};
+
+const getFootballerById = async (req, res, next) => {
+  const footballerId = req.params.fid;
+
+  let footballer;
+  try {
+    footballer = await Footballer.findById(footballerId);
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching footballer failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!footballer) {
+    return next(
+      new HttpError("Could not find footballer for the provided user id.", 404)
+    );
+  }
+
+  console.log(footballer);
+
+  res.json({
+    footballer: footballer.toObject({ getters: true }),
+  });
 };
 
 const getFootballersByUserId = async (req, res, next) => {
@@ -29,9 +60,7 @@ const getFootballersByUserId = async (req, res, next) => {
 
   let userWithFootballers;
   try {
-    userWithFootballers = await User.findById(userId).populate(
-      "footballers"
-    );
+    userWithFootballers = await User.findById(userId).populate("footballers");
   } catch (err) {
     const error = new HttpError(
       "Fetching footballers failed, please try again later.",
@@ -64,7 +93,7 @@ const createFootballer = async (req, res, next) => {
     );
   }
 
-  const { name, surname, birthDate, nationality, position, creator } = req.body;
+  const { name, surname, birthDate, nationality, position } = req.body;
 
   let existingFootballer;
   try {
@@ -93,17 +122,19 @@ const createFootballer = async (req, res, next) => {
     nationality,
     birthDate,
     position,
-    image:
-      "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg",
-    creator,
+    image: req.file.path,
+    creator: req.userData.userId,
     clubs: [],
     transfers: [],
   });
 
+  console.log(req.userData);
+
   let user;
   try {
-    user = await User.findById(creator);
+    user = await User.findById(req.userData.userId);
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Creating footballer failed, please try again.",
       500
@@ -159,6 +190,14 @@ const updateFootballer = async (req, res, next) => {
     return next(error);
   }
 
+  if (footballer.creator.toString() !== req.userData.userId) {
+    const error = new HttpError(
+      "You are not allowed to edit this footballer.",
+      3
+    );
+    return next(error);
+  }
+
   footballer.name = name;
   footballer.surname = surname;
   footballer.birthDate = birthDate;
@@ -197,6 +236,16 @@ const deleteFootballer = async (req, res, next) => {
     return next(error);
   }
 
+  if (footballer.creator.id !== req.userData.userId) {
+    const error = new HttpError(
+      "You are not allowed to delete this footballer.",
+      403
+    );
+    return next(error);
+  }
+
+  const imagePath = footballer.image;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -212,10 +261,33 @@ const deleteFootballer = async (req, res, next) => {
     return next(error);
   }
 
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
+
   res.status(200).json({ message: "Deleted footballer." });
 };
 
 //Transfer
+
+const getTransfers = async (req, res, next) => {
+  let transfers;
+  try {
+    transfers = await Transfer.find({});
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching transfers failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({
+    transfers: transfers.map((transfer) =>
+      transfer.toObject({ getters: true })
+    ),
+  });
+};
 
 const createTransfer = async (req, res, next) => {
   const errors = validationResult(req);
@@ -367,6 +439,51 @@ const deleteTransfer = async (req, res, next) => {
 };
 
 //Club
+
+const getClubs = async (req, res, next) => {
+  let clubs;
+  try {
+    clubs = await Club.find({});
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching clubs failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({
+    clubs: clubs.map((club) => club.toObject({ getters: true })),
+  });
+};
+
+const getClubById = async (req, res, next) => {
+  const clubId = req.params.cid;
+
+  let club;
+  try {
+    club = await Club.findById(clubId);
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching club failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!club) {
+    return next(
+      new HttpError("Could not find club for the provided user id.", 404)
+    );
+  }
+
+  console.log(club);
+
+  res.json({
+    // footballer: footballer.toObject({ getters: true }),
+    club: club,
+  });
+};
 
 const createClub = async (req, res, next) => {
   const errors = validationResult(req);
@@ -538,13 +655,17 @@ const getUsers = async (req, res, next) => {
 };
 
 exports.getFootballers = getFootballers;
+exports.getFootballerById = getFootballerById;
 exports.getFootballersByUserId = getFootballersByUserId;
 exports.createFootballer = createFootballer;
 exports.updateFootballer = updateFootballer;
 exports.deleteFootballer = deleteFootballer;
+exports.getTransfers = getTransfers;
 exports.createTransfer = createTransfer;
 exports.updateTransfer = updateTransfer;
 exports.deleteTransfer = deleteTransfer;
+exports.getClubs = getClubs;
+exports.getClubById = getClubById;
 exports.createClub = createClub;
 exports.updateClub = updateClub;
 exports.deleteClub = deleteClub;

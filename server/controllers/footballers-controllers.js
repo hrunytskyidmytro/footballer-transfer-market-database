@@ -19,7 +19,11 @@ const getFootballers = async (req, res, next) => {
     return next(error);
   }
 
-  res.json({ footballers: footballers.map((footballer) => footballer.toObject({ getters: true })) });
+  res.json({
+    footballers: footballers.map((footballer) =>
+      footballer.toObject({ getters: true })
+    ),
+  });
 };
 
 const getFootballerById = async (req, res, next) => {
