@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useHistory, NavLink, Link } from "react-router-dom";
-import { Space, Table, Image, Dropdown, Button, Modal } from "antd";
+import { Space, Table, Image, Dropdown, Button, Modal, Flex } from "antd";
 import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
-
-import NewFootballer from "./NewFootballer";
+import { AuthContext } from "../../../shared/context/auth-context";
 
 const Footballers = () => {
+  const auth = useContext(AuthContext);
   const history = useHistory();
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedFotballers, setLoadedFootballers] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deletedFootballerId, setDeletedFootballerId] = useState(null);
 
   useEffect(() => {
     const fetchFootballers = async () => {
@@ -28,28 +29,30 @@ const Footballers = () => {
     fetchFootballers();
   }, [sendRequest]);
 
-  const items = [
-    {
-      key: "1",
-      label: "Edit",
-    },
-    {
-      key: "2",
-      label: "Delete",
-    },
-  ];
-
-  const onMenuClick = (e) => {
-    console.log("click", e);
-  };
-
-  const showModal = () => {
-    setIsModalOpen(true);
-    // history.push("/footballers/new");
-  };
-
-  const handleOk = () => {
+  const confirmDeleteHandler = async () => {
     setIsModalOpen(false);
+    try {
+      await sendRequest(
+        `http://localhost:5001/api/admins/footballers/${deletedFootballerId}`,
+        "DELETE",
+        null,
+        {
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setDeletedFootballerId(null);
+      setLoadedFootballers((prevFootballers) =>
+        prevFootballers.filter(
+          (footballer) => footballer._id !== deletedFootballerId
+        )
+      );
+      history.push("/admins/footballers");
+    } catch (err) {}
+  };
+
+  const showModal = (id) => {
+    setIsModalOpen(true);
+    setDeletedFootballerId(id);
   };
 
   const handleCancel = () => {
@@ -118,16 +121,14 @@ const Footballers = () => {
     },
     {
       key: "action",
-      render: (_) => (
+      render: (footballer) => (
         <Space size="middle">
-          <Dropdown.Button
-            menu={{
-              items,
-              onClick: onMenuClick,
-            }}
-          >
-            Actions
-          </Dropdown.Button>
+          <Flex gap="small">
+            <Button onClick={() => history.push(`/admins/footballers/${footballer.key}`)}>Edit</Button>
+            <Button danger onClick={() => showModal(footballer.key)}>
+              Delete
+            </Button>
+          </Flex>
         </Space>
       ),
     },
@@ -159,28 +160,30 @@ const Footballers = () => {
           <LoadingSpinner />
         </div>
       )}
-      {/* <Button
+      <Button
         type="primary"
-        onClick={showModal}
         style={{
           fontSize: "16px",
         }}
+        onClick={() => history.push("/admins/footballers/new")}
       >
         Add Footballer
-      </Button> */}
-      <NavLink to="./footballers/new">Add Footballer</NavLink>
+      </Button>
       <div
         style={{
           height: 20,
         }}
       ></div>
       <Modal
-        title="Add new footballer"
+        title="Are you sure?"
         open={isModalOpen}
-        onOk={handleOk}
+        onOk={confirmDeleteHandler}
         onCancel={handleCancel}
+        okText="Yes"
+        cancelText="No"
       >
-        <NewFootballer />
+        Do you want to proceed and delete this footballer? Please note that it
+        can't be undone thereafter.
       </Modal>
       {!isLoading && loadedFotballers && (
         <>

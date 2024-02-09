@@ -12,7 +12,7 @@ import {
 
 import "./AdminDashboard.css";
 import { NavLink } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { AuthContext } from "../../../shared/context/auth-context";
 import { Layout, Menu, theme, Button } from "antd";
 
@@ -20,19 +20,22 @@ import Users from "../../../admin/users/pages/Users";
 import Footballers from "../../../admin/footballers/pages/Footballers";
 import Transfers from "../../../admin/transfers/pages/Transfers";
 import Clubs from "../../../admin/clubs/pages/Clubs";
+import NewFootballer from "../../../admin/footballers/pages/NewFootballer";
+import UpdateFootballer from "../../../admin/footballers/pages/UpdateFootballer";
 
 const { Header, Content, Footer, Sider } = Layout;
 
 const AdminDashboard = () => {
   const auth = useContext(AuthContext);
   const history = useHistory();
+  // const footballerId = useParams().footballerId;
   const [selectedMenuItem, setSelectedMenuItem] = useState("1");
   const [collapsed, setCollapsed] = useState(false);
 
   // const handleMenuClick = (e) => {
   //   setSelectedMenuItem(e.key);
   // };
-
+  // console.log(footballerId);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -77,6 +80,12 @@ const AdminDashboard = () => {
     case "/admins/statistics":
       content = <h2>Statistics Works!</h2>;
       break;
+    case "/admins/footballers/new":
+      content = <NewFootballer />;
+      break;
+    case "/admins/footballers/:footballerId":
+      content = <UpdateFootballer />;
+      break;
     default:
       content = null;
       break;
@@ -104,18 +113,15 @@ const AdminDashboard = () => {
   // }
 
   return (
-    <Layout hasSider>
+    <Layout
+      style={{
+        minHeight: "100vh",
+      }}
+    >
       <Sider
-        style={{
-          overflow: "auto",
-          height: "100vh",
-          left: 0,
-          top: 0,
-          bottom: 0,
-        }}
-        trigger={null}
         collapsible
         collapsed={collapsed}
+        onCollapse={(value) => setCollapsed(value)}
       >
         <div className="demo-logo-vertical" />
         <Menu
@@ -174,19 +180,9 @@ const AdminDashboard = () => {
           style={{
             padding: 0,
             background: colorBgContainer,
-            marginTop: 10,
+            margin: "10px 16px 10px 16px",
           }}
         >
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: "16px",
-              width: 64,
-              height: 64,
-            }}
-          />
           <Button
             type="primary"
             onClick={auth.logout}
@@ -202,12 +198,7 @@ const AdminDashboard = () => {
         </Header>
         <Content
           style={{
-            overflow: "initial",
-            margin: "24px 16px",
-            padding: 24,
-            minHeight: 280,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
+            margin: "0px 16px",
           }}
         >
           <div
