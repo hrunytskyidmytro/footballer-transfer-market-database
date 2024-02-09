@@ -59,7 +59,6 @@ const NewFootballer = () => {
     }
 
     try {
-      console.log("Form data:", formState.inputs);
       const formData = new FormData();
       formData.append("name", formState.inputs.name.value);
       formData.append("surname", formState.inputs.surname.value);
@@ -67,24 +66,15 @@ const NewFootballer = () => {
       formData.append("birthDate", formState.inputs.birthDate.value);
       formData.append("position", formState.inputs.position.value);
       formData.append("image", formState.inputs.image.value);
-      console.log("Form data:", formData);
       await sendRequest(
         "http://localhost:5001/api/admins/footballers/new",
         "POST",
         formData,
-        // {
-        //   name: formState.inputs.name.value,
-        //   surname: formState.inputs.surname.value,
-        //   nationality: formState.inputs.nationality.value,
-        //   birthDate: formState.inputs.birthDate.value,
-        //   position: formState.inputs.surname.value,
-        //   image: formState.inputs.surname.value,
-        // },
         {
           Authorization: "Bearer " + auth.token,
         }
       );
-      history.push("/");
+      history.push("/admins/footballers");
     } catch (err) {}
   };
 
@@ -144,7 +134,7 @@ const NewFootballer = () => {
           errorText="PLease provide an image."
         />
         <Button type="submit" disabled={!formState.isValid}>
-          ADD FOOTBALLER
+          Add footballer
         </Button>
       </form>
     </React.Fragment>

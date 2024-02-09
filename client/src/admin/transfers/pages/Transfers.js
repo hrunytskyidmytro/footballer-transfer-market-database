@@ -18,6 +18,7 @@ const Transfers = () => {
           "http://localhost:5001/api/admins/transfers"
         );
         setLoadedTransfers(responseData.transfers);
+        console.log(responseData.transfers.length);
       } catch (err) {}
     };
     fetchTransfers();
@@ -27,26 +28,83 @@ const Transfers = () => {
     const fetchDataForTransfers = async () => {
       const data = [];
       for (const transfer of loadedTransfers) {
-        const footballerResponse = await sendRequest(
-          `http://localhost:5001/api/admins/footballers/${transfer.footballer}`
-        );
-        const fromClubResponse = await sendRequest(
-          `http://localhost:5001/api/admins/clubs/${transfer.fromClub}`
-        );
-        const toClubResponse = await sendRequest(
-          `http://localhost:5001/api/admins/clubs/${transfer.toClub}`
-        );
-        data.push({
-          key: transfer.id,
-          image: footballerResponse.footballer.image,
-          name: footballerResponse.footballer.name,
-          surname: footballerResponse.footballer.surname,
-          fromClub: fromClubResponse.club.name,
-          toClub: toClubResponse.club.name,
-          transferFee: transfer.transferFee,
-          transferDate: transfer.transferDate,
-          transferType: transfer.transferType,
-        });
+        try {
+          const footballerResponse = await sendRequest(
+            `http://localhost:5001/api/admins/footballers/${transfer.footballer}`
+          );
+          const fromClubResponse = await sendRequest(
+            `http://localhost:5001/api/admins/clubs/${transfer.fromClub}`
+          );
+          const toClubResponse = await sendRequest(
+            `http://localhost:5001/api/admins/clubs/${transfer.toClub}`
+          );
+          data.push({
+            key: transfer.id,
+            image: footballerResponse
+              ? footballerResponse.footballer.image
+              : "Not found",
+            name: footballerResponse
+              ? footballerResponse.footballer.name
+              : "Not found",
+            surname: footballerResponse
+              ? footballerResponse.footballer.surname
+              : "Not found",
+            fromClub: fromClubResponse
+              ? fromClubResponse.club.name
+              : "Not found",
+            toClub: toClubResponse ? toClubResponse.club.name : "Not found",
+            transferFee: transfer.transferFee,
+            transferDate: transfer.transferDate,
+            transferType: transfer.transferType,
+          });
+
+          // const footballerData =
+          //   footballerResponse && footballerResponse.footballer
+          //     ? {
+          //         image: footballerResponse.footballer.image,
+          //         name: footballerResponse.footballer.name,
+          //         surname: footballerResponse.footballer.surname,
+          //       }
+          //     : {
+          //         image: "Not found",
+          //         name: "Not found",
+          //         surname: "Not found",
+          //       };
+
+          // const footballerDataImage =
+          //   footballerResponse && footballerResponse.footballer.image
+          //     ? footballerResponse.footballer.image
+          //     : "Not found";
+          // const footballerDataName =
+          //   footballerResponse && footballerResponse.footballer.name
+          //     ? footballerResponse.footballer.name
+          //     : "Not found";
+          // const footballerDataSurname =
+          //   footballerResponse && footballerResponse.footballer.surname
+          //     ? footballerResponse.footballer.surname
+          //     : "Not found";
+          // const fromClubName =
+          //   fromClubResponse && fromClubResponse.club
+          //     ? fromClubResponse.club.name
+          //     : "Not found";
+          // const toClubName =
+          //   toClubResponse && toClubResponse.club
+          //     ? toClubResponse.club.name
+          //     : "Not found";
+
+          // data.push({
+          //   key: transfer.id,
+          //   image: footballerDataImage,
+          //   name: footballerDataName,
+          //   surname: footballerDataSurname,
+          //   fromClub: fromClubName,
+          //   toClub: toClubName,
+          //   transferFee: transfer.transferFee,
+          //   transferDate: transfer.transferDate,
+          //   transferType: transfer.transferType,
+          // });
+          console.log(data);
+        } catch (err) {}
       }
       setTransferData(data);
     };
@@ -154,7 +212,7 @@ const Transfers = () => {
 
   return (
     <React.Fragment>
-      <ErrorModal error={error} onClear={clearError} />
+      {/* <ErrorModal error={error} onClear={clearError} /> */}
       {isLoading && (
         <div className="center">
           <LoadingSpinner />

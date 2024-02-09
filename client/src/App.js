@@ -6,10 +6,10 @@ import {
   Switch,
 } from "react-router-dom";
 
-import UpdateFootballer from "./footballers/pages/UpdateFootballer";
 import UserFootballers from "./footballers/pages/UserFootballers";
 import AdminDashboard from "./admin/dashboard/components/AdminDashboard";
 import NewFootballer from "../../client/src/admin/footballers/pages/NewFootballer";
+import UpdateFootballer from "../../client/src/admin/footballers/pages/UpdateFootballer";
 import Auth from "./user/pages/Auth";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import { AuthContext } from "./shared/context/auth-context";
@@ -35,7 +35,8 @@ const App = () => {
           <>
             <Redirect from="/" to="/admins/users" exact />
             <Route path="/admins" component={AdminDashboard} />
-            <Route path="/admins/footballers/new" component={NewFootballer} />
+            {/* <Route path="/admins/footballers/new" component={NewFootballer} /> */}
+            {/* <Route path="/admins/footballers/:footballerId" component={UpdateFootballer} /> */}
           </>
         )}
 
@@ -45,19 +46,20 @@ const App = () => {
         </Route>
         {/* <Route path="/:userId/footballers">
           <UserFootballers />
-        </Route> */}
-        {/* <Route path="/footballers/new" exact>
+        </Route>
+        <Route path="/footballers/new" exact>
           <NewFootballer />
-        </Route> */}
-        {/* <Route path="/footballers/:footballerId">
+        </Route>
+        <Route path="/footballers/:footballerId">
           <UpdateFootballer />
         </Route> */}
-        <Redirect to="/auth" />
+        <Redirect to="/" />
       </Switch>
     );
   } else {
     routes = (
       <Switch>
+        <Redirect from="/" to="/auth" exact />
         <Route path="/" exact>
           {/* <Users /> */}
         </Route>
@@ -67,7 +69,7 @@ const App = () => {
         <Route path="/auth">
           <Auth />
         </Route>
-        <Redirect to="/auth" />
+        {/* <Redirect to="/auth" /> */}
       </Switch>
     );
   }

@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 
@@ -36,7 +38,7 @@ const getFootballerById = async (req, res, next) => {
     footballer = await Footballer.findById(footballerId);
   } catch (err) {
     const error = new HttpError(
-      "Fetching footballer failed, please try again later.",
+      "Something went wrong, could not find a footballer.",
       500
     );
     return next(error);
@@ -44,7 +46,7 @@ const getFootballerById = async (req, res, next) => {
 
   if (!footballer) {
     return next(
-      new HttpError("Could not find footballer for the provided user id.", 404)
+      new HttpError("Could not find footballer.", 404)
     );
   }
 
@@ -190,13 +192,13 @@ const updateFootballer = async (req, res, next) => {
     return next(error);
   }
 
-  if (footballer.creator.toString() !== req.userData.userId) {
-    const error = new HttpError(
-      "You are not allowed to edit this footballer.",
-      3
-    );
-    return next(error);
-  }
+  // if (footballer.creator.toString() !== req.userData.userId) {
+  //   const error = new HttpError(
+  //     "You are not allowed to edit this footballer.",
+  //     3
+  //   );
+  //   return next(error);
+  // }
 
   footballer.name = name;
   footballer.surname = surname;
@@ -224,6 +226,7 @@ const deleteFootballer = async (req, res, next) => {
   try {
     footballer = await Footballer.findById(footballerId).populate("creator");
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
       "Something went wrong, could not delete footballer.",
       500
@@ -233,14 +236,6 @@ const deleteFootballer = async (req, res, next) => {
 
   if (!footballer) {
     const error = new HttpError("Could not find footballer for this id.", 404);
-    return next(error);
-  }
-
-  if (footballer.creator.id !== req.userData.userId) {
-    const error = new HttpError(
-      "You are not allowed to delete this footballer.",
-      403
-    );
     return next(error);
   }
 
