@@ -28,14 +28,11 @@ const { Header, Content, Footer, Sider } = Layout;
 const AdminDashboard = () => {
   const auth = useContext(AuthContext);
   const history = useHistory();
+  // const location = useLocation();
   // const footballerId = useParams().footballerId;
   const [selectedMenuItem, setSelectedMenuItem] = useState("1");
   const [collapsed, setCollapsed] = useState(false);
 
-  // const handleMenuClick = (e) => {
-  //   setSelectedMenuItem(e.key);
-  // };
-  // console.log(footballerId);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -83,34 +80,13 @@ const AdminDashboard = () => {
     case "/admins/footballers/new":
       content = <NewFootballer />;
       break;
-    case "/admins/footballers/:footballerId":
-      content = <UpdateFootballer />;
-      break;
+    // case `/admins/footballers/:footballerId`:
+    //   content = <UpdateFootballer />;
+    //   break;
     default:
       content = null;
       break;
   }
-
-  // let content = null;
-  // switch (selectedMenuItem) {
-  //   case "1":
-  //     content = <Users />;
-  //     break;
-  //   case "2":
-  //     content = <Footballers />;
-  //     break;
-  //   case "3":
-  //     content = <Transfers />;
-  //     break;
-  //   case "4":
-  //     content = <Clubs />;
-  //     break;
-  //   case "5":
-  //     content = <h2>Statistics Works!</h2>;
-  //     break;
-  //   default:
-  //     content = null;
-  // }
 
   return (
     <Layout
@@ -158,22 +134,6 @@ const AdminDashboard = () => {
             },
           ]}
         />
-        {/* <Menu.Item key="1" icon={<TeamOutlined />}>
-            <NavLink to="/admins">Users</NavLink>
-          </Menu.Item>
-          <Menu.Item key="2" icon={<FaPersonRunning />}>
-            <NavLink to="/admins">Footballers</NavLink>
-          </Menu.Item>
-          <Menu.Item key="3" icon={<MdTransferWithinAStation />}>
-            <NavLink to="/admins">Transfers</NavLink>
-          </Menu.Item>
-          <Menu.Item key="4" icon={<ShopOutlined />}>
-            <NavLink to="/admins">Clubs</NavLink>
-          </Menu.Item>
-          <Menu.Item key="5" icon={<BarChartOutlined />}>
-            <NavLink to="/admins">Statistics</NavLink>
-          </Menu.Item>
-        </Menu> */}
       </Sider>
       <Layout>
         <Header
