@@ -15,15 +15,13 @@ import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
 // import "./FootballerForm.css";
 
-const UpdateFootballer = () => {
+const UpdateFootballer = ({ footballerId, hideForm, updateFootballers }) => {
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedFootballer, setLoadedFootballers] = useState();
-  const footballerId = useParams().footballerId;
+  // const footballerId = useParams().footballerId;
 
   const history = useHistory();
-
-  console.log(footballerId);
 
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -107,7 +105,9 @@ const UpdateFootballer = () => {
           Authorization: "Bearer " + auth.token,
         }
       );
-      //   history.push("/" + auth.userId + "/footballers");
+      history.push("/admins/footballers");
+      updateFootballers();
+      hideForm();
     } catch (err) {}
   };
 
@@ -131,7 +131,7 @@ const UpdateFootballer = () => {
 
   return (
     <React.Fragment>
-      <ErrorModal error={error} onClear={clearError} />
+      {/* <ErrorModal error={error} onClear={clearError} /> */}
       {!isLoading && loadedFootballer && (
         <form className="footballer-form" onSubmit={footballerSubmitHandler}>
           <Input

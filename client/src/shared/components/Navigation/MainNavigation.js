@@ -14,7 +14,7 @@ const MainNavigation = () => {
     <Layout>
       <Header style={{ display: "flex", alignItems: "center" }}>
         <div className="demo-logo" />
-        <Menu
+        {/* <Menu
           theme="dark"
           mode="horizontal"
           defaultSelectedKeys={["1"]}
@@ -42,7 +42,7 @@ const MainNavigation = () => {
               label: "Login",
             },
           ]}
-        />
+        /> */}
           {/* <Menu.Item key="1" className="main-navigation__home-page">
             <Link to="/">Transfer-market</Link>
           </Menu.Item>
@@ -64,6 +64,13 @@ const MainNavigation = () => {
             </Menu.Item>
           )} */}
         {/* </Menu> */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <a href="/footballers">Footballers</a>
+          <a href="/transfers">Transfers</a>
+          <a href="/clubs">Clubs</a>
+          <a href="/agents">Agents</a>
+          <a href="/auth">Login</a>
+        </div>
       </Header>
     </Layout>
   );

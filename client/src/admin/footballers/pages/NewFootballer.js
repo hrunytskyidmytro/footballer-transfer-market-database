@@ -15,10 +15,10 @@ import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
 // import "./FootballerForm.css";
 
-const NewFootballer = () => {
+const NewFootballer = ({ updateFootballers }) => {
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [formState, inputHandler] = useForm(
+  const [formState, inputHandler, setFormData] = useForm(
     {
       name: {
         value: "",
@@ -75,6 +75,7 @@ const NewFootballer = () => {
         }
       );
       history.push("/admins/footballers");
+      updateFootballers();
     } catch (err) {}
   };
 
@@ -133,6 +134,7 @@ const NewFootballer = () => {
           onInput={inputHandler}
           errorText="PLease provide an image."
         />
+        {console.log("Form state after selecting image:", formState)}
         <Button type="submit" disabled={!formState.isValid}>
           Add footballer
         </Button>

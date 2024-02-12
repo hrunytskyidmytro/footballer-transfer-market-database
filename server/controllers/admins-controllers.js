@@ -37,6 +37,7 @@ const getFootballerById = async (req, res, next) => {
   try {
     footballer = await Footballer.findById(footballerId);
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
       "Something went wrong, could not find a footballer.",
       500

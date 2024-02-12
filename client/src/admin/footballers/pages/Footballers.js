@@ -1,12 +1,23 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useHistory, NavLink, Link } from "react-router-dom";
-import { Space, Table, Image, Dropdown, Button, Modal, Flex } from "antd";
+import {
+  Space,
+  Table,
+  Image,
+  Dropdown,
+  Button,
+  Modal,
+  Flex,
+  Pagination,
+} from "antd";
 import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
+import NewFootballer from "./NewFootballer";
+import UpdateFootballer from "./UpdateFootballer";
 
 const Footballers = () => {
   const auth = useContext(AuthContext);
@@ -15,6 +26,13 @@ const Footballers = () => {
   const [loadedFotballers, setLoadedFootballers] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletedFootballerId, setDeletedFootballerId] = useState(null);
+  const [editFootballerId, setEditFootballerId] = useState(null);
+  const [isModalForAdd, setIsModalForAdd] = useState(false);
+  const [isModalForEdit, setIsModalForEdit] = useState(false);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 4,
+  });
 
   useEffect(() => {
     const fetchFootballers = async () => {
@@ -50,13 +68,33 @@ const Footballers = () => {
     } catch (err) {}
   };
 
-  const showModal = (id) => {
+  const updateFootballers = async () => {
+    setIsModalForAdd(false);
+    try {
+      const responseData = await sendRequest(
+        "http://localhost:5001/api/admins/footballers"
+      );
+      setLoadedFootballers(responseData.footballers);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const showModalForDelete = (id) => {
     setIsModalOpen(true);
     setDeletedFootballerId(id);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const hideFormForAdd = () => {
+    setIsModalForAdd(false);
+  };
+
+  const hideFormForEdit = () => {
+    setIsModalForEdit(false);
   };
 
   const columns = [
@@ -124,8 +162,16 @@ const Footballers = () => {
       render: (footballer) => (
         <Space size="middle">
           <Flex gap="small">
-            <Button onClick={() => history.push(`/admins/footballers/${footballer.key}`)}>Edit</Button>
-            <Button danger onClick={() => showModal(footballer.key)}>
+            <Button
+              onClick={() => {
+                history.push(`/admins/footballers/${footballer.key}`);
+                setIsModalForEdit(true);
+                setEditFootballerId(footballer.key);
+              }}
+            >
+              Edit
+            </Button>
+            <Button danger onClick={() => showModalForDelete(footballer.key)}>
               Delete
             </Button>
           </Flex>
@@ -134,8 +180,12 @@ const Footballers = () => {
     },
   ];
 
-  const onChange = (pagination, filters, sorter, extra) => {
-    console.log("params", pagination, filters, sorter, extra);
+  // const onChange = (pagination, filters, sorter, extra) => {
+  //   console.log("params", pagination, filters, sorter, extra);
+  // };
+
+  const onChange = (page, pageSize) => {
+    setPagination({ ...pagination, current: page, pageSize });
   };
 
   const data = loadedFotballers
@@ -155,20 +205,25 @@ const Footballers = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      {isLoading && (
+      {isLoading ? (
         <div className="center">
           <LoadingSpinner />
         </div>
+      ) : (
+        <Button
+          type="primary"
+          style={{
+            fontSize: "16px",
+          }}
+          onClick={() => {
+            history.push("/admins/footballers/new");
+            setIsModalForAdd(true);
+          }}
+        >
+          Add Footballer
+        </Button>
       )}
-      <Button
-        type="primary"
-        style={{
-          fontSize: "16px",
-        }}
-        onClick={() => history.push("/admins/footballers/new")}
-      >
-        Add Footballer
-      </Button>
+
       <div
         style={{
           height: 20,
@@ -185,9 +240,42 @@ const Footballers = () => {
         Do you want to proceed and delete this footballer? Please note that it
         can't be undone thereafter.
       </Modal>
+      <Modal
+        title="Add new footballer"
+        open={isModalForAdd}
+        onCancel={hideFormForAdd}
+        footer={null}
+      >
+        <NewFootballer updateFootballers={updateFootballers} />
+      </Modal>
+      <Modal
+        title="Edit footballer"
+        open={isModalForEdit}
+        onCancel={hideFormForEdit}
+        footer={null}
+      >
+        <UpdateFootballer
+          footballerId={editFootballerId}
+          hideForm={hideFormForEdit}
+          updateFootballers={updateFootballers}
+        />
+      </Modal>
       {!isLoading && loadedFotballers && (
         <>
-          <Table columns={columns} dataSource={data} onChange={onChange} />
+          <Table
+            columns={columns}
+            dataSource={data}
+            pagination={pagination}
+            onChange={onChange}
+          />
+          <div className="pagination">
+            <Pagination
+              current={pagination.current}
+              pageSize={pagination.pageSize}
+              total={data.length}
+              onChange={onChange}
+            />
+          </div>
         </>
       )}
     </React.Fragment>
