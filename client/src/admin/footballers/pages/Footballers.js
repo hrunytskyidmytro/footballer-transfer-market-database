@@ -1,38 +1,21 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useHistory, NavLink, Link } from "react-router-dom";
-import {
-  Space,
-  Table,
-  Image,
-  Dropdown,
-  Button,
-  Modal,
-  Flex,
-  Pagination,
-} from "antd";
+import { Link } from "react-router-dom";
+import { Space, Table, Image, Button, Modal, Flex, message } from "antd";
 import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
-import NewFootballer from "./NewFootballer";
-import UpdateFootballer from "./UpdateFootballer";
 
 const Footballers = () => {
   const auth = useContext(AuthContext);
-  const history = useHistory();
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedFotballers, setLoadedFootballers] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletedFootballerId, setDeletedFootballerId] = useState(null);
-  const [editFootballerId, setEditFootballerId] = useState(null);
-  const [isModalForAdd, setIsModalForAdd] = useState(false);
-  const [isModalForEdit, setIsModalForEdit] = useState(false);
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 4,
-  });
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchFootballers = async () => {
@@ -64,20 +47,8 @@ const Footballers = () => {
           (footballer) => footballer._id !== deletedFootballerId
         )
       );
-      history.push("/admins/footballers");
+      message.success("Footballer successfully deleted!");
     } catch (err) {}
-  };
-
-  const updateFootballers = async () => {
-    setIsModalForAdd(false);
-    try {
-      const responseData = await sendRequest(
-        "http://localhost:5001/api/admins/footballers"
-      );
-      setLoadedFootballers(responseData.footballers);
-    } catch (err) {
-      console.error(err);
-    }
   };
 
   const showModalForDelete = (id) => {
@@ -87,14 +58,6 @@ const Footballers = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false);
-  };
-
-  const hideFormForAdd = () => {
-    setIsModalForAdd(false);
-  };
-
-  const hideFormForEdit = () => {
-    setIsModalForEdit(false);
   };
 
   const columns = [
@@ -162,15 +125,9 @@ const Footballers = () => {
       render: (footballer) => (
         <Space size="middle">
           <Flex gap="small">
-            <Button
-              onClick={() => {
-                history.push(`/admins/footballers/${footballer.key}`);
-                setIsModalForEdit(true);
-                setEditFootballerId(footballer.key);
-              }}
-            >
-              Edit
-            </Button>
+            <Link to={`/admins/footballers/${footballer.key}`}>
+              <Button>Edit</Button>
+            </Link>
             <Button danger onClick={() => showModalForDelete(footballer.key)}>
               Delete
             </Button>
@@ -180,12 +137,8 @@ const Footballers = () => {
     },
   ];
 
-  // const onChange = (pagination, filters, sorter, extra) => {
-  //   console.log("params", pagination, filters, sorter, extra);
-  // };
-
-  const onChange = (page, pageSize) => {
-    setPagination({ ...pagination, current: page, pageSize });
+  const onChange = (pagination, filters, sorter, extra) => {
+    console.log("params", pagination, filters, sorter, extra);
   };
 
   const data = loadedFotballers
@@ -210,18 +163,16 @@ const Footballers = () => {
           <LoadingSpinner />
         </div>
       ) : (
-        <Button
-          type="primary"
-          style={{
-            fontSize: "16px",
-          }}
-          onClick={() => {
-            history.push("/admins/footballers/new");
-            setIsModalForAdd(true);
-          }}
-        >
-          Add Footballer
-        </Button>
+        <Link to="/admins/footballers/new">
+          <Button
+            type="primary"
+            style={{
+              fontSize: "16px",
+            }}
+          >
+            Add Footballer
+          </Button>
+        </Link>
       )}
 
       <div
@@ -240,42 +191,29 @@ const Footballers = () => {
         Do you want to proceed and delete this footballer? Please note that it
         can't be undone thereafter.
       </Modal>
-      <Modal
-        title="Add new footballer"
-        open={isModalForAdd}
-        onCancel={hideFormForAdd}
-        footer={null}
-      >
-        <NewFootballer updateFootballers={updateFootballers} />
-      </Modal>
-      <Modal
-        title="Edit footballer"
-        open={isModalForEdit}
-        onCancel={hideFormForEdit}
-        footer={null}
-      >
-        <UpdateFootballer
-          footballerId={editFootballerId}
-          hideForm={hideFormForEdit}
-          updateFootballers={updateFootballers}
-        />
-      </Modal>
       {!isLoading && loadedFotballers && (
         <>
           <Table
             columns={columns}
-            dataSource={data}
-            pagination={pagination}
+            dataSource={data.map((footballer, index) => ({
+              ...footballer,
+              key: footballer.id,
+              number: limit * (page - 1) + index + 1
+            }))}
+            pagination={{
+              pageSize: limit,
+              total: data.length,
+              showSizeChanger: true,
+              pageSizeOptions: [2, 4, 10, 20],
+              responsive: true,
+              showTotal: (total) => `All ${total}`,
+              onChange: (page, pageSize) => {
+                setPage(page);
+                setLimit(pageSize);
+              },
+            }}
             onChange={onChange}
           />
-          <div className="pagination">
-            <Pagination
-              current={pagination.current}
-              pageSize={pagination.pageSize}
-              total={data.length}
-              onChange={onChange}
-            />
-          </div>
         </>
       )}
     </React.Fragment>

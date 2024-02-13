@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { message } from "antd";
 
 import Input from "../../../shared/components/FormElements/Input";
 import Button from "../../../shared/components/FormElements/Button";
@@ -15,13 +16,12 @@ import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
 // import "./FootballerForm.css";
 
-const UpdateFootballer = ({ footballerId, hideForm, updateFootballers }) => {
+const UpdateFootballer = () => {
+  const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedFootballer, setLoadedFootballers] = useState();
-  // const footballerId = useParams().footballerId;
-
-  const history = useHistory();
+  const footballerId = useParams().footballerId;
 
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -105,9 +105,10 @@ const UpdateFootballer = ({ footballerId, hideForm, updateFootballers }) => {
           Authorization: "Bearer " + auth.token,
         }
       );
-      history.push("/admins/footballers");
-      updateFootballers();
-      hideForm();
+      navigate("/admins/footballers");
+      message.success("Footballer successfully edited!");
+      // updateFootballers();
+      // hideForm();
     } catch (err) {}
   };
 
@@ -131,7 +132,7 @@ const UpdateFootballer = ({ footballerId, hideForm, updateFootballers }) => {
 
   return (
     <React.Fragment>
-      {/* <ErrorModal error={error} onClear={clearError} /> */}
+      <ErrorModal error={error} onClear={clearError} />
       {!isLoading && loadedFootballer && (
         <form className="footballer-form" onSubmit={footballerSubmitHandler}>
           <Input
