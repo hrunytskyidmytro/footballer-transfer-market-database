@@ -12,7 +12,7 @@ import {
 
 import "./AdminDashboard.css";
 import { NavLink } from "react-router-dom";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { AuthContext } from "../../../shared/context/auth-context";
 import { Layout, Menu, theme, Button } from "antd";
 
@@ -27,7 +27,7 @@ const { Header, Content, Footer, Sider } = Layout;
 
 const AdminDashboard = () => {
   const auth = useContext(AuthContext);
-  const history = useHistory();
+  // const history = useHistory();
   // const location = useLocation();
   // const footballerId = useParams().footballerId;
   const [selectedMenuItem, setSelectedMenuItem] = useState("1");
@@ -37,28 +37,28 @@ const AdminDashboard = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const handleMenuClick = (key) => {
-    setSelectedMenuItem(key);
-    switch (key) {
-      case "1":
-        history.push("/admins/users");
-        break;
-      case "2":
-        history.push("/admins/footballers");
-        break;
-      case "3":
-        history.push("/admins/transfers");
-        break;
-      case "4":
-        history.push("/admins/clubs");
-        break;
-      case "5":
-        history.push("/admins/statistics");
-        break;
-      default:
-        break;
-    }
-  };
+  // const handleMenuClick = (key) => {
+  //   setSelectedMenuItem(key);
+  //   switch (key) {
+  //     case "1":
+  //       history.push("/admins/users");
+  //       break;
+  //     case "2":
+  //       history.push("/admins/footballers");
+  //       break;
+  //     case "3":
+  //       history.push("/admins/transfers");
+  //       break;
+  //     case "4":
+  //       history.push("/admins/clubs");
+  //       break;
+  //     case "5":
+  //       history.push("/admins/statistics");
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
 
   let content = null;
   switch (window.location.pathname) {
@@ -105,7 +105,7 @@ const AdminDashboard = () => {
           mode="inline"
           defaultSelectedKeys={["1"]}
           selectedKeys={[selectedMenuItem]}
-          onClick={({ key }) => handleMenuClick(key)}
+          // onClick={({ key }) => handleMenuClick(key)}
           items={[
             {
               key: "1",

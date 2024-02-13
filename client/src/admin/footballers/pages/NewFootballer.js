@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { message } from "antd";
 
 import Input from "../../../shared/components//FormElements/Input";
 import Button from "../../../shared/components/FormElements/Button";
@@ -15,10 +16,11 @@ import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
 // import "./FootballerForm.css";
 
-const NewFootballer = ({ updateFootballers }) => {
+const NewFootballer = () => {
+  const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [formState, inputHandler, setFormData] = useForm(
+  const [formState, inputHandler] = useForm(
     {
       name: {
         value: "",
@@ -48,8 +50,6 @@ const NewFootballer = ({ updateFootballers }) => {
     false
   );
 
-  let history = useHistory();
-
   const footballerSubmitHandler = async (event) => {
     event.preventDefault();
 
@@ -74,8 +74,8 @@ const NewFootballer = ({ updateFootballers }) => {
           Authorization: "Bearer " + auth.token,
         }
       );
-      history.push("/admins/footballers");
-      updateFootballers();
+      navigate("/admins/footballers");
+      message.success("Footballer successfully added!");
     } catch (err) {}
   };
 
@@ -134,9 +134,8 @@ const NewFootballer = ({ updateFootballers }) => {
           onInput={inputHandler}
           errorText="PLease provide an image."
         />
-        {console.log("Form state after selecting image:", formState)}
         <Button type="submit" disabled={!formState.isValid}>
-          Add footballer
+          Add Footballer
         </Button>
       </form>
     </React.Fragment>
