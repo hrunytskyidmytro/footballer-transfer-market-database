@@ -3,7 +3,7 @@ const HttpError = require("../models/http-error");
 const User = require("../models/user");
 
 const checkAdmin = async (req, res, next) => {
-  const userId = req.params.uid;
+  const userId = req.userData.userId;
 
   let user;
   try {
@@ -16,7 +16,7 @@ const checkAdmin = async (req, res, next) => {
 
     if (user.role !== "admin") {
       const error = new HttpError(
-        "Permission denied. Only admins can add footballers.",
+        "Permission denied. Only admins can add, edit or delete.",
         403
       );
       return next(error);

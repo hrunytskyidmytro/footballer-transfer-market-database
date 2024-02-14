@@ -8,6 +8,8 @@ const Footballer = require("../models/footballer");
 const Transfer = require("../models/transfer");
 const Club = require("../models/club");
 const User = require("../models/user");
+const Agent = require("../models/agent");
+const New = require("../models/new");
 
 //Footballer
 
@@ -46,9 +48,7 @@ const getFootballerById = async (req, res, next) => {
   }
 
   if (!footballer) {
-    return next(
-      new HttpError("Could not find footballer.", 404)
-    );
+    return next(new HttpError("Could not find footballer.", 404));
   }
 
   console.log(footballer);
@@ -96,7 +96,23 @@ const createFootballer = async (req, res, next) => {
     );
   }
 
-  const { name, surname, birthDate, nationality, position } = req.body;
+  const {
+    name,
+    surname,
+    nationality,
+    birthDate,
+    weight,
+    height,
+    age,
+    foot,
+    club,
+    contractUntil,
+    placeOfBirth,
+    mainPosition,
+    additionalPosition,
+    cost,
+    agent,
+  } = req.body;
 
   let existingFootballer;
   try {
@@ -124,7 +140,17 @@ const createFootballer = async (req, res, next) => {
     surname,
     nationality,
     birthDate,
-    position,
+    weight,
+    height,
+    age,
+    foot,
+    club,
+    contractUntil,
+    placeOfBirth,
+    mainPosition,
+    additionalPosition,
+    cost,
+    agent,
     image: req.file.path,
     creator: req.userData.userId,
     clubs: [],
@@ -179,7 +205,23 @@ const updateFootballer = async (req, res, next) => {
     );
   }
 
-  const { name, surname, birthDate, nationality, position } = req.body;
+  const {
+    name,
+    surname,
+    birthDate,
+    nationality,
+    weight,
+    height,
+    age,
+    foot,
+    club,
+    contractUntil,
+    placeOfBirth,
+    mainPosition,
+    additionalPosition,
+    cost,
+    agent,
+  } = req.body;
   const footballerId = req.params.fid;
 
   let footballer;
@@ -193,19 +235,21 @@ const updateFootballer = async (req, res, next) => {
     return next(error);
   }
 
-  // if (footballer.creator.toString() !== req.userData.userId) {
-  //   const error = new HttpError(
-  //     "You are not allowed to edit this footballer.",
-  //     3
-  //   );
-  //   return next(error);
-  // }
-
   footballer.name = name;
   footballer.surname = surname;
   footballer.birthDate = birthDate;
   footballer.nationality = nationality;
-  footballer.position = position;
+  footballer.weight = weight;
+  footballer.height = height;
+  footballer.age = age;
+  footballer.foot = foot;
+  footballer.club = club;
+  footballer.contractUntil = contractUntil;
+  footballer.placeOfBirth = placeOfBirth;
+  footballer.mainPosition = mainPosition;
+  footballer.additionalPosition = additionalPosition;
+  footballer.cost = cost;
+  footballer.agent = agent;
 
   try {
     await footballer.save();
@@ -301,6 +345,8 @@ const createTransfer = async (req, res, next) => {
     transferFee,
     transferDate,
     transferType,
+    season,
+    compensationAmount,
   } = req.body;
 
   if (fromClub === toClub) {
@@ -334,6 +380,8 @@ const createTransfer = async (req, res, next) => {
     transferFee,
     transferDate,
     transferType,
+    season,
+    compensationAmount,
   });
 
   try {
@@ -364,7 +412,13 @@ const updateTransfer = async (req, res, next) => {
     );
   }
 
-  const { transferFee, transferDate, transferType } = req.body;
+  const {
+    transferFee,
+    transferDate,
+    transferType,
+    season,
+    compensationAmount,
+  } = req.body;
   const transferId = req.params.tid;
 
   let transfer;
@@ -381,6 +435,8 @@ const updateTransfer = async (req, res, next) => {
   transfer.transferFee = transferFee;
   transfer.transferDate = transferDate;
   transfer.transferType = transferType;
+  transfer.season = season;
+  transfer.compensationAmount = compensationAmount;
 
   try {
     await transfer.save();
@@ -476,8 +532,7 @@ const getClubById = async (req, res, next) => {
   console.log(club);
 
   res.json({
-    // footballer: footballer.toObject({ getters: true }),
-    club: club,
+    club: club.toObject({ getters: true }),
   });
 };
 
@@ -490,13 +545,16 @@ const createClub = async (req, res, next) => {
     );
   }
 
-  const { name, country } = req.body;
+  const { name, country, description, cost, foundationYear } = req.body;
 
   const createdClub = new Club({
     name,
     country,
     image:
       "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg",
+    description,
+    cost,
+    foundationYear,
   });
 
   const footballerId = req.params.fid;
@@ -547,7 +605,7 @@ const updateClub = async (req, res, next) => {
     );
   }
 
-  const { name, country } = req.body;
+  const { name, country, description, cost, foundationYear } = req.body;
   const clubId = req.params.cid;
 
   let club;
@@ -563,6 +621,9 @@ const updateClub = async (req, res, next) => {
 
   club.name = name;
   club.country = country;
+  club.description = description;
+  club.cost = cost;
+  club.foundationYear = foundationYear;
 
   try {
     await club.save();
@@ -633,6 +694,349 @@ const deleteClub = async (req, res, next) => {
   res.status(200).json({ message: "Deleted club." });
 };
 
+//Agents
+
+const getAgents = async (req, res, next) => {
+  let agents;
+  try {
+    agents = await Agent.find({});
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching agents failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({
+    agents: agents.map((agent) => agent.toObject({ getters: true })),
+  });
+};
+
+const getAgentById = async (req, res, next) => {
+  const agentId = req.params.aid;
+
+  let agent;
+  try {
+    agent = await Agent.findById(agentId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find a agent.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!agent) {
+    const error = new HttpError(
+      "Could not find a agent for the provided id.",
+      404
+    );
+    return next(error);
+  }
+
+  res.send({ agent: agent.toObject({ getters: true }) });
+};
+
+const createAgent = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  const { name, surname, country, email, phoneNumber, description } = req.body;
+
+  let existingAgent;
+  try {
+    existingAgent = await Agent.findOne({
+      $or: [{ name }, { surname }],
+    });
+  } catch (err) {
+    const error = new HttpError(
+      "Creating agent failed, please try again.",
+      500
+    );
+    return next(error);
+  }
+
+  if (existingAgent) {
+    const error = new HttpError(
+      "Agent with the same name or surname already exists.",
+      422
+    );
+    return next(error);
+  }
+
+  const createdAgent = new Agent({
+    name,
+    surname,
+    country,
+    email,
+    phoneNumber,
+    image: req.file.path,
+    description,
+  });
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await createdAgent.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError(
+      "Creating agent failed, please try again.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(201).json({ agent: createdAgent });
+};
+
+const updateAgent = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  const { name, surname, country, email, phoneNumber, description } = req.body;
+  const agentId = req.params.aid;
+
+  let agent;
+  try {
+    agent = await Agent.findById(agentId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update agent.",
+      500
+    );
+    return next(error);
+  }
+
+  agent.name = name;
+  agent.surname = surname;
+  agent.country = country;
+  agent.email = email;
+  agent.phoneNumber = phoneNumber;
+  agent.description = description;
+
+  try {
+    await agent.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update agent.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ agent: agent.toObject({ getters: true }) });
+};
+
+const deleteAgent = async (req, res, next) => {
+  const agentId = req.params.aid;
+
+  let agent;
+  try {
+    agent = await Agent.findById(agentId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not delete agent.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!agent) {
+    const error = new HttpError("Could not find agent for this id.", 404);
+    return next(error);
+  }
+
+  const imagePath = agent.image;
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await agent.deleteOne({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    console.log(err.message);
+    const error = new HttpError(
+      "Something went wrong, could not delete agent.",
+      500
+    );
+    return next(error);
+  }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
+
+  res.status(200).json({ message: "Deleted agent." });
+};
+
+//News
+
+const getNews = async (req, res, next) => {
+  let news;
+  try {
+    news = await New.find({});
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching news failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({
+    news: news.map((n) => n.toObject({ getters: true })),
+  });
+};
+
+const getNewById = async (req, res, next) => {
+  const newId = req.params.nid;
+
+  let n;
+  try {
+    n = await New.findById(newId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find a new.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!n) {
+    const error = new HttpError(
+      "Could not find a new for the provided id.",
+      404
+    );
+    return next(error);
+  }
+
+  res.send({ n: n.toObject({ getters: true }) });
+};
+
+const createNew = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  const { title, description } = req.body;
+
+  const createdNew = new New({
+    title,
+    description,
+    image: req.file.path,
+    author: req.userData.userId,
+  });
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await createdNew.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError("Creating new failed, please try again.", 500);
+    return next(error);
+  }
+
+  res.status(201).json({ new: createdNew });
+};
+
+const updateNew = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  const { title, description } = req.body;
+  const newId = req.params.nid;
+
+  let n;
+  try {
+    n = await New.findById(newId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update new.",
+      500
+    );
+    return next(error);
+  }
+
+  n.title = title;
+  n.description = description;
+
+  try {
+    await n.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update new.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ n: n.toObject({ getters: true }) });
+};
+
+const deleteNew = async (req, res, next) => {
+  const newId = req.params.nid;
+
+  let n;
+  try {
+    n = await New.findById(newId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not delete new.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!n) {
+    const error = new HttpError("Could not find new for this id.", 404);
+    return next(error);
+  }
+
+  const imagePath = n.image;
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await n.deleteOne({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    console.log(err.message);
+    const error = new HttpError(
+      "Something went wrong, could not delete new.",
+      500
+    );
+    return next(error);
+  }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
+
+  res.status(200).json({ message: "Deleted new." });
+};
+
 //User
 
 const getUsers = async (req, res, next) => {
@@ -650,6 +1054,83 @@ const getUsers = async (req, res, next) => {
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
+const updateUser = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  const { name, surname, email, role } = req.body;
+  const userId = req.params.uid;
+
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update user.",
+      500
+    );
+    return next(error);
+  }
+
+  user.name = name;
+  user.surname = surname;
+  user.email = email;
+  user.role = role;
+
+  try {
+    await user.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update user.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ user: user.toObject({ getters: true }) });
+};
+
+const deleteUser = async (req, res, next) => {
+  const userId = req.params.uid;
+
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not delete user.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    const error = new HttpError("Could not find user for this id.", 404);
+    return next(error);
+  }
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await user.deleteOne({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    console.log(err.message);
+    const error = new HttpError(
+      "Something went wrong, could not delete user.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ message: "Deleted user." });
+};
+
 exports.getFootballers = getFootballers;
 exports.getFootballerById = getFootballerById;
 exports.getFootballersByUserId = getFootballersByUserId;
@@ -665,4 +1146,16 @@ exports.getClubById = getClubById;
 exports.createClub = createClub;
 exports.updateClub = updateClub;
 exports.deleteClub = deleteClub;
+exports.getAgents = getAgents;
+exports.getAgentById = getAgentById;
+exports.createAgent = createAgent;
+exports.updateAgent = updateAgent;
+exports.deleteAgent = deleteAgent;
+exports.getNews = getNews;
+exports.getNewById = getNewById;
+exports.createNew = createNew;
+exports.updateNew = updateNew;
+exports.deleteNew = deleteNew;
 exports.getUsers = getUsers;
+exports.updateUser = updateUser;
+exports.deleteUser = deleteUser;

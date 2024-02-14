@@ -10,6 +10,8 @@ const footballersRoutes = require("./routes/footballers-routes");
 const usersRoutes = require("./routes/users-routes");
 const transfersRoutes = require("./routes/transfers-routes");
 const clubsRoutes = require("./routes/clubs-routes");
+const agentsRoutes = require("./routes/agents-routes");
+const newsRoutes = require("./routes/news-routes");
 const adminsRoutes = require("./routes/admins-routes");
 const HttpError = require("./models/http-error");
 
@@ -33,15 +35,19 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/footballers", footballersRoutes); // => /api/footballers...
+app.use("/api/footballers", footballersRoutes); 
 
-app.use("/api/users", usersRoutes); // => /api/users...
+app.use("/api/users", usersRoutes); 
 
-app.use("/api/transfers", transfersRoutes); // => /api/transfers...
+app.use("/api/transfers", transfersRoutes); 
 
-app.use("/api/clubs", clubsRoutes); // => /api/clubs...
+app.use("/api/clubs", clubsRoutes); 
 
-app.use("/api/admins", adminsRoutes); // => /api/admins...
+app.use("/api/agents", agentsRoutes); 
+
+app.use("/api/news", newsRoutes); 
+
+app.use("/api/admins", adminsRoutes); 
 
 app.use((req, res, next) => {
   const error = new HttpError("Could not find this route.", 404);

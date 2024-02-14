@@ -19,13 +19,55 @@ const footballerSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  position: {
+  weight: {
+    type: Number,
+    required: true,
+  },
+  height: {
+    type: Number,
+    required: true,
+  },
+  age: {
+    type: Number,
+    required: true,
+  },
+  foot: {
     type: String,
+    required: true,
+  },
+  club: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+    ref: "Club",
+  },
+  contractUntil: {
+    type: Date,
+    required: true,
+  },
+  placeOfBirth: {
+    type: String,
+    required: true,
+  },
+  mainPosition: {
+    type: String,
+    required: true,
+  },
+  additionalPosition: {
+    type: String,
+    required: false,
+  },
+  cost: {
+    type: Number,
     required: true,
   },
   image: {
     type: String,
-    required: true, 
+    required: true,
+  },
+  agent: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+    ref: "Agent",
   },
   creator: {
     type: mongoose.Types.ObjectId,

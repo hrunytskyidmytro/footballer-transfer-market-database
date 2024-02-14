@@ -31,6 +31,14 @@ const transferSchema = new Schema({
     enum: ["internal", "international", "loan", "free", "swap", "youth"],
     default: "internal",
   },
+  season: {
+    type: String,
+    required: true,
+  },
+  compensationAmount: {
+    type: Number,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Transfer", transferSchema);
