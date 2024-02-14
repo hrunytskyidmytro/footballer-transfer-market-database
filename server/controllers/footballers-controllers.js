@@ -48,7 +48,7 @@ const getFootballerById = async (req, res, next) => {
     return next(error);
   }
 
-  res.send({ footballer: footballer.toObject({ getters: true }) }); // => { footballer } => { footballer: footballer }
+  res.send({ footballer: footballer.toObject({ getters: true }) });
 };
 
 const getFootballersByUserId = async (req, res, next) => {

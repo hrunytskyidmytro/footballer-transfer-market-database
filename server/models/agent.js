@@ -2,12 +2,24 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const clubSchema = new Schema({
+const agentSchema = new Schema({
   name: {
     type: String,
     required: true,
   },
+  surname: {
+    type: String,
+    required: true,
+  },
   country: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  phoneNumber: {
     type: String,
     required: true,
   },
@@ -19,14 +31,6 @@ const clubSchema = new Schema({
     type: String,
     required: true,
   },
-  cost: {
-    type: Number,
-    required: true,
-  },
-  foundationYear: {
-    type: Number,
-    required: true,
-  },
 });
 
-module.exports = mongoose.model("Club", clubSchema);
+module.exports = mongoose.model("Agent", agentSchema);

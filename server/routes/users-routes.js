@@ -14,7 +14,7 @@ router.post(
   [
     check("name").not().isEmpty(),
     check("email")
-      .normalizeEmail() // Test@test.com => test@test.com
+      .normalizeEmail()
       .isEmail(),
     check("password").isLength({ min: 6 }),
   ],

@@ -18,13 +18,13 @@ router.get("/footballers/user/:uid", adminsController.getFootballersByUserId);
 
 router.get("/transfers", adminsController.getTransfers);
 
-router.delete("/transfers/:tid", adminsController.deleteTransfer);
-
 router.get("/clubs", adminsController.getClubs);
 
 router.get("/clubs/:cid", adminsController.getClubById);
 
-router.use(checkAuth);
+// router.use(checkAuth);
+
+// router.use(checkAdmin);
 
 router.post(
   "/footballers/new",
@@ -33,7 +33,14 @@ router.post(
     check("name").not().isEmpty(),
     check("surname").not().isEmpty(),
     check("nationality").not().isEmpty(),
-    check("position").not().isEmpty(),
+    check("weight").not().isEmpty(),
+    check("height").not().isEmpty(),
+    check("age").not().isEmpty(),
+    check("foot").not().isEmpty(),
+    check("placeOfBirth").not().isEmpty(),
+    check("mainPosition").not().isEmpty(),
+    check("additionalPosition").not().isEmpty(),
+    check("cost").not().isEmpty(),
   ],
   adminsController.createFootballer
 );
@@ -44,7 +51,14 @@ router.patch(
     check("name").not().isEmpty(),
     check("surname").not().isEmpty(),
     check("nationality").not().isEmpty(),
-    check("position").not().isEmpty(),
+    check("weight").not().isEmpty(),
+    check("height").not().isEmpty(),
+    check("age").not().isEmpty(),
+    check("foot").not().isEmpty(),
+    check("placeOfBirth").not().isEmpty(),
+    check("mainPosition").not().isEmpty(),
+    check("additionalPosition").not().isEmpty(),
+    check("cost").not().isEmpty(),
   ],
   adminsController.updateFootballer
 );
@@ -53,32 +67,116 @@ router.delete("/footballers/:fid", adminsController.deleteFootballer);
 
 router.post(
   "/transfers/new",
-  [check("transferFee").not().isEmpty()],
+  [
+    check("transferFee").not().isEmpty(),
+    check("season").not().isEmpty(),
+    check("compensationAmount").not().isEmpty(),
+  ],
   adminsController.createTransfer
 );
 
 router.patch(
   "/transfers/:tid",
   [
-    check("transferFee").not().isEmpty().isInt(),
-    check("transferDate").not().isEmpty(),
-    check("transferType").not().isEmpty(),
+    check("transferFee").not().isEmpty(),
+    check("season").not().isEmpty(),
+    check("compensationAmount").not().isEmpty(),
   ],
   adminsController.updateTransfer
 );
 
+router.delete("/transfers/:tid", adminsController.deleteTransfer);
+
 router.post(
   "/clubs/new/footballer/:fid",
-  [check("name").not().isEmpty(), check("country").not().isEmpty()],
+  [
+    check("name").not().isEmpty(),
+    check("country").not().isEmpty(),
+    check("description").not().isEmpty(),
+    check("cost").not().isEmpty(),
+    check("foundationYear").not().isEmpty(),
+  ],
   adminsController.createClub
 );
 
 router.patch(
   "/clubs/:cid",
-  [check("name").not().isEmpty(), check("country").not().isEmpty()],
+  [
+    check("name").not().isEmpty(),
+    check("country").not().isEmpty(),
+    check("description").not().isEmpty(),
+    check("cost").not().isEmpty(),
+    check("foundationYear").not().isEmpty(),
+  ],
   adminsController.updateClub
 );
 
 router.delete("/clubs/:cid", adminsController.deleteClub);
+
+router.post(
+  "/agents/new",
+  [
+    check("name").not().isEmpty(),
+    check("surname").not().isEmpty(),
+    check("country").not().isEmpty(),
+    check("email").normalizeEmail().isEmail(),
+    check("phoneNumber").custom((value) => {
+      const phoneRegExp = /^\+[0-9]{1,3}-[0-9]{3}-[0-9]{3}-[0-9]{4}$/;
+      if (!phoneRegExp.test(value)) {
+        throw new Error("Invalid phone number format.");
+      }
+      return true;
+    }),
+    check("description").not().isEmpty(),
+  ],
+  adminsController.createAgent
+);
+
+router.patch(
+  "/agents/:aid",
+  [
+    check("name").not().isEmpty(),
+    check("surname").not().isEmpty(),
+    check("country").not().isEmpty(),
+    check("email").normalizeEmail().isEmail(),
+    check("phoneNumber").custom((value) => {
+      const phoneRegExp = /^\+[0-9]{1,3}-[0-9]{3}-[0-9]{3}-[0-9]{4}$/;
+      if (!phoneRegExp.test(value)) {
+        throw new Error("Invalid phone number format.");
+      }
+      return true;
+    }),
+    check("description").not().isEmpty(),
+  ],
+  adminsController.updateAgent
+);
+
+router.delete("/agents/:aid", adminsController.deleteAgent);
+
+router.post(
+  "/news/new",
+  [check("title").not().isEmpty(), check("description").not().isEmpty()],
+  adminsController.createNew
+);
+
+router.patch(
+  "/news/:nid",
+  [check("title").not().isEmpty(), check("description").not().isEmpty()],
+  adminsController.updateNew
+);
+
+router.delete("/news/:nid", adminsController.deleteNew);
+
+router.patch(
+  "/users/:uid",
+  [
+    check("name").not().isEmpty(),
+    check("surname").not().isEmpty(),
+    check("email").normalizeEmail().isEmail(),
+  ],
+  adminsController.updateUser
+);
+
+router.delete("/users/:uid", adminsController.deleteUser);
 
 module.exports = router;

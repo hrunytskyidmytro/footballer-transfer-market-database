@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Table, Space, Dropdown } from "antd";
+import React, { useEffect, useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import { Table, Space, Flex, Button, Modal, message } from "antd";
+import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
+import { AuthContext } from "../../../shared/context/auth-context";
 
 const Users = () => {
+  const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedUsers, setLoadedUsers] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deletedUserId, setDeletedUserId] = useState(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -22,26 +28,44 @@ const Users = () => {
     fetchUsers();
   }, [sendRequest]);
 
-  const items = [
-    {
-      key: "1",
-      label: "Edit",
-    },
-    {
-      key: "2",
-      label: "Delete",
-    },
-  ];
+  const confirmDeleteHandler = async () => {
+    setIsModalOpen(false);
+    try {
+      await sendRequest(
+        `http://localhost:5001/api/admins/users/${deletedUserId}`,
+        "DELETE",
+        null,
+        {
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setDeletedUserId(null);
+      setLoadedUsers((prevUsers) =>
+        prevUsers.filter((user) => user._id !== deletedUserId)
+      );
+      message.success("User successfully deleted!");
+    } catch (err) {}
+  };
 
-  const onMenuClick = (e) => {
-    console.log("click", e);
+  const showModalForDelete = (id) => {
+    setIsModalOpen(true);
+    setDeletedUserId(id);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   const columns = [
     {
-      title: "User",
+      title: "Name",
       dataIndex: "name",
       key: "name",
+    },
+    {
+      title: "Surname",
+      dataIndex: "surname",
+      key: "surname",
     },
     {
       title: "Email",
@@ -54,6 +78,12 @@ const Users = () => {
       key: "role",
     },
     {
+      title: "Date of registration",
+      dataIndex: "registrationDate",
+      key: "registrationDate",
+      render: (text) => moment(text).format("MMMM Do YYYY"),
+    },
+    {
       title: "Footballer Count",
       dataIndex: "footballerCount",
       key: "footballerCount",
@@ -62,16 +92,16 @@ const Users = () => {
     },
     {
       key: "action",
-      render: (_) => (
+      render: (user) => (
         <Space size="middle">
-          <Dropdown.Button
-            menu={{
-              items,
-              onClick: onMenuClick,
-            }}
-          >
-            Actions
-          </Dropdown.Button>
+          <Flex gap="small">
+            <Link to={`/admins/users/${user.key}`}>
+              <Button>Edit</Button>
+            </Link>
+            <Button danger onClick={() => showModalForDelete(user.key)}>
+              Delete
+            </Button>
+          </Flex>
         </Space>
       ),
     },
@@ -81,7 +111,9 @@ const Users = () => {
     ? loadedUsers.map((user) => ({
         key: user.id,
         name: user.name,
+        surname: user.surname,
         email: user.email,
+        registrationDate: user.registrationDate,
         role: user.role,
         footballerCount: user.footballers.length,
       }))
@@ -95,6 +127,17 @@ const Users = () => {
           <LoadingSpinner />
         </div>
       )}
+      <Modal
+        title="Are you sure?"
+        open={isModalOpen}
+        onOk={confirmDeleteHandler}
+        onCancel={handleCancel}
+        okText="Yes"
+        cancelText="No"
+      >
+        Do you want to proceed and delete this user? Please note that it can't
+        be undone thereafter.
+      </Modal>
       {!isLoading && loadedUsers && (
         <Table columns={columns} dataSource={data} pagination={true} />
       )}

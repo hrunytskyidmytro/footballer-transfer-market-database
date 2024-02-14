@@ -8,15 +8,19 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  surname: {
+    type: String,
+    required: true,
+  },
   email: {
     type: String,
     required: true,
     unique: true,
   },
-  image: {
-    type: String,
-    required: true,
-  },
+  // image: {
+  //   type: String,
+  //   required: true,
+  // },
   password: {
     type: String,
     required: true,
@@ -24,8 +28,12 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
-    enum: ["admin", "user"],
+    enum: ["admin", "user", "football_manager"],
     default: "user",
+  },
+  registrationDate: {
+    type: Date,
+    default: Date.now,
   },
   footballers: [
     {
