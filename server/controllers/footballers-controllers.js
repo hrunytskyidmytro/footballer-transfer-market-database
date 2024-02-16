@@ -189,7 +189,7 @@ const updateFootballer = async (req, res, next) => {
   if (footballer.creator.toString() !== req.userData.userId) {
     const error = new HttpError(
       "You are not allowed to edit this footballer.",
-      3
+      403
     );
     return next(error);
   }

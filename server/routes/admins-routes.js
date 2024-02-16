@@ -10,6 +10,8 @@ const router = express.Router();
 
 router.get("/users", adminsController.getUsers);
 
+router.get("/users/:uid", adminsController.getUserById);
+
 router.get("/footballers", adminsController.getFootballers);
 
 router.get("/footballers/:fid", adminsController.getFootballerById);
@@ -22,9 +24,17 @@ router.get("/clubs", adminsController.getClubs);
 
 router.get("/clubs/:cid", adminsController.getClubById);
 
-// router.use(checkAuth);
+router.get("/agents", adminsController.getAgents)
 
-// router.use(checkAdmin);
+router.get("/agents/:aid", adminsController.getAgentById);
+
+router.get("/news", adminsController.getNews)
+
+router.get("/news/:nid", adminsController.getNewById);
+
+router.use(checkAuth);
+
+router.use(checkAdmin);
 
 router.post(
   "/footballers/new",
@@ -89,6 +99,7 @@ router.delete("/transfers/:tid", adminsController.deleteTransfer);
 
 router.post(
   "/clubs/new/footballer/:fid",
+  fileUpload.single("image"),
   [
     check("name").not().isEmpty(),
     check("country").not().isEmpty(),
@@ -115,13 +126,14 @@ router.delete("/clubs/:cid", adminsController.deleteClub);
 
 router.post(
   "/agents/new",
+  fileUpload.single("image"),
   [
     check("name").not().isEmpty(),
     check("surname").not().isEmpty(),
     check("country").not().isEmpty(),
     check("email").normalizeEmail().isEmail(),
     check("phoneNumber").custom((value) => {
-      const phoneRegExp = /^\+[0-9]{1,3}-[0-9]{3}-[0-9]{3}-[0-9]{4}$/;
+      const phoneRegExp = /^\+\d{1,3}-\d{1,4}-\d{1,4}-\d{4}$/;
       if (!phoneRegExp.test(value)) {
         throw new Error("Invalid phone number format.");
       }
@@ -140,7 +152,7 @@ router.patch(
     check("country").not().isEmpty(),
     check("email").normalizeEmail().isEmail(),
     check("phoneNumber").custom((value) => {
-      const phoneRegExp = /^\+[0-9]{1,3}-[0-9]{3}-[0-9]{3}-[0-9]{4}$/;
+      const phoneRegExp = /^\+\d{1,3}-\d{1,4}-\d{1,4}-\d{4}$/;
       if (!phoneRegExp.test(value)) {
         throw new Error("Invalid phone number format.");
       }
@@ -155,6 +167,7 @@ router.delete("/agents/:aid", adminsController.deleteAgent);
 
 router.post(
   "/news/new",
+  fileUpload.single("image"),
   [check("title").not().isEmpty(), check("description").not().isEmpty()],
   adminsController.createNew
 );

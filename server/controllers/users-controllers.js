@@ -23,7 +23,7 @@ const getUsers = async (req, res, next) => {
 const signup = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(errors.message);
+    console.log(errors);
     return next(
       new HttpError("Invalid inputs passed, please check your data.", 422)
     );
@@ -66,7 +66,6 @@ const signup = async (req, res, next) => {
     name,
     surname,
     email,
-    // image: req.file.path,
     password: hashedPassword,
     footballers: [],
   });
@@ -109,6 +108,46 @@ const signup = async (req, res, next) => {
     token: token,
     role: createdUser.role,
   });
+};
+
+const updateUser = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    return next(
+      new HttpError("Invalid inputs passed, please check your data.", 422)
+    );
+  }
+
+  const { name, surname, email } = req.body;
+  const userId = req.params.uid;
+
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update user.",
+      500
+    );
+    return next(error);
+  }
+
+  user.name = name;
+  user.surname = surname;
+  user.email = email;
+
+  try {
+    await user.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update user.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ user: user.toObject({ getters: true }) });
 };
 
 const login = async (req, res, next) => {
@@ -182,5 +221,6 @@ const login = async (req, res, next) => {
 };
 
 exports.signup = signup;
+exports.updateUser = updateUser;
 exports.login = login;
 exports.getUsers = getUsers;
