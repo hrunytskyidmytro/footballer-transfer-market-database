@@ -5,7 +5,6 @@ import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
-import ImageUpload from "../../shared/components/FormElements/ImageUpload";
 import {
   VALIDATOR_EMAIL,
   VALIDATOR_MINLENGTH,
@@ -41,7 +40,7 @@ const Auth = () => {
         {
           ...formState.inputs,
           name: undefined,
-          image: undefined,
+          surname: undefined,
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       );
@@ -53,8 +52,8 @@ const Auth = () => {
             value: "",
             isValid: false,
           },
-          image: {
-            value: null,
+          surname: {
+            value: "",
             isValid: false,
           },
         },
@@ -89,13 +88,12 @@ const Auth = () => {
         formData.append("email", formState.inputs.email.value);
         formData.append("name", formState.inputs.name.value);
         formData.append("password", formState.inputs.password.value);
-        formData.append("image", formState.inputs.image.value);
+        formData.append("surname", formState.inputs.surname.value);
         const responseData = await sendRequest(
           "http://localhost:5001/api/users/signup",
           "POST",
           formData
         );
-
         auth.login(responseData.userId, responseData.token, responseData.role);
       } catch (err) {}
     }
@@ -121,11 +119,14 @@ const Auth = () => {
             />
           )}
           {!isLoginMode && (
-            <ImageUpload
-              center
-              id="image"
+            <Input
+              element="input"
+              id="surname"
+              type="text"
+              label="Your Surname"
+              validators={[VALIDATOR_REQUIRE()]}
+              errorText="Please enter a surname."
               onInput={inputHandler}
-              errorText="Please provide an image."
             />
           )}
           <Input

@@ -104,9 +104,60 @@ const Footballers = () => {
       render: (text) => moment(text).format("MMMM Do YYYY"),
     },
     {
-      title: "Position",
-      dataIndex: "position",
-      key: "position",
+      title: "Weight",
+      dataIndex: "weight",
+      key: "weight",
+    },
+    {
+      title: "Height",
+      dataIndex: "height",
+      key: "height",
+    },
+    {
+      title: "Age",
+      dataIndex: "age",
+      key: "age",
+    },
+    {
+      title: "Foot",
+      dataIndex: "foot",
+      key: "foot",
+    },
+    {
+      title: "Club",
+      dataIndex: "club",
+      key: "club",
+    },
+    {
+      title: "Agent",
+      dataIndex: "agent",
+      key: "agent",
+    },
+    {
+      title: "Contract until",
+      dataIndex: "contractUntil",
+      key: "contractUntil",
+      render: (text) => moment(text).format("MMMM Do YYYY"),
+    },
+    {
+      title: "Place of Birth",
+      dataIndex: "placeOfBirth",
+      key: "placeOfBirth",
+    },
+    {
+      title: "Main position",
+      dataIndex: "mainPosition",
+      key: "mainPosition",
+    },
+    {
+      title: "Additional position",
+      dataIndex: "additionalPosition",
+      key: "additionalPosition",
+    },
+    {
+      title: "Cost",
+      dataIndex: "cost",
+      key: "cost",
     },
     {
       title: "Clubs",
@@ -137,19 +188,25 @@ const Footballers = () => {
     },
   ];
 
-  const onChange = (pagination, filters, sorter, extra) => {
-    console.log("params", pagination, filters, sorter, extra);
-  };
-
   const data = loadedFotballers
     ? loadedFotballers.map((footballer) => ({
-        key: footballer.id,
+        id: footballer.id,
         image: footballer.image,
         name: footballer.name,
         surname: footballer.surname,
         nationality: footballer.nationality,
         birthDate: footballer.birthDate,
-        position: footballer.position,
+        weight: footballer.weight,
+        height: footballer.height,
+        age: footballer.age,
+        foot: footballer.foot,
+        club: footballer.club,
+        agent: footballer.agent,
+        contractUntil: footballer.contractUntil,
+        placeOfBirth: footballer.placeOfBirth,
+        mainPosition: footballer.mainPosition,
+        additionalPosition: footballer.additionalPosition,
+        cost: footballer.cost,
         clubs: footballer.clubs.length,
         transfers: footballer.transfers.length,
       }))
@@ -174,7 +231,6 @@ const Footballers = () => {
           </Button>
         </Link>
       )}
-
       <div
         style={{
           height: 20,
@@ -198,7 +254,7 @@ const Footballers = () => {
             dataSource={data.map((footballer, index) => ({
               ...footballer,
               key: footballer.id,
-              number: limit * (page - 1) + index + 1
+              number: limit * (page - 1) + index + 1,
             }))}
             pagination={{
               pageSize: limit,
@@ -212,7 +268,6 @@ const Footballers = () => {
                 setLimit(pageSize);
               },
             }}
-            onChange={onChange}
           />
         </>
       )}

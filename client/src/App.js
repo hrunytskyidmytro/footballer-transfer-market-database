@@ -6,19 +6,30 @@ import {
   BarChartOutlined,
   ShopOutlined,
   TeamOutlined,
+  UserSwitchOutlined,
   LeftSquareOutlined,
+  ReadOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, theme, Button } from "antd";
 
-import NewFootballer from "../../client/src/admin/footballers/pages/NewFootballer";
-import UpdateFootballer from "../../client/src/admin/footballers/pages/UpdateFootballer";
 import Auth from "./user/pages/Auth";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
+
+import NewFootballer from "../../client/src/admin/footballers/pages/NewFootballer";
+import UpdateFootballer from "../../client/src/admin/footballers/pages/UpdateFootballer";
+import UpdateUser from "./admin/users/pages/UpdateUser";
+import NewAgent from "./admin/agents/pages/NewAgent";
+import UpdateAgent from "./admin/agents/pages/UpdateAgent";
+import NewNews from "./admin/news/pages/NewNews";
+import UpdateNews from "./admin/news/pages/UpdateNews";
 
 import Users from "../src/admin/users/pages/Users";
 import Footballers from "./admin/footballers/pages/Footballers";
 import Transfers from "../src/admin/transfers/pages/Transfers";
 import Clubs from "../src/admin/clubs/pages/Clubs";
+import Agents from "../src/admin/agents/pages/Agents";
+import News from "../src/admin/news/pages/News";
 
 import { AuthContext } from "./shared/context/auth-context";
 import { useAuth } from "./shared/hooks/auth-hook";
@@ -88,6 +99,9 @@ const App = () => {
                 defaultSelectedKeys={["/admins/users"]}
                 selectedKeys={[selectedMenuItem]}
               >
+                <Menu.Item key="/admins/" icon={<HomeOutlined />}>
+                  <Link to="/admins/">Home</Link>
+                </Menu.Item>
                 <Menu.Item key="/admins/users" icon={<TeamOutlined />}>
                   <Link to="/admins/users">Users</Link>
                 </Menu.Item>
@@ -102,6 +116,12 @@ const App = () => {
                 </Menu.Item>
                 <Menu.Item key="/admins/clubs" icon={<ShopOutlined />}>
                   <Link to="/admins/clubs">Clubs</Link>
+                </Menu.Item>
+                <Menu.Item key="/admins/agents" icon={<UserSwitchOutlined />}>
+                  <Link to="/admins/agents">Agents</Link>
+                </Menu.Item>
+                <Menu.Item key="/admins/news" icon={<ReadOutlined />}>
+                  <Link to="/admins/news">News</Link>
                 </Menu.Item>
                 <Menu.Item key="/admins/statistics" icon={<BarChartOutlined />}>
                   <Link to="/admins/statistics">Statistics</Link>
@@ -150,7 +170,10 @@ const App = () => {
                 <Routes>
                   {token && role === "admin" && (
                     <>
-                      <Route path="/admins/users" element={<Users />} />
+                      <Route path="/admins/users/" element={<Outlet />}>
+                        <Route index element={<Users />} />
+                        <Route path=":userId" element={<UpdateUser />} />
+                      </Route>
                       <Route path="/admins/footballers/" element={<Outlet />}>
                         <Route index element={<Footballers />} />
                         <Route path="new" element={<NewFootballer />} />
@@ -161,6 +184,16 @@ const App = () => {
                       </Route>
                       <Route path="/admins/transfers" element={<Transfers />} />
                       <Route path="/admins/clubs" element={<Clubs />} />
+                      <Route path="/admins/agents/" element={<Outlet />}>
+                        <Route index element={<Agents />} />
+                        <Route path="new" element={<NewAgent />} />
+                        <Route path=":agentId" element={<UpdateAgent />} />
+                      </Route>
+                      <Route path="/admins/news/" element={<Outlet />}>
+                        <Route index element={<News />} />
+                        <Route path="new" element={<NewNews />} />
+                        <Route path=":newId" element={<UpdateNews />} />
+                      </Route>
                       <Route
                         path="*"
                         element={<Navigate to="/admins/users" />}

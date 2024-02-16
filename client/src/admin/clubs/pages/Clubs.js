@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Space, Dropdown } from "antd";
+import { Table, Space, Dropdown, Image } from "antd";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
@@ -39,6 +39,14 @@ const Clubs = () => {
 
   const columns = [
     {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      render: (image) => (
+        <Image width={100} src={`http://localhost:5001/${image}`} />
+      ),
+    },
+    {
       title: "Name",
       dataIndex: "name",
       key: "name",
@@ -49,23 +57,18 @@ const Clubs = () => {
       key: "country",
     },
     {
-      title: "Image",
-      dataIndex: "image",
-      key: "image",
-    },
-    {
       key: "action",
       render: (_) => (
         <Space size="middle">
-        <Dropdown.Button
-          menu={{
-            items,
-            onClick: onMenuClick,
-          }}
-        >
-          Actions
-        </Dropdown.Button>
-      </Space>
+          <Dropdown.Button
+            menu={{
+              items,
+              onClick: onMenuClick,
+            }}
+          >
+            Actions
+          </Dropdown.Button>
+        </Space>
       ),
     },
   ];
@@ -73,9 +76,9 @@ const Clubs = () => {
   const data = loadedClubs
     ? loadedClubs.map((club) => ({
         key: club.id,
+        image: club.image,
         name: club.name,
         country: club.country,
-        image: club.image,
       }))
     : [];
 

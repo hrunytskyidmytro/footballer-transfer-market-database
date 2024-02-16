@@ -10,6 +10,7 @@ import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_DATE,
+  VALIDATOR_NUMBER,
 } from "../../../shared/util/validators";
 import { useForm } from "../../../shared/hooks/form-hook";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
@@ -20,8 +21,8 @@ const UpdateFootballer = () => {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [loadedFootballer, setLoadedFootballers] = useState();
-  const footballerId = useParams().footballerId;
+  const [loadedFootballers, setLoadedFootballers] = useState();
+  const { footballerId } = useParams();
 
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -41,7 +42,39 @@ const UpdateFootballer = () => {
         value: "",
         isValid: false,
       },
-      position: {
+      weight: {
+        value: "",
+        isValid: false,
+      },
+      height: {
+        value: "",
+        isValid: false,
+      },
+      age: {
+        value: "",
+        isValid: false,
+      },
+      foot: {
+        value: "",
+        isValid: false,
+      },
+      contractUntil: {
+        value: "",
+        isValid: false,
+      },
+      placeOfBirth: {
+        value: "",
+        isValid: false,
+      },
+      mainPosition: {
+        value: "",
+        isValid: false,
+      },
+      additionalPosition: {
+        value: "",
+        isValid: false,
+      },
+      cost: {
         value: "",
         isValid: false,
       },
@@ -74,8 +107,40 @@ const UpdateFootballer = () => {
               value: responseData.footballer.birthDate,
               isValid: true,
             },
-            position: {
-              value: responseData.footballer.position,
+            weight: {
+              value: responseData.footballer.weight,
+              isValid: true,
+            },
+            height: {
+              value: responseData.footballer.height,
+              isValid: true,
+            },
+            age: {
+              value: responseData.footballer.age,
+              isValid: true,
+            },
+            foot: {
+              value: responseData.footballer.foot,
+              isValid: true,
+            },
+            contractUntil: {
+              value: responseData.footballer.contractUntil,
+              isValid: true,
+            },
+            placeOfBirth: {
+              value: responseData.footballer.placeOfBirth,
+              isValid: true,
+            },
+            mainPosition: {
+              value: responseData.footballer.mainPosition,
+              isValid: true,
+            },
+            additionalPosition: {
+              value: responseData.footballer.additionalPosition,
+              isValid: true,
+            },
+            cost: {
+              value: responseData.footballer.cost,
               isValid: true,
             },
           },
@@ -98,7 +163,15 @@ const UpdateFootballer = () => {
           surname: formState.inputs.surname.value,
           nationality: formState.inputs.nationality.value,
           birthDate: formState.inputs.birthDate.value,
-          position: formState.inputs.position.value,
+          weight: formState.inputs.weight.value,
+          height: formState.inputs.height.value,
+          age: formState.inputs.age.value,
+          foot: formState.inputs.foot.value,
+          contractUntil: formState.inputs.contractUntil.value,
+          placeOfBirth: formState.inputs.placeOfBirth.value,
+          mainPosition: formState.inputs.mainPosition.value,
+          additionalPosition: formState.inputs.additionalPosition.value,
+          cost: formState.inputs.cost.value,
         }),
         {
           "Content-Type": "application/json",
@@ -107,8 +180,6 @@ const UpdateFootballer = () => {
       );
       navigate("/admins/footballers");
       message.success("Footballer successfully edited!");
-      // updateFootballers();
-      // hideForm();
     } catch (err) {}
   };
 
@@ -120,7 +191,7 @@ const UpdateFootballer = () => {
     );
   }
 
-  if (!loadedFootballer && !error) {
+  if (!loadedFootballers && !error) {
     return (
       <div className="center">
         <Card>
@@ -133,7 +204,7 @@ const UpdateFootballer = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      {!isLoading && loadedFootballer && (
+      {!isLoading && loadedFootballers && (
         <form className="footballer-form" onSubmit={footballerSubmitHandler}>
           <Input
             id="name"
@@ -143,7 +214,7 @@ const UpdateFootballer = () => {
             validators={[VALIDATOR_REQUIRE()]}
             errorText="Please enter a valid name."
             onInput={inputHandler}
-            initialValue={loadedFootballer.name}
+            initialValue={loadedFootballers.name}
             initialValid={true}
           />
           <Input
@@ -154,7 +225,7 @@ const UpdateFootballer = () => {
             validators={[VALIDATOR_REQUIRE()]}
             errorText="Please enter a valid surname."
             onInput={inputHandler}
-            initialValue={loadedFootballer.surname}
+            initialValue={loadedFootballers.surname}
             initialValid={true}
           />
           <Input
@@ -165,7 +236,7 @@ const UpdateFootballer = () => {
             validators={[VALIDATOR_REQUIRE()]}
             errorText="Please enter a valid nationality."
             onInput={inputHandler}
-            initialValue={loadedFootballer.nationality}
+            initialValue={loadedFootballers.nationality}
             initialValid={true}
           />
           <Input
@@ -176,18 +247,106 @@ const UpdateFootballer = () => {
             validators={[VALIDATOR_DATE()]}
             errorText="Please enter a valid date of birth."
             onInput={inputHandler}
-            initialValue={loadedFootballer.birthDate}
+            initialValue={loadedFootballers.birthDate}
             initialValid={true}
           />
           <Input
-            id="position"
+            id="weight"
+            element="input"
+            type="number"
+            label="Weight"
+            validators={[VALIDATOR_NUMBER()]}
+            errorText="Please enter a valid weight."
+            onInput={inputHandler}
+            initialValue={loadedFootballers.weight}
+            initialValid={true}
+          />
+          <Input
+            id="height"
+            element="input"
+            type="number"
+            label="Height"
+            validators={[VALIDATOR_NUMBER()]}
+            errorText="Please enter a valid height."
+            onInput={inputHandler}
+            initialValue={loadedFootballers.height}
+            initialValid={true}
+          />
+          <Input
+            id="age"
+            element="input"
+            type="number"
+            label="Age"
+            validators={[VALIDATOR_NUMBER()]}
+            errorText="Please enter a valid age."
+            onInput={inputHandler}
+            initialValue={loadedFootballers.age}
+            initialValid={true}
+          />
+          <Input
+            id="foot"
             element="input"
             type="text"
-            label="Position"
+            label="Foot"
             validators={[VALIDATOR_REQUIRE()]}
-            errorText="Please enter a valid position."
+            errorText="Please enter a valid foot."
             onInput={inputHandler}
-            initialValue={loadedFootballer.position}
+            initialValue={loadedFootballers.foot}
+            initialValid={true}
+          />
+          <Input
+            id="contractUntil"
+            element="input"
+            type="date"
+            label="Contract until"
+            validators={[VALIDATOR_DATE()]}
+            errorText="Please enter a valid contract."
+            onInput={inputHandler}
+            initialValue={loadedFootballers.contractUntil}
+            initialValid={true}
+          />
+          <Input
+            id="placeOfBirth"
+            element="input"
+            type="text"
+            label="Place of birth"
+            validators={[VALIDATOR_REQUIRE()]}
+            errorText="Please enter a valid place."
+            onInput={inputHandler}
+            initialValue={loadedFootballers.placeOfBirth}
+            initialValid={true}
+          />
+          <Input
+            id="mainPosition"
+            element="input"
+            type="text"
+            label="Main position"
+            validators={[VALIDATOR_REQUIRE()]}
+            errorText="Please enter a valid main position."
+            onInput={inputHandler}
+            initialValue={loadedFootballers.mainPosition}
+            initialValid={true}
+          />
+          <Input
+            id="additionalPosition"
+            element="input"
+            type="text"
+            label="Additional position"
+            validators={[VALIDATOR_REQUIRE()]}
+            errorText="Please enter a valid additional position."
+            onInput={inputHandler}
+            initialValue={loadedFootballers.additionalPosition}
+            initialValid={true}
+          />
+          <Input
+            id="cost"
+            element="input"
+            type="number"
+            label="Cost"
+            validators={[VALIDATOR_NUMBER()]}
+            errorText="Please enter a valid cost."
+            onInput={inputHandler}
+            initialValue={loadedFootballers.cost}
             initialValid={true}
           />
           <Button type="submit" disabled={!formState.isValid}>

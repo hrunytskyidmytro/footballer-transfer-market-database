@@ -186,6 +186,7 @@ const createFootballer = async (req, res, next) => {
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Creating footballer failed, please try again.",
       500
@@ -214,13 +215,13 @@ const updateFootballer = async (req, res, next) => {
     height,
     age,
     foot,
-    club,
+    // club,
     contractUntil,
     placeOfBirth,
     mainPosition,
     additionalPosition,
     cost,
-    agent,
+    // agent,
   } = req.body;
   const footballerId = req.params.fid;
 
@@ -243,13 +244,13 @@ const updateFootballer = async (req, res, next) => {
   footballer.height = height;
   footballer.age = age;
   footballer.foot = foot;
-  footballer.club = club;
+  // footballer.club = club;
   footballer.contractUntil = contractUntil;
   footballer.placeOfBirth = placeOfBirth;
   footballer.mainPosition = mainPosition;
   footballer.additionalPosition = additionalPosition;
   footballer.cost = cost;
-  footballer.agent = agent;
+  // footballer.agent = agent;
 
   try {
     await footballer.save();
@@ -786,6 +787,7 @@ const createAgent = async (req, res, next) => {
     await createdAgent.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Creating agent failed, please try again.",
       500
@@ -1054,6 +1056,31 @@ const getUsers = async (req, res, next) => {
   res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
+const getUserById = async (req, res, next) => {
+  const userId = req.params.uid;
+
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find a user.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    const error = new HttpError(
+      "Could not find a user for the provided id.",
+      404
+    );
+    return next(error);
+  }
+
+  res.send({ user: user.toObject({ getters: true }) });
+};
+
 const updateUser = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -1063,7 +1090,7 @@ const updateUser = async (req, res, next) => {
     );
   }
 
-  const { name, surname, email, role } = req.body;
+  const { name, surname, email } = req.body;
   const userId = req.params.uid;
 
   let user;
@@ -1080,7 +1107,6 @@ const updateUser = async (req, res, next) => {
   user.name = name;
   user.surname = surname;
   user.email = email;
-  user.role = role;
 
   try {
     await user.save();
@@ -1157,5 +1183,6 @@ exports.createNew = createNew;
 exports.updateNew = updateNew;
 exports.deleteNew = deleteNew;
 exports.getUsers = getUsers;
+exports.getUserById = getUserById;
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;

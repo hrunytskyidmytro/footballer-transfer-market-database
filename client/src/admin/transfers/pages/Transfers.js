@@ -18,7 +18,6 @@ const Transfers = () => {
           "http://localhost:5001/api/admins/transfers"
         );
         setLoadedTransfers(responseData.transfers);
-        console.log(responseData.transfers.length);
       } catch (err) {}
     };
     fetchTransfers();
@@ -57,53 +56,6 @@ const Transfers = () => {
             transferDate: transfer.transferDate,
             transferType: transfer.transferType,
           });
-
-          // const footballerData =
-          //   footballerResponse && footballerResponse.footballer
-          //     ? {
-          //         image: footballerResponse.footballer.image,
-          //         name: footballerResponse.footballer.name,
-          //         surname: footballerResponse.footballer.surname,
-          //       }
-          //     : {
-          //         image: "Not found",
-          //         name: "Not found",
-          //         surname: "Not found",
-          //       };
-
-          // const footballerDataImage =
-          //   footballerResponse && footballerResponse.footballer.image
-          //     ? footballerResponse.footballer.image
-          //     : "Not found";
-          // const footballerDataName =
-          //   footballerResponse && footballerResponse.footballer.name
-          //     ? footballerResponse.footballer.name
-          //     : "Not found";
-          // const footballerDataSurname =
-          //   footballerResponse && footballerResponse.footballer.surname
-          //     ? footballerResponse.footballer.surname
-          //     : "Not found";
-          // const fromClubName =
-          //   fromClubResponse && fromClubResponse.club
-          //     ? fromClubResponse.club.name
-          //     : "Not found";
-          // const toClubName =
-          //   toClubResponse && toClubResponse.club
-          //     ? toClubResponse.club.name
-          //     : "Not found";
-
-          // data.push({
-          //   key: transfer.id,
-          //   image: footballerDataImage,
-          //   name: footballerDataName,
-          //   surname: footballerDataSurname,
-          //   fromClub: fromClubName,
-          //   toClub: toClubName,
-          //   transferFee: transfer.transferFee,
-          //   transferDate: transfer.transferDate,
-          //   transferType: transfer.transferType,
-          // });
-          console.log(data);
         } catch (err) {}
       }
       setTransferData(data);
