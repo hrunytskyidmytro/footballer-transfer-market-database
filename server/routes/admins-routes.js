@@ -20,6 +20,8 @@ router.get("/footballers/user/:uid", adminsController.getFootballersByUserId);
 
 router.get("/transfers", adminsController.getTransfers);
 
+router.get("/transfers/:tid", adminsController.getTransferById);
+
 router.get("/clubs", adminsController.getClubs);
 
 router.get("/clubs/:cid", adminsController.getClubById);
@@ -77,6 +79,7 @@ router.delete("/footballers/:fid", adminsController.deleteFootballer);
 
 router.post(
   "/transfers/new",
+  fileUpload.none(),
   [
     check("transferFee").not().isEmpty(),
     check("season").not().isEmpty(),

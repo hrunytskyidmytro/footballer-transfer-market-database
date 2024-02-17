@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 
@@ -21,7 +21,9 @@ const NewFootballer = () => {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [formState, inputHandler] = useForm(
+  const [agents, setAgents] = useState([]);
+  const [clubs, setClubs] = useState([]);
+  const [formState, inputHandler, setFormData] = useForm(
     {
       name: {
         value: "",
@@ -79,6 +81,23 @@ const NewFootballer = () => {
     false
   );
 
+  useEffect(() => {
+    const fetchAgentsAndClubs = async () => {
+      try {
+        const agentsResponse = await sendRequest(
+          "http://localhost:5001/api/admins/agents"
+        );
+        setAgents(agentsResponse.agents);
+
+        const clubsResponse = await sendRequest(
+          "http://localhost:5001/api/admins/clubs"
+        );
+        setClubs(clubsResponse.clubs);
+      } catch (err) {}
+    };
+    fetchAgentsAndClubs();
+  }, [sendRequest]);
+
   const footballerSubmitHandler = async (event) => {
     event.preventDefault();
 
@@ -105,6 +124,8 @@ const NewFootballer = () => {
         formState.inputs.additionalPosition.value
       );
       formData.append("cost", formState.inputs.cost.value);
+      formData.append("agent", formState.inputs.agent.value);
+      formData.append("club", formState.inputs.club.value);
       formData.append("image", formState.inputs.image.value);
       await sendRequest(
         "http://localhost:5001/api/admins/footballers/new",
@@ -119,11 +140,38 @@ const NewFootballer = () => {
     } catch (err) {}
   };
 
+  const selectHandler = (event) => {
+    const id = event.target.id;
+    const value = event.target.value;
+    const isValid = !!value;
+
+    setFormData({
+      ...formState.inputs,
+      [id]: { value: value, isValid: isValid },
+    });
+  };
+
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
       <form onSubmit={footballerSubmitHandler}>
         {isLoading && <LoadingSpinner asOverlay />}
+        <select id="agent" onChange={selectHandler}>
+          <option value="">Choose agent</option>
+          {agents.map((agent) => (
+            <option key={agent.id} value={agent.id}>
+              {agent.name} {agent.surname}
+            </option>
+          ))}
+        </select>
+        <select id="club" onChange={selectHandler}>
+          <option value="">Choose club</option>
+          {clubs.map((club) => (
+            <option key={club.id} value={club.id}>
+              {club.name}
+            </option>
+          ))}
+        </select>
         <Input
           id="name"
           element="input"

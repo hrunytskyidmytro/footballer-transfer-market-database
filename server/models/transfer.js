@@ -28,8 +28,7 @@ const transferSchema = new Schema({
   },
   transferType: {
     type: String,
-    enum: ["internal", "international", "loan", "free", "swap", "youth"],
-    default: "internal",
+    required: true,
   },
   season: {
     type: String,

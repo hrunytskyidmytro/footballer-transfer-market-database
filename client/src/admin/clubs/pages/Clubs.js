@@ -57,6 +57,21 @@ const Clubs = () => {
       key: "country",
     },
     {
+      title: "Cost",
+      dataIndex: "cost",
+      key: "cost",
+    },
+    {
+      title: "Foundation year",
+      dataIndex: "foundationYear",
+      key: "foundationYear",
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
       key: "action",
       render: (_) => (
         <Space size="middle">
@@ -79,6 +94,9 @@ const Clubs = () => {
         image: club.image,
         name: club.name,
         country: club.country,
+        cost: club.cost,
+        foundationYear: club.foundationYear,
+        description: club.description,
       }))
     : [];
 

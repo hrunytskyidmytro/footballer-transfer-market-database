@@ -23,6 +23,8 @@ import NewAgent from "./admin/agents/pages/NewAgent";
 import UpdateAgent from "./admin/agents/pages/UpdateAgent";
 import NewNews from "./admin/news/pages/NewNews";
 import UpdateNews from "./admin/news/pages/UpdateNews";
+import NewTransfer from "./admin/transfers/pages/NewTransfer";
+import UpdateTransfer from "./admin/transfers/pages/UpdateTransfer";
 
 import Users from "../src/admin/users/pages/Users";
 import Footballers from "./admin/footballers/pages/Footballers";
@@ -182,7 +184,14 @@ const App = () => {
                           element={<UpdateFootballer />}
                         />
                       </Route>
-                      <Route path="/admins/transfers" element={<Transfers />} />
+                      <Route path="/admins/transfers/" element={<Outlet />}>
+                        <Route index element={<Transfers />} />
+                        <Route path="new" element={<NewTransfer />} />
+                        <Route
+                          path=":transferId"
+                          element={<UpdateTransfer />}
+                        />
+                      </Route>
                       <Route path="/admins/clubs" element={<Clubs />} />
                       <Route path="/admins/agents/" element={<Outlet />}>
                         <Route index element={<Agents />} />
