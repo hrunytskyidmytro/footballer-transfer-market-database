@@ -11,7 +11,7 @@ import { AuthContext } from "../../../shared/context/auth-context";
 const Footballers = () => {
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [loadedFotballers, setLoadedFootballers] = useState();
+  const [loadedFootballers, setLoadedFootballers] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletedFootballerId, setDeletedFootballerId] = useState(null);
   const [limit, setLimit] = useState(10);
@@ -44,7 +44,7 @@ const Footballers = () => {
       setDeletedFootballerId(null);
       setLoadedFootballers((prevFootballers) =>
         prevFootballers.filter(
-          (footballer) => footballer._id !== deletedFootballerId
+          (footballer) => footballer.id !== deletedFootballerId
         )
       );
       message.success("Footballer successfully deleted!");
@@ -124,14 +124,14 @@ const Footballers = () => {
       key: "foot",
     },
     {
-      title: "Club",
-      dataIndex: "club",
-      key: "club",
-    },
-    {
       title: "Agent",
       dataIndex: "agent",
       key: "agent",
+    },
+    {
+      title: "Club",
+      dataIndex: "club",
+      key: "club",
     },
     {
       title: "Contract until",
@@ -188,8 +188,8 @@ const Footballers = () => {
     },
   ];
 
-  const data = loadedFotballers
-    ? loadedFotballers.map((footballer) => ({
+  const data = loadedFootballers
+    ? loadedFootballers.map((footballer) => ({
         id: footballer.id,
         image: footballer.image,
         name: footballer.name,
@@ -200,8 +200,8 @@ const Footballers = () => {
         height: footballer.height,
         age: footballer.age,
         foot: footballer.foot,
-        club: footballer.club,
-        agent: footballer.agent,
+        agent: footballer.agent ? footballer.agent.surname : "Not found",
+        club: footballer.club ? footballer.club.name : "Not found",
         contractUntil: footballer.contractUntil,
         placeOfBirth: footballer.placeOfBirth,
         mainPosition: footballer.mainPosition,
@@ -247,7 +247,7 @@ const Footballers = () => {
         Do you want to proceed and delete this footballer? Please note that it
         can't be undone thereafter.
       </Modal>
-      {!isLoading && loadedFotballers && (
+      {!isLoading && loadedFootballers && (
         <>
           <Table
             columns={columns}

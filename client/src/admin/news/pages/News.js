@@ -12,7 +12,6 @@ const News = () => {
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedNews, setLoadedNews] = useState();
-  const [newsData, setNewsData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletedNewId, setDeletedNewId] = useState(null);
   const [limit, setLimit] = useState(10);
@@ -31,34 +30,6 @@ const News = () => {
     fetchNews();
   }, [sendRequest]);
 
-  useEffect(() => {
-    const fetchDataForNews = async () => {
-      if (!loadedNews) return;
-
-      const data = [];
-      for (const n of loadedNews) {
-        try {
-          const authorResponse = await sendRequest(
-            `http://localhost:5001/api/admins/users/${n.author}`
-          );
-          data.push({
-            id: n.id,
-            image: n.image,
-            title: n.title,
-            description: n.description,
-            date: n.date,
-            author: authorResponse ? authorResponse.user.surname : "Not found",
-          });
-        } catch (err) {}
-      }
-      setNewsData(data);
-    };
-
-    if (loadedNews && loadedNews.length > 0) {
-      fetchDataForNews();
-    }
-  }, [loadedNews, sendRequest]);
-
   const confirmDeleteHandler = async () => {
     setIsModalOpen(false);
     try {
@@ -72,7 +43,7 @@ const News = () => {
       );
       setDeletedNewId(null);
       setLoadedNews((prevNews) =>
-        prevNews.filter((n) => n._id !== deletedNewId)
+        prevNews.filter((n) => n.id !== deletedNewId)
       );
       message.success("News successfully deleted!");
     } catch (err) {}
@@ -102,11 +73,6 @@ const News = () => {
       key: "title",
     },
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-    },
-    {
       title: "Date",
       dataIndex: "date",
       key: "date",
@@ -116,6 +82,11 @@ const News = () => {
       title: "Author",
       dataIndex: "author",
       key: "author",
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
     },
     {
       key: "action",
@@ -133,6 +104,17 @@ const News = () => {
       ),
     },
   ];
+
+  const data = loadedNews
+    ? loadedNews.map((n) => ({
+        id: n.id,
+        image: n.image,
+        title: n.title,
+        description: n.description,
+        date: n.date,
+        author: n.author ? n.author.surname : "Not found",
+      }))
+    : [];
 
   return (
     <React.Fragment>
@@ -172,14 +154,14 @@ const News = () => {
       {!isLoading && loadedNews && (
         <Table
           columns={columns}
-          dataSource={newsData.map((news, index) => ({
+          dataSource={data.map((news, index) => ({
             ...news,
             key: news.id,
             number: limit * (page - 1) + index + 1,
           }))}
           pagination={{
             pageSize: limit,
-            total: newsData.length,
+            total: data.length,
             showSizeChanger: true,
             pageSizeOptions: [2, 4, 10, 20],
             responsive: true,

@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Space, Table, Image, Dropdown } from "antd";
+import React, { useEffect, useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import { Space, Table, Image, Flex, Button, Modal, message } from "antd";
 import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
+import { AuthContext } from "../../../shared/context/auth-context";
 
 const Transfers = () => {
+  const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedTransfers, setLoadedTransfers] = useState([]);
-  const [transferData, setTransferData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deletedTransferId, setDeletedTransferId] = useState(null);
 
   useEffect(() => {
     const fetchTransfers = async () => {
@@ -18,67 +22,39 @@ const Transfers = () => {
           "http://localhost:5001/api/admins/transfers"
         );
         setLoadedTransfers(responseData.transfers);
+        console.log(responseData.transfers.length);
+        console.log(responseData.transfers);
       } catch (err) {}
     };
     fetchTransfers();
   }, [sendRequest]);
 
-  useEffect(() => {
-    const fetchDataForTransfers = async () => {
-      const data = [];
-      for (const transfer of loadedTransfers) {
-        try {
-          const footballerResponse = await sendRequest(
-            `http://localhost:5001/api/admins/footballers/${transfer.footballer}`
-          );
-          const fromClubResponse = await sendRequest(
-            `http://localhost:5001/api/admins/clubs/${transfer.fromClub}`
-          );
-          const toClubResponse = await sendRequest(
-            `http://localhost:5001/api/admins/clubs/${transfer.toClub}`
-          );
-          data.push({
-            key: transfer.id,
-            image: footballerResponse
-              ? footballerResponse.footballer.image
-              : "Not found",
-            name: footballerResponse
-              ? footballerResponse.footballer.name
-              : "Not found",
-            surname: footballerResponse
-              ? footballerResponse.footballer.surname
-              : "Not found",
-            fromClub: fromClubResponse
-              ? fromClubResponse.club.name
-              : "Not found",
-            toClub: toClubResponse ? toClubResponse.club.name : "Not found",
-            transferFee: transfer.transferFee,
-            transferDate: transfer.transferDate,
-            transferType: transfer.transferType,
-          });
-        } catch (err) {}
-      }
-      setTransferData(data);
-    };
+  const confirmDeleteHandler = async () => {
+    setIsModalOpen(false);
+    try {
+      await sendRequest(
+        `http://localhost:5001/api/admins/transfers/${deletedTransferId}`,
+        "DELETE",
+        null,
+        {
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setDeletedTransferId(null);
+      setLoadedTransfers((prevTransfers) =>
+        prevTransfers.filter((transfer) => transfer.id !== deletedTransferId)
+      );
+      message.success("Transfer successfully deleted!");
+    } catch (err) {}
+  };
 
-    if (loadedTransfers.length > 0) {
-      fetchDataForTransfers();
-    }
-  }, [loadedTransfers, sendRequest]);
+  const showModalForDelete = (id) => {
+    setIsModalOpen(true);
+    setDeletedTransferId(id);
+  };
 
-  const items = [
-    {
-      key: "1",
-      label: "Edit",
-    },
-    {
-      key: "2",
-      label: "Delete",
-    },
-  ];
-
-  const onMenuClick = (e) => {
-    console.log("click", e);
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   const columns = [
@@ -142,17 +118,27 @@ const Transfers = () => {
       key: "transferType",
     },
     {
+      title: "Season",
+      dataIndex: "season",
+      key: "season",
+    },
+    {
+      title: "Compensation Amount",
+      dataIndex: "compensationAmount",
+      key: "compensationAmount",
+    },
+    {
       key: "action",
-      render: (_) => (
+      render: (transfer) => (
         <Space size="middle">
-          <Dropdown.Button
-            menu={{
-              items,
-              onClick: onMenuClick,
-            }}
-          >
-            Actions
-          </Dropdown.Button>
+          <Flex gap="small">
+            <Link to={`/admins/transfers/${transfer.key}`}>
+              <Button>Edit</Button>
+            </Link>
+            <Button danger onClick={() => showModalForDelete(transfer.key)}>
+              Delete
+            </Button>
+          </Flex>
         </Space>
       ),
     },
@@ -162,20 +148,63 @@ const Transfers = () => {
     console.log("params", pagination, filters, sorter, extra);
   };
 
+  const data = loadedTransfers
+    ? loadedTransfers.map((transfer) => ({
+        key: transfer.id,
+        image: transfer.footballer ? transfer.footballer.image : "Not found",
+        name: transfer.footballer ? transfer.footballer.name : "Not found",
+        surname: transfer.footballer
+          ? transfer.footballer.surname
+          : "Not found",
+        fromClub: transfer.fromClub
+          ? transfer.fromClub.name
+          : "Not found",
+        toClub: transfer.toClub ? transfer.toClub.name : "Not found",
+        transferFee: transfer.transferFee,
+        transferDate: transfer.transferDate,
+        transferType: transfer.transferType,
+        season: transfer.season,
+        compensationAmount: transfer.compensationAmount,
+      }))
+    : [];
+
   return (
     <React.Fragment>
-      {/* <ErrorModal error={error} onClear={clearError} /> */}
-      {isLoading && (
+      <ErrorModal error={error} onClear={clearError} />
+      {isLoading ? (
         <div className="center">
           <LoadingSpinner />
         </div>
+      ) : (
+        <Link to="/admins/transfers/new">
+          <Button
+            type="primary"
+            style={{
+              fontSize: "16px",
+            }}
+          >
+            Add transfer
+          </Button>
+        </Link>
       )}
+      <div
+        style={{
+          height: 20,
+        }}
+      ></div>
+      <Modal
+        title="Are you sure?"
+        open={isModalOpen}
+        onOk={confirmDeleteHandler}
+        onCancel={handleCancel}
+        okText="Yes"
+        cancelText="No"
+      >
+        Do you want to proceed and delete this transfer? Please note that it
+        can't be undone thereafter.
+      </Modal>
       {!isLoading && (
-        <Table
-          columns={columns}
-          dataSource={transferData}
-          onChange={onChange}
-        />
+        <Table columns={columns} dataSource={data} onChange={onChange} />
       )}
     </React.Fragment>
   );

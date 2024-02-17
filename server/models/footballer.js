@@ -17,7 +17,6 @@ const footballerSchema = new Schema({
   },
   birthDate: {
     type: Date,
-    default: Date.now,
   },
   weight: {
     type: Number,
@@ -37,7 +36,7 @@ const footballerSchema = new Schema({
   },
   club: {
     type: mongoose.Types.ObjectId,
-    // required: true,
+    required: true,
     ref: "Club",
   },
   contractUntil: {
@@ -66,7 +65,7 @@ const footballerSchema = new Schema({
   },
   agent: {
     type: mongoose.Types.ObjectId,
-    // required: true,
+    required: true,
     ref: "Agent",
   },
   creator: {

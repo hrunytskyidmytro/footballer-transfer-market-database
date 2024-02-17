@@ -11,12 +11,12 @@ const User = require("../models/user");
 const Agent = require("../models/agent");
 const New = require("../models/new");
 
-//Footballer
+//Footballers
 
 const getFootballers = async (req, res, next) => {
   let footballers;
   try {
-    footballers = await Footballer.find({});
+    footballers = await Footballer.find({}).populate("agent").populate("club");
   } catch (err) {
     const error = new HttpError(
       "Fetching footballers failed, please try again later.",
@@ -176,8 +176,6 @@ const createFootballer = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(user);
-
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -215,13 +213,11 @@ const updateFootballer = async (req, res, next) => {
     height,
     age,
     foot,
-    // club,
     contractUntil,
     placeOfBirth,
     mainPosition,
     additionalPosition,
     cost,
-    // agent,
   } = req.body;
   const footballerId = req.params.fid;
 
@@ -244,13 +240,11 @@ const updateFootballer = async (req, res, next) => {
   footballer.height = height;
   footballer.age = age;
   footballer.foot = foot;
-  // footballer.club = club;
   footballer.contractUntil = contractUntil;
   footballer.placeOfBirth = placeOfBirth;
   footballer.mainPosition = mainPosition;
   footballer.additionalPosition = additionalPosition;
   footballer.cost = cost;
-  // footballer.agent = agent;
 
   try {
     await footballer.save();
@@ -295,6 +289,7 @@ const deleteFootballer = async (req, res, next) => {
     await footballer.creator.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Something went wrong, could not delete footballer.",
       500
@@ -309,12 +304,15 @@ const deleteFootballer = async (req, res, next) => {
   res.status(200).json({ message: "Deleted footballer." });
 };
 
-//Transfer
+//Transfers
 
 const getTransfers = async (req, res, next) => {
   let transfers;
   try {
-    transfers = await Transfer.find({});
+    transfers = await Transfer.find({})
+      .populate("footballer")
+      .populate("fromClub")
+      .populate("toClub");
   } catch (err) {
     const error = new HttpError(
       "Fetching transfers failed, please try again later.",
@@ -344,7 +342,6 @@ const createTransfer = async (req, res, next) => {
     fromClub,
     toClub,
     transferFee,
-    transferDate,
     transferType,
     season,
     compensationAmount,
@@ -379,7 +376,6 @@ const createTransfer = async (req, res, next) => {
     fromClub,
     toClub,
     transferFee,
-    transferDate,
     transferType,
     season,
     compensationAmount,
@@ -402,6 +398,30 @@ const createTransfer = async (req, res, next) => {
   }
 
   res.status(201).json({ transfer: createdTransfer });
+};
+
+const getTransferById = async (req, res, next) => {
+  const transferId = req.params.tid;
+
+  let transfer;
+  try {
+    transfer = await Transfer.findById(transferId);
+  } catch (err) {
+    console.log(err);
+    const error = new HttpError(
+      "Something went wrong, could not find a transfer.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!transfer) {
+    return next(new HttpError("Could not find transfer.", 404));
+  }
+
+  res.json({
+    transfer: transfer.toObject({ getters: true }),
+  });
 };
 
 const updateTransfer = async (req, res, next) => {
@@ -491,7 +511,7 @@ const deleteTransfer = async (req, res, next) => {
   res.status(200).json({ message: "Deleted transfer." });
 };
 
-//Club
+//Clubs
 
 const getClubs = async (req, res, next) => {
   let clubs;
@@ -721,6 +741,7 @@ const getAgentById = async (req, res, next) => {
   try {
     agent = await Agent.findById(agentId);
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Something went wrong, could not find a agent.",
       500
@@ -888,7 +909,7 @@ const deleteAgent = async (req, res, next) => {
 const getNews = async (req, res, next) => {
   let news;
   try {
-    news = await New.find({});
+    news = await New.find({}).populate("author");
   } catch (err) {
     const error = new HttpError(
       "Fetching news failed, please try again later.",
@@ -1039,7 +1060,7 @@ const deleteNew = async (req, res, next) => {
   res.status(200).json({ message: "Deleted new." });
 };
 
-//User
+//Users
 
 const getUsers = async (req, res, next) => {
   let users;
@@ -1164,6 +1185,7 @@ exports.createFootballer = createFootballer;
 exports.updateFootballer = updateFootballer;
 exports.deleteFootballer = deleteFootballer;
 exports.getTransfers = getTransfers;
+exports.getTransferById = getTransferById;
 exports.createTransfer = createTransfer;
 exports.updateTransfer = updateTransfer;
 exports.deleteTransfer = deleteTransfer;

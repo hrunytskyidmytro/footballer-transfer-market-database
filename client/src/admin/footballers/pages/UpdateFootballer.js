@@ -350,7 +350,7 @@ const UpdateFootballer = () => {
             initialValid={true}
           />
           <Button type="submit" disabled={!formState.isValid}>
-            UPDATE FOOTBALLER
+            Update footballer
           </Button>
         </form>
       )}
