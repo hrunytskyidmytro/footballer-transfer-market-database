@@ -79,9 +79,9 @@ const News = () => {
       render: (text) => moment(text).format("MMMM Do YYYY"),
     },
     {
-      title: "Author",
-      dataIndex: "author",
-      key: "author",
+      title: "Creator",
+      dataIndex: "creator",
+      key: "creator",
     },
     {
       title: "Description",
@@ -112,7 +112,7 @@ const News = () => {
         title: n.title,
         description: n.description,
         date: n.date,
-        author: n.author ? n.author.surname : "Not found",
+        creator: n.creator ? n.creator.surname : "Not found",
       }))
     : [];
 
@@ -163,7 +163,7 @@ const News = () => {
             pageSize: limit,
             total: data.length,
             showSizeChanger: true,
-            pageSizeOptions: [2, 4, 10, 20],
+            pageSizeOptions: [1, 2, 4, 10, 20],
             responsive: true,
             showTotal: (total) => `All ${total}`,
             onChange: (page, pageSize) => {

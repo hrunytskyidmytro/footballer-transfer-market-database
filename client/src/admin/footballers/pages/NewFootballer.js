@@ -11,6 +11,7 @@ import {
   VALIDATOR_REQUIRE,
   VALIDATOR_DATE,
   VALIDATOR_NUMBER,
+  VALIDATOR_MAXLENGTH,
 } from "../../../shared/util/validators";
 import { useForm } from "../../../shared/hooks/form-hook";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
@@ -177,7 +178,7 @@ const NewFootballer = () => {
           element="input"
           type="text"
           label="Name"
-          validators={[VALIDATOR_REQUIRE()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
           errorText="Please enter a valid name."
           onInput={inputHandler}
         />
@@ -186,7 +187,7 @@ const NewFootballer = () => {
           element="input"
           type="text"
           label="Surname"
-          validators={[VALIDATOR_REQUIRE()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
           errorText="Please enter a valid surname."
           onInput={inputHandler}
         />
@@ -195,7 +196,7 @@ const NewFootballer = () => {
           element="input"
           type="text"
           label="Nationality"
-          validators={[VALIDATOR_REQUIRE()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
           errorText="Please enter a valid nationality."
           onInput={inputHandler}
         />
@@ -204,7 +205,7 @@ const NewFootballer = () => {
           element="input"
           type="date"
           label="Date of birth"
-          validators={[VALIDATOR_DATE()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_DATE()]}
           errorText="Please enter a valid date of birth."
           onInput={inputHandler}
         />
@@ -213,7 +214,7 @@ const NewFootballer = () => {
           element="input"
           type="number"
           label="Weight"
-          validators={[VALIDATOR_NUMBER()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
           errorText="Please enter a valid weight."
           onInput={inputHandler}
         />
@@ -222,7 +223,7 @@ const NewFootballer = () => {
           element="input"
           type="number"
           label="Height"
-          validators={[VALIDATOR_NUMBER()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
           errorText="Please enter a valid height."
           onInput={inputHandler}
         />
@@ -231,7 +232,7 @@ const NewFootballer = () => {
           element="input"
           type="number"
           label="Age"
-          validators={[VALIDATOR_NUMBER()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
           errorText="Please enter a valid age."
           onInput={inputHandler}
         />
@@ -240,7 +241,7 @@ const NewFootballer = () => {
           element="input"
           type="text"
           label="Foot"
-          validators={[VALIDATOR_REQUIRE()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(10)]}
           errorText="Please enter a valid foot."
           onInput={inputHandler}
         />
@@ -249,8 +250,8 @@ const NewFootballer = () => {
           element="input"
           type="date"
           label="Contract until"
-          validators={[VALIDATOR_DATE()]}
-          errorText="Please enter a valid contract."
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_DATE()]}
+          errorText="Please enter a valid contract until."
           onInput={inputHandler}
         />
         <Input
@@ -258,7 +259,7 @@ const NewFootballer = () => {
           element="input"
           type="text"
           label="Place of birth"
-          validators={[VALIDATOR_REQUIRE()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
           errorText="Please enter a valid place."
           onInput={inputHandler}
         />
@@ -267,7 +268,7 @@ const NewFootballer = () => {
           element="input"
           type="text"
           label="Main position"
-          validators={[VALIDATOR_REQUIRE()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
           errorText="Please enter a valid main position."
           onInput={inputHandler}
         />
@@ -276,7 +277,7 @@ const NewFootballer = () => {
           element="input"
           type="text"
           label="Additional position"
-          validators={[VALIDATOR_REQUIRE()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
           errorText="Please enter a valid additional position."
           onInput={inputHandler}
         />
@@ -285,7 +286,7 @@ const NewFootballer = () => {
           element="input"
           type="number"
           label="Cost"
-          validators={[VALIDATOR_NUMBER()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
           errorText="Please enter a valid cost."
           onInput={inputHandler}
         />

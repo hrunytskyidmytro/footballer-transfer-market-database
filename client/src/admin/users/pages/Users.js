@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Table, Space, Flex, Button, Modal, message } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
@@ -14,6 +15,8 @@ const Users = () => {
   const [loadedUsers, setLoadedUsers] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletedUserId, setDeletedUserId] = useState(null);
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -57,6 +60,12 @@ const Users = () => {
   };
 
   const columns = [
+    {
+      title: "",
+      dataIndex: "avatar",
+      key: "avatar",
+      render: () => <UserOutlined />,
+    },
     {
       title: "Name",
       dataIndex: "name",
@@ -109,7 +118,7 @@ const Users = () => {
 
   const data = loadedUsers
     ? loadedUsers.map((user) => ({
-        key: user.id,
+        id: user.id,
         name: user.name,
         surname: user.surname,
         email: user.email,
@@ -139,7 +148,26 @@ const Users = () => {
         be undone thereafter.
       </Modal>
       {!isLoading && loadedUsers && (
-        <Table columns={columns} dataSource={data} pagination={true} />
+        <Table
+          columns={columns}
+          dataSource={data.map((user, index) => ({
+            ...user,
+            key: user.id,
+            number: limit * (page - 1) + index + 1,
+          }))}
+          pagination={{
+            pageSize: limit,
+            total: data.length,
+            showSizeChanger: true,
+            pageSizeOptions: [2, 4, 10, 20],
+            responsive: true,
+            showTotal: (total) => `All ${total}`,
+            onChange: (page, pageSize) => {
+              setPage(page);
+              setLimit(pageSize);
+            },
+          }}
+        />
       )}
     </React.Fragment>
   );

@@ -8,8 +8,9 @@ import Card from "../../../shared/components/UIElements/Card";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import {
-  VALIDATOR_REQUIRE,
   VALIDATOR_EMAIL,
+  VALIDATOR_MAXLENGTH,
+  VALIDATOR_REQUIRE,
 } from "../../../shared/util/validators";
 import { useForm } from "../../../shared/hooks/form-hook";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
@@ -120,7 +121,7 @@ const UpdateUser = () => {
             element="input"
             type="text"
             label="Name"
-            validators={[VALIDATOR_REQUIRE()]}
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
             errorText="Please enter a valid name."
             onInput={inputHandler}
             initialValue={loadedUsers.name}
@@ -131,7 +132,7 @@ const UpdateUser = () => {
             element="input"
             type="text"
             label="Surname"
-            validators={[VALIDATOR_REQUIRE()]}
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
             errorText="Please enter a valid surname."
             onInput={inputHandler}
             initialValue={loadedUsers.surname}
@@ -142,14 +143,18 @@ const UpdateUser = () => {
             element="input"
             type="text"
             label="E-mail"
-            validators={[VALIDATOR_EMAIL()]}
+            validators={[
+              VALIDATOR_REQUIRE(),
+              VALIDATOR_EMAIL(),
+              VALIDATOR_MAXLENGTH(20),
+            ]}
             errorText="Please enter a valid email."
             onInput={inputHandler}
             initialValue={loadedUsers.email}
             initialValid={true}
           />
           <Button type="submit" disabled={!formState.isValid}>
-            Update user
+            Update User
           </Button>
         </form>
       )}

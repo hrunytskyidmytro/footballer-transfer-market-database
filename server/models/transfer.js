@@ -21,10 +21,12 @@ const transferSchema = new Schema({
   transferFee: {
     type: Number,
     required: true,
+    min: 50000,
+    max: 200000000,
   },
   transferDate: {
     type: Date,
-    default: Date.now,
+    required: true,
   },
   transferType: {
     type: String,
@@ -37,6 +39,8 @@ const transferSchema = new Schema({
   compensationAmount: {
     type: Number,
     required: true,
+    min: 50000,
+    max: 1000000,
   },
 });
 

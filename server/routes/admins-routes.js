@@ -82,6 +82,7 @@ router.post(
   fileUpload.none(),
   [
     check("transferFee").not().isEmpty(),
+    check("transferType").not().isEmpty(),
     check("season").not().isEmpty(),
     check("compensationAmount").not().isEmpty(),
   ],
@@ -92,6 +93,7 @@ router.patch(
   "/transfers/:tid",
   [
     check("transferFee").not().isEmpty(),
+    check("transferType").not().isEmpty(),
     check("season").not().isEmpty(),
     check("compensationAmount").not().isEmpty(),
   ],
@@ -101,7 +103,7 @@ router.patch(
 router.delete("/transfers/:tid", adminsController.deleteTransfer);
 
 router.post(
-  "/clubs/new/footballer/:fid",
+  "/clubs/new",
   fileUpload.single("image"),
   [
     check("name").not().isEmpty(),

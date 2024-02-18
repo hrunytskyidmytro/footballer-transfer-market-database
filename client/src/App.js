@@ -25,6 +25,8 @@ import NewNews from "./admin/news/pages/NewNews";
 import UpdateNews from "./admin/news/pages/UpdateNews";
 import NewTransfer from "./admin/transfers/pages/NewTransfer";
 import UpdateTransfer from "./admin/transfers/pages/UpdateTransfer";
+import NewClub from "./admin/clubs/pages/NewClub";
+import UpdateClub from "./admin/clubs/pages/UpdateClub";
 
 import Users from "../src/admin/users/pages/Users";
 import Footballers from "./admin/footballers/pages/Footballers";
@@ -163,7 +165,7 @@ const App = () => {
             >
               <div
                 style={{
-                  padding: 24,
+                  padding: "20px 10px 20px 10px",
                   textAlign: "center",
                   background: colorBgContainer,
                   borderRadius: borderRadiusLG,
@@ -192,7 +194,11 @@ const App = () => {
                           element={<UpdateTransfer />}
                         />
                       </Route>
-                      <Route path="/admins/clubs" element={<Clubs />} />
+                      <Route path="/admins/clubs/" element={<Outlet />}>
+                        <Route index element={<Clubs />} />
+                        <Route path="new" element={<NewClub />} />
+                        <Route path=":clubId" element={<UpdateClub />} />
+                      </Route>
                       <Route path="/admins/agents/" element={<Outlet />}>
                         <Route index element={<Agents />} />
                         <Route path="new" element={<NewAgent />} />

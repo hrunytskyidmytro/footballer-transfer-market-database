@@ -10,6 +10,7 @@ import ImageUpload from "../../../shared/components/FormElements/ImageUpload";
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_MINLENGTH,
+  VALIDATOR_MAXLENGTH,
 } from "../../../shared/util/validators";
 import { useForm } from "../../../shared/hooks/form-hook";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
@@ -70,7 +71,7 @@ const NewNews = () => {
           element="input"
           type="text"
           label="Title"
-          validators={[VALIDATOR_REQUIRE()]}
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(60)]}
           errorText="Please enter a valid title."
           onInput={inputHandler}
         />

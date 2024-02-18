@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { Table, Space, Dropdown, Image } from "antd";
+import React, { useEffect, useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import { Table, Space, Flex, Image, Button, Modal, message } from "antd";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
+import { AuthContext } from "../../../shared/context/auth-context";
 
 const Clubs = () => {
+  const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedClubs, setLoadedClubs] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deletedClubId, setDeletedClubId] = useState(null);
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchClubs = async () => {
@@ -22,19 +29,32 @@ const Clubs = () => {
     fetchClubs();
   }, [sendRequest]);
 
-  const items = [
-    {
-      key: "1",
-      label: "Edit",
-    },
-    {
-      key: "2",
-      label: "Delete",
-    },
-  ];
+  const confirmDeleteHandler = async () => {
+    setIsModalOpen(false);
+    try {
+      await sendRequest(
+        `http://localhost:5001/api/admins/clubs/${deletedClubId}`,
+        "DELETE",
+        null,
+        {
+          Authorization: "Bearer " + auth.token,
+        }
+      );
+      setDeletedClubId(null);
+      setLoadedClubs((prevClubs) =>
+        prevClubs.filter((club) => club.id !== deletedClubId)
+      );
+      message.success("Club successfully deleted!");
+    } catch (err) {}
+  };
 
-  const onMenuClick = (e) => {
-    console.log("click", e);
+  const showModalForDelete = (id) => {
+    setIsModalOpen(true);
+    setDeletedClubId(id);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   const columns = [
@@ -60,6 +80,12 @@ const Clubs = () => {
       title: "Cost",
       dataIndex: "cost",
       key: "cost",
+      render: (cost) => {
+        const formattedCost = cost
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return `${formattedCost} €`;
+      },
     },
     {
       title: "Foundation year",
@@ -73,16 +99,16 @@ const Clubs = () => {
     },
     {
       key: "action",
-      render: (_) => (
+      render: (club) => (
         <Space size="middle">
-          <Dropdown.Button
-            menu={{
-              items,
-              onClick: onMenuClick,
-            }}
-          >
-            Actions
-          </Dropdown.Button>
+          <Flex gap="small">
+            <Link to={`/admins/clubs/${club.key}`}>
+              <Button>Edit</Button>
+            </Link>
+            <Button danger onClick={() => showModalForDelete(club.key)}>
+              Delete
+            </Button>
+          </Flex>
         </Space>
       ),
     },
@@ -90,7 +116,7 @@ const Clubs = () => {
 
   const data = loadedClubs
     ? loadedClubs.map((club) => ({
-        key: club.id,
+        id: club.id,
         image: club.image,
         name: club.name,
         country: club.country,
@@ -103,13 +129,59 @@ const Clubs = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      {isLoading && (
+      {isLoading ? (
         <div className="center">
           <LoadingSpinner />
         </div>
+      ) : (
+        <Link to="/admins/clubs/new">
+          <Button
+            type="primary"
+            style={{
+              fontSize: "16px",
+            }}
+          >
+            Add Club
+          </Button>
+        </Link>
       )}
+      <div
+        style={{
+          height: 20,
+        }}
+      ></div>
+      <Modal
+        title="Are you sure?"
+        open={isModalOpen}
+        onOk={confirmDeleteHandler}
+        onCancel={handleCancel}
+        okText="Yes"
+        cancelText="No"
+      >
+        Do you want to proceed and delete this club? Please note that it can't
+        be undone thereafter.
+      </Modal>
       {!isLoading && loadedClubs && (
-        <Table columns={columns} dataSource={data} pagination={true} />
+        <Table
+          columns={columns}
+          dataSource={data.map((club, index) => ({
+            ...club,
+            key: club.id,
+            number: limit * (page - 1) + index + 1,
+          }))}
+          pagination={{
+            pageSize: limit,
+            total: data.length,
+            showSizeChanger: true,
+            pageSizeOptions: [1, 2, 4, 10, 20],
+            responsive: true,
+            showTotal: (total) => `All ${total}`,
+            onChange: (page, pageSize) => {
+              setPage(page);
+              setLimit(pageSize);
+            },
+          }}
+        />
       )}
     </React.Fragment>
   );
