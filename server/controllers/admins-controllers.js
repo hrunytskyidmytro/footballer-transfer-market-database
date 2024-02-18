@@ -105,13 +105,13 @@ const createFootballer = async (req, res, next) => {
     height,
     age,
     foot,
+    agent,
     club,
     contractUntil,
     placeOfBirth,
     mainPosition,
     additionalPosition,
     cost,
-    agent,
   } = req.body;
 
   let existingFootballer;
@@ -153,7 +153,6 @@ const createFootballer = async (req, res, next) => {
     agent,
     image: req.file.path,
     creator: req.userData.userId,
-    clubs: [],
     transfers: [],
   });
 
@@ -249,6 +248,7 @@ const updateFootballer = async (req, res, next) => {
   try {
     await footballer.save();
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Something went wrong, could not update footballer.",
       500
@@ -328,6 +328,30 @@ const getTransfers = async (req, res, next) => {
   });
 };
 
+const getTransferById = async (req, res, next) => {
+  const transferId = req.params.tid;
+
+  let transfer;
+  try {
+    transfer = await Transfer.findById(transferId);
+  } catch (err) {
+    console.log(err);
+    const error = new HttpError(
+      "Something went wrong, could not find a transfer.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!transfer) {
+    return next(new HttpError("Could not find transfer.", 404));
+  }
+
+  res.json({
+    transfer: transfer.toObject({ getters: true }),
+  });
+};
+
 const createTransfer = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -342,6 +366,7 @@ const createTransfer = async (req, res, next) => {
     fromClub,
     toClub,
     transferFee,
+    transferDate,
     transferType,
     season,
     compensationAmount,
@@ -376,6 +401,7 @@ const createTransfer = async (req, res, next) => {
     fromClub,
     toClub,
     transferFee,
+    transferDate,
     transferType,
     season,
     compensationAmount,
@@ -398,30 +424,6 @@ const createTransfer = async (req, res, next) => {
   }
 
   res.status(201).json({ transfer: createdTransfer });
-};
-
-const getTransferById = async (req, res, next) => {
-  const transferId = req.params.tid;
-
-  let transfer;
-  try {
-    transfer = await Transfer.findById(transferId);
-  } catch (err) {
-    console.log(err);
-    const error = new HttpError(
-      "Something went wrong, could not find a transfer.",
-      500
-    );
-    return next(error);
-  }
-
-  if (!transfer) {
-    return next(new HttpError("Could not find transfer.", 404));
-  }
-
-  res.json({
-    transfer: transfer.toObject({ getters: true }),
-  });
 };
 
 const updateTransfer = async (req, res, next) => {
@@ -537,6 +539,7 @@ const getClubById = async (req, res, next) => {
   try {
     club = await Club.findById(clubId);
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Fetching club failed, please try again later.",
       500
@@ -568,45 +571,32 @@ const createClub = async (req, res, next) => {
 
   const { name, country, description, cost, foundationYear } = req.body;
 
+  let existingClub;
+  try {
+    existingClub = await Club.findOne({ name: name });
+  } catch (err) {
+    const error = new HttpError("Creating club failed, please try again.", 500);
+    return next(error);
+  }
+
+  if (existingClub) {
+    const error = new HttpError("CLub with the same name already exists.", 422);
+    return next(error);
+  }
+
   const createdClub = new Club({
     name,
     country,
-    image:
-      "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg",
+    image: req.file.path,
     description,
     cost,
     foundationYear,
   });
 
-  const footballerId = req.params.fid;
-
-  let footballer;
-  try {
-    footballer = await Footballer.findById(footballerId);
-  } catch (err) {
-    const error = new HttpError(
-      "Creating footballer failed, please try again.",
-      500
-    );
-    return next(error);
-  }
-
-  if (!footballer) {
-    const error = new HttpError(
-      "Could not find footballer for provided id.",
-      404
-    );
-    return next(error);
-  }
-
-  console.log(footballer);
-
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdClub.save({ session: sess });
-    footballer.clubs.push(createdClub);
-    await footballer.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
     console.log(err.message);
@@ -678,30 +668,12 @@ const deleteClub = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(club);
-
-  let footballer;
-  try {
-    footballer = await Footballer.findOne({ clubs: clubId }).populate("clubs");
-  } catch (err) {
-    const error = new HttpError(
-      "Something went wrong, could not delete footballer.",
-      500
-    );
-    return next(error);
-  }
-
-  if (!footballer) {
-    const error = new HttpError("Could not find footballer for this id.", 404);
-    return next(error);
-  }
+  const imagePath = agent.image;
 
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await club.deleteOne({ session: sess });
-    footballer.clubs.pull(club);
-    await footballer.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
     console.log(err.message);
@@ -711,6 +683,10 @@ const deleteClub = async (req, res, next) => {
     );
     return next(error);
   }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: "Deleted club." });
 };
@@ -909,7 +885,7 @@ const deleteAgent = async (req, res, next) => {
 const getNews = async (req, res, next) => {
   let news;
   try {
-    news = await New.find({}).populate("author");
+    news = await New.find({}).populate("creator");
   } catch (err) {
     const error = new HttpError(
       "Fetching news failed, please try again later.",
@@ -963,7 +939,7 @@ const createNew = async (req, res, next) => {
     title,
     description,
     image: req.file.path,
-    author: req.userData.userId,
+    creator: req.userData.userId,
   });
 
   try {
@@ -972,7 +948,7 @@ const createNew = async (req, res, next) => {
     await createdNew.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
-    const error = new HttpError("Creating new failed, please try again.", 500);
+    const error = new HttpError("Creating news failed, please try again.", 500);
     return next(error);
   }
 
@@ -996,7 +972,7 @@ const updateNew = async (req, res, next) => {
     n = await New.findById(newId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not update new.",
+      "Something went wrong, could not update news.",
       500
     );
     return next(error);
@@ -1009,7 +985,7 @@ const updateNew = async (req, res, next) => {
     await n.save();
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not update new.",
+      "Something went wrong, could not update news.",
       500
     );
     return next(error);
@@ -1026,14 +1002,14 @@ const deleteNew = async (req, res, next) => {
     n = await New.findById(newId);
   } catch (err) {
     const error = new HttpError(
-      "Something went wrong, could not delete new.",
+      "Something went wrong, could not delete news.",
       500
     );
     return next(error);
   }
 
   if (!n) {
-    const error = new HttpError("Could not find new for this id.", 404);
+    const error = new HttpError("Could not find news for this id.", 404);
     return next(error);
   }
 
@@ -1047,7 +1023,7 @@ const deleteNew = async (req, res, next) => {
   } catch (err) {
     console.log(err.message);
     const error = new HttpError(
-      "Something went wrong, could not delete new.",
+      "Something went wrong, could not delete news.",
       500
     );
     return next(error);
@@ -1057,7 +1033,7 @@ const deleteNew = async (req, res, next) => {
     console.log(err);
   });
 
-  res.status(200).json({ message: "Deleted new." });
+  res.status(200).json({ message: "Deleted news." });
 };
 
 //Users

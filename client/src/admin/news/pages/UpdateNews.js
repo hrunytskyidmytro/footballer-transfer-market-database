@@ -10,6 +10,7 @@ import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_MINLENGTH,
+  VALIDATOR_MAXLENGTH,
 } from "../../../shared/util/validators";
 import { useForm } from "../../../shared/hooks/form-hook";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
@@ -105,13 +106,13 @@ const UpdateNews = () => {
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
       {!isLoading && loadedNews && (
-        <form className="footballer-form" onSubmit={footballerSubmitHandler}>
+        <form className="news-form" onSubmit={footballerSubmitHandler}>
           <Input
             id="title"
             element="input"
             type="text"
             label="Title"
-            validators={[VALIDATOR_REQUIRE()]}
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(60)]}
             errorText="Please enter a valid title."
             onInput={inputHandler}
             initialValue={loadedNews.title}
@@ -128,7 +129,7 @@ const UpdateNews = () => {
             initialValid={true}
           />
           <Button type="submit" disabled={!formState.isValid}>
-            Update news
+            Update News
           </Button>
         </form>
       )}

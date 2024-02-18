@@ -9,16 +9,16 @@ import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner
 import ImageUpload from "../../../shared/components/FormElements/ImageUpload";
 import {
   VALIDATOR_REQUIRE,
-  VALIDATOR_EMAIL,
-  VALIDATOR_MINLENGTH,
+  VALIDATOR_NUMBER,
   VALIDATOR_MAXLENGTH,
+  VALIDATOR_MINLENGTH,
 } from "../../../shared/util/validators";
 import { useForm } from "../../../shared/hooks/form-hook";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
 // import "./FootballerForm.css";
 
-const NewAgent = () => {
+const NewClub = () => {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
@@ -28,19 +28,7 @@ const NewAgent = () => {
         value: "",
         isValid: false,
       },
-      surname: {
-        value: "",
-        isValid: false,
-      },
       country: {
-        value: "",
-        isValid: false,
-      },
-      email: {
-        value: "",
-        isValid: false,
-      },
-      phoneNumber: {
         value: "",
         isValid: false,
       },
@@ -48,11 +36,19 @@ const NewAgent = () => {
         value: "",
         isValid: false,
       },
+      cost: {
+        value: "",
+        isValid: false,
+      },
+      foundationYear: {
+        value: "",
+        isValid: false,
+      },
     },
     false
   );
 
-  const agentSubmitHandler = async (event) => {
+  const clubSubmitHandler = async (event) => {
     event.preventDefault();
 
     if (auth.role !== "admin") {
@@ -63,29 +59,28 @@ const NewAgent = () => {
     try {
       const formData = new FormData();
       formData.append("name", formState.inputs.name.value);
-      formData.append("surname", formState.inputs.surname.value);
       formData.append("country", formState.inputs.country.value);
-      formData.append("email", formState.inputs.email.value);
-      formData.append("phoneNumber", formState.inputs.phoneNumber.value);
       formData.append("description", formState.inputs.description.value);
+      formData.append("cost", formState.inputs.cost.value);
+      formData.append("foundationYear", formState.inputs.foundationYear.value);
       formData.append("image", formState.inputs.image.value);
       await sendRequest(
-        "http://localhost:5001/api/admins/agents/new",
+        "http://localhost:5001/api/admins/clubs/new",
         "POST",
         formData,
         {
           Authorization: "Bearer " + auth.token,
         }
       );
-      navigate("/admins/agents");
-      message.success("Agent successfully added!");
+      navigate("/admins/clubs");
+      message.success("Club successfully added!");
     } catch (err) {}
   };
 
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      <form onSubmit={agentSubmitHandler}>
+      <form onSubmit={clubSubmitHandler}>
         {isLoading && <LoadingSpinner asOverlay />}
         <Input
           id="name"
@@ -94,15 +89,6 @@ const NewAgent = () => {
           label="Name"
           validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
           errorText="Please enter a valid name."
-          onInput={inputHandler}
-        />
-        <Input
-          id="surname"
-          element="input"
-          type="text"
-          label="Surname"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid surname."
           onInput={inputHandler}
         />
         <Input
@@ -115,25 +101,21 @@ const NewAgent = () => {
           onInput={inputHandler}
         />
         <Input
-          id="email"
+          id="cost"
           element="input"
-          type="text"
-          label="E-mail"
-          validators={[
-            VALIDATOR_REQUIRE(),
-            VALIDATOR_EMAIL(),
-            VALIDATOR_MAXLENGTH(20),
-          ]}
-          errorText="Please enter a valid email."
+          type="number"
+          label="Cost"
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
+          errorText="Please enter a valid cost."
           onInput={inputHandler}
         />
         <Input
-          id="phoneNumber"
+          id="foundationYear"
           element="input"
-          type="text"
-          label="Phone number"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid phone number."
+          type="number"
+          label="Foundation year"
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
+          errorText="Please enter a valid foundation year."
           onInput={inputHandler}
         />
         <Input
@@ -150,11 +132,11 @@ const NewAgent = () => {
           errorText="PLease provide an image."
         />
         <Button type="submit" disabled={!formState.isValid}>
-          Add Agent
+          Add Club
         </Button>
       </form>
     </React.Fragment>
   );
 };
 
-export default NewAgent;
+export default NewClub;

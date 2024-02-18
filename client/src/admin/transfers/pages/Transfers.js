@@ -14,6 +14,8 @@ const Transfers = () => {
   const [loadedTransfers, setLoadedTransfers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletedTransferId, setDeletedTransferId] = useState(null);
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchTransfers = async () => {
@@ -105,6 +107,12 @@ const Transfers = () => {
       key: "transferFee",
       defaultSortOrder: "descend",
       sorter: (a, b) => a.transferFee - b.transferFee,
+      render: (transferFee) => {
+        const formattedTransferFee = transferFee
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return `${formattedTransferFee} €`;
+      },
     },
     {
       title: "Transfer Date",
@@ -126,6 +134,12 @@ const Transfers = () => {
       title: "Compensation Amount",
       dataIndex: "compensationAmount",
       key: "compensationAmount",
+      render: (compensationAmount) => {
+        const formattedCompAmount = compensationAmount
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return `${formattedCompAmount} €`;
+      },
     },
     {
       key: "action",
@@ -144,10 +158,6 @@ const Transfers = () => {
     },
   ];
 
-  const onChange = (pagination, filters, sorter, extra) => {
-    console.log("params", pagination, filters, sorter, extra);
-  };
-
   const data = loadedTransfers
     ? loadedTransfers.map((transfer) => ({
         key: transfer.id,
@@ -156,9 +166,7 @@ const Transfers = () => {
         surname: transfer.footballer
           ? transfer.footballer.surname
           : "Not found",
-        fromClub: transfer.fromClub
-          ? transfer.fromClub.name
-          : "Not found",
+        fromClub: transfer.fromClub ? transfer.fromClub.name : "Not found",
         toClub: transfer.toClub ? transfer.toClub.name : "Not found",
         transferFee: transfer.transferFee,
         transferDate: transfer.transferDate,
@@ -183,7 +191,7 @@ const Transfers = () => {
               fontSize: "16px",
             }}
           >
-            Add transfer
+            Add Transfer
           </Button>
         </Link>
       )}
@@ -204,7 +212,26 @@ const Transfers = () => {
         can't be undone thereafter.
       </Modal>
       {!isLoading && (
-        <Table columns={columns} dataSource={data} onChange={onChange} />
+        <Table
+          columns={columns}
+          dataSource={data.map((transfer, index) => ({
+            ...transfer,
+            key: transfer.id,
+            number: limit * (page - 1) + index + 1,
+          }))}
+          pagination={{
+            pageSize: limit,
+            total: data.length,
+            showSizeChanger: true,
+            pageSizeOptions: [2, 4, 10, 20],
+            responsive: true,
+            showTotal: (total) => `All ${total}`,
+            onChange: (page, pageSize) => {
+              setPage(page);
+              setLimit(pageSize);
+            },
+          }}
+        />
       )}
     </React.Fragment>
   );

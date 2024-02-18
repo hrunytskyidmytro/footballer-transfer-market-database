@@ -107,11 +107,16 @@ const Footballers = () => {
       title: "Weight",
       dataIndex: "weight",
       key: "weight",
+      render: (weight) => `${weight} kg`,
     },
     {
       title: "Height",
       dataIndex: "height",
       key: "height",
+      render: (height) => {
+        const formattedHeight = `${height / 100}`.replace(".", ",");
+        return `${formattedHeight} m`;
+      },
     },
     {
       title: "Age",
@@ -158,6 +163,12 @@ const Footballers = () => {
       title: "Cost",
       dataIndex: "cost",
       key: "cost",
+      render: (cost) => {
+        const formattedCost = cost
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return `${formattedCost} €`;
+      },
     },
     {
       title: "Clubs",

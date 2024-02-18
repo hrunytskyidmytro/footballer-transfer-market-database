@@ -22,10 +22,14 @@ const clubSchema = new Schema({
   cost: {
     type: Number,
     required: true,
+    min: 100000,
+    max: 10000000000,
   },
   foundationYear: {
     type: Number,
     required: true,
+    min: 1900,
+    max: 2024,
   },
 });
 

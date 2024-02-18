@@ -11,6 +11,7 @@ import {
   VALIDATOR_REQUIRE,
   VALIDATOR_DATE,
   VALIDATOR_NUMBER,
+  VALIDATOR_MAXLENGTH,
 } from "../../../shared/util/validators";
 import { useForm } from "../../../shared/hooks/form-hook";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
@@ -139,21 +140,10 @@ const UpdateTransfer = () => {
             element="input"
             type="number"
             label="Transfer fee"
-            validators={[VALIDATOR_NUMBER()]}
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
             errorText="Please enter a valid transfer fee."
             onInput={inputHandler}
             initialValue={loadedTransfers.transferFee}
-            initialValid={true}
-          />
-          <Input
-            id="transferType"
-            element="input"
-            type="text"
-            label="Transfer type"
-            validators={[VALIDATOR_REQUIRE()]}
-            errorText="Please enter a valid transfer type."
-            onInput={inputHandler}
-            initialValue={loadedTransfers.transferType}
             initialValid={true}
           />
           <Input
@@ -161,10 +151,21 @@ const UpdateTransfer = () => {
             element="input"
             type="date"
             label="Transfer date"
-            validators={[VALIDATOR_DATE()]}
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_DATE()]}
             errorText="Please enter a valid transfer date."
             onInput={inputHandler}
             initialValue={loadedTransfers.transferDate}
+            initialValid={true}
+          />
+          <Input
+            id="transferType"
+            element="input"
+            type="text"
+            label="Transfer type"
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(10)]}
+            errorText="Please enter a valid transfer type."
+            onInput={inputHandler}
+            initialValue={loadedTransfers.transferType}
             initialValid={true}
           />
           <Input
@@ -172,7 +173,7 @@ const UpdateTransfer = () => {
             element="input"
             type="text"
             label="Season"
-            validators={[VALIDATOR_REQUIRE()]}
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(10)]}
             errorText="Please enter a valid season."
             onInput={inputHandler}
             initialValue={loadedTransfers.season}
@@ -183,14 +184,14 @@ const UpdateTransfer = () => {
             element="input"
             type="number"
             label="Compensation amount"
-            validators={[VALIDATOR_NUMBER()]}
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
             errorText="Please enter a valid compensation amount."
             onInput={inputHandler}
             initialValue={loadedTransfers.compensationAmount}
             initialValid={true}
           />
           <Button type="submit" disabled={!formState.isValid}>
-            Update transfer
+            Update Transfer
           </Button>
         </form>
       )}

@@ -9,21 +9,21 @@ import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import {
   VALIDATOR_REQUIRE,
-  VALIDATOR_EMAIL,
-  VALIDATOR_MINLENGTH,
   VALIDATOR_MAXLENGTH,
+  VALIDATOR_MINLENGTH,
+  VALIDATOR_NUMBER,
 } from "../../../shared/util/validators";
 import { useForm } from "../../../shared/hooks/form-hook";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
 // import "./FootballerForm.css";
 
-const UpdateAgent = () => {
+const UpdateClub = () => {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [loadedAgents, setLoadedAgents] = useState();
-  const { agentId } = useParams();
+  const [loadedClubs, setLoadedClubs] = useState();
+  const { clubId } = useParams();
 
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -31,23 +31,19 @@ const UpdateAgent = () => {
         value: "",
         isValid: false,
       },
-      surname: {
-        value: "",
-        isValid: false,
-      },
       country: {
         value: "",
         isValid: false,
       },
-      email: {
-        value: "",
-        isValid: false,
-      },
-      phoneNumber: {
-        value: "",
-        isValid: false,
-      },
       description: {
+        value: "",
+        isValid: false,
+      },
+      cost: {
+        value: "",
+        isValid: false,
+      },
+      foundationYear: {
         value: "",
         isValid: false,
       },
@@ -56,36 +52,32 @@ const UpdateAgent = () => {
   );
 
   useEffect(() => {
-    const fetchAgent = async () => {
+    const fetchClub = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:5001/api/admins/agents/${agentId}`
+          `http://localhost:5001/api/admins/clubs/${clubId}`
         );
-        setLoadedAgents(responseData.agent);
+        setLoadedClubs(responseData.club);
         setFormData(
           {
             name: {
-              value: responseData.agent.name,
-              isValid: true,
-            },
-            surname: {
-              value: responseData.agent.surname,
+              value: responseData.club.name,
               isValid: true,
             },
             country: {
-              value: responseData.agent.country,
-              isValid: true,
-            },
-            email: {
-              value: responseData.agent.email,
-              isValid: true,
-            },
-            phoneNumber: {
-              value: responseData.agent.phoneNumber,
+              value: responseData.club.country,
               isValid: true,
             },
             description: {
-              value: responseData.agent.description,
+              value: responseData.club.description,
+              isValid: true,
+            },
+            cost: {
+              value: responseData.club.cost,
+              isValid: true,
+            },
+            foundationYear: {
+              value: responseData.club.foundationYear,
               isValid: true,
             },
           },
@@ -94,30 +86,29 @@ const UpdateAgent = () => {
       } catch (err) {}
     };
 
-    fetchAgent();
-  }, [sendRequest, agentId, setFormData]);
+    fetchClub();
+  }, [sendRequest, clubId, setFormData]);
 
-  const footballerSubmitHandler = async (event) => {
+  const clubSubmitHandler = async (event) => {
     event.preventDefault();
     try {
       await sendRequest(
-        `http://localhost:5001/api/admins/agents/${agentId}`,
+        `http://localhost:5001/api/admins/clubs/${clubId}`,
         "PATCH",
         JSON.stringify({
           name: formState.inputs.name.value,
-          surname: formState.inputs.surname.value,
           country: formState.inputs.country.value,
-          email: formState.inputs.email.value,
-          phoneNumber: formState.inputs.phoneNumber.value,
           description: formState.inputs.description.value,
+          cost: formState.inputs.cost.value,
+          foundationYear: formState.inputs.foundationYear.value,
         }),
         {
           "Content-Type": "application/json",
           Authorization: "Bearer " + auth.token,
         }
       );
-      navigate("/admins/agents");
-      message.success("Agent successfully edited!");
+      navigate("/admins/clubs");
+      message.success("Club successfully edited!");
     } catch (err) {}
   };
 
@@ -129,11 +120,11 @@ const UpdateAgent = () => {
     );
   }
 
-  if (!loadedAgents && !error) {
+  if (!loadedClubs && !error) {
     return (
       <div className="center">
         <Card>
-          <h2>Could not find agent!</h2>
+          <h2>Could not find club!</h2>
         </Card>
       </div>
     );
@@ -142,8 +133,8 @@ const UpdateAgent = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      {!isLoading && loadedAgents && (
-        <form className="agent-form" onSubmit={footballerSubmitHandler}>
+      {!isLoading && loadedClubs && (
+        <form className="club-form" onSubmit={clubSubmitHandler}>
           <Input
             id="name"
             element="input"
@@ -152,18 +143,7 @@ const UpdateAgent = () => {
             validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
             errorText="Please enter a valid name."
             onInput={inputHandler}
-            initialValue={loadedAgents.name}
-            initialValid={true}
-          />
-          <Input
-            id="surname"
-            element="input"
-            type="text"
-            label="Surname"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-            errorText="Please enter a valid surname."
-            onInput={inputHandler}
-            initialValue={loadedAgents.surname}
+            initialValue={loadedClubs.name}
             initialValid={true}
           />
           <Input
@@ -174,33 +154,29 @@ const UpdateAgent = () => {
             validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
             errorText="Please enter a valid country."
             onInput={inputHandler}
-            initialValue={loadedAgents.country}
+            initialValue={loadedClubs.country}
             initialValid={true}
           />
           <Input
-            id="email"
+            id="cost"
             element="input"
             type="text"
-            label="E-mail"
-            validators={[
-              VALIDATOR_REQUIRE(),
-              VALIDATOR_EMAIL(),
-              VALIDATOR_MAXLENGTH(20),
-            ]}
-            errorText="Please enter a valid email."
+            label="Cost"
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
+            errorText="Please enter a valid cost."
             onInput={inputHandler}
-            initialValue={loadedAgents.email}
+            initialValue={loadedClubs.cost}
             initialValid={true}
           />
           <Input
-            id="phoneNumber"
+            id="foundationYear"
             element="input"
-            type="text"
-            label="Phone number"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-            errorText="Please enter a valid phone number."
+            type="number"
+            label="Foundation year"
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
+            errorText="Please enter a valid foundation year."
             onInput={inputHandler}
-            initialValue={loadedAgents.phoneNumber}
+            initialValue={loadedClubs.foundationYear}
             initialValid={true}
           />
           <Input
@@ -210,11 +186,11 @@ const UpdateAgent = () => {
             validators={[VALIDATOR_MINLENGTH(5)]}
             errorText="Please enter a valid description."
             onInput={inputHandler}
-            initialValue={loadedAgents.description}
+            initialValue={loadedClubs.description}
             initialValid={true}
           />
           <Button type="submit" disabled={!formState.isValid}>
-            Update Agent
+            Update Club
           </Button>
         </form>
       )}
@@ -222,4 +198,4 @@ const UpdateAgent = () => {
   );
 };
 
-export default UpdateAgent;
+export default UpdateClub;
