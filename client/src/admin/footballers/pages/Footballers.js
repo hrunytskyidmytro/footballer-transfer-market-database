@@ -98,7 +98,7 @@ const Footballers = () => {
       key: "nationality",
     },
     {
-      title: "Date of Birth",
+      title: "Date of birth",
       dataIndex: "birthDate",
       key: "birthDate",
       render: (text) => moment(text).format("MMMM Do YYYY"),
@@ -145,7 +145,7 @@ const Footballers = () => {
       render: (text) => moment(text).format("MMMM Do YYYY"),
     },
     {
-      title: "Place of Birth",
+      title: "Place of birth",
       dataIndex: "placeOfBirth",
       key: "placeOfBirth",
     },
@@ -169,18 +169,6 @@ const Footballers = () => {
           .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         return `${formattedCost} €`;
       },
-    },
-    {
-      title: "Clubs",
-      dataIndex: "clubs",
-      key: "clubs",
-    },
-    {
-      title: "Transfers",
-      dataIndex: "transfers",
-      key: "transfers",
-      defaultSortOrder: "descend",
-      sorter: (a, b) => a.transfers - b.transfers,
     },
     {
       key: "action",
@@ -218,8 +206,6 @@ const Footballers = () => {
         mainPosition: footballer.mainPosition,
         additionalPosition: footballer.additionalPosition,
         cost: footballer.cost,
-        clubs: footballer.clubs.length,
-        transfers: footballer.transfers.length,
       }))
     : [];
 
@@ -235,6 +221,8 @@ const Footballers = () => {
           <Button
             type="primary"
             style={{
+              display: "flex",
+              justifyContent: "flex-start",
               fontSize: "16px",
             }}
           >

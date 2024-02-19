@@ -27,6 +27,8 @@ const transferSchema = new Schema({
   transferDate: {
     type: Date,
     required: true,
+    min: new Date("2000-01-01"),
+    max: new Date(),
   },
   transferType: {
     type: String,
@@ -40,7 +42,12 @@ const transferSchema = new Schema({
     type: Number,
     required: true,
     min: 50000,
-    max: 1000000,
+    max: 5000000,
+  },
+  contractTransferUntil: {
+    type: Date,
+    required: true,
+    min: new Date(),
   },
 });
 

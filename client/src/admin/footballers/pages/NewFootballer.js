@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
+import {  message } from "antd";
 
 import Input from "../../../shared/components//FormElements/Input";
 import Button from "../../../shared/components/FormElements/Button";
@@ -43,15 +43,15 @@ const NewFootballer = () => {
         isValid: false,
       },
       weight: {
-        value: "",
+        value: 0,
         isValid: false,
       },
       height: {
-        value: "",
+        value: 0,
         isValid: false,
       },
       age: {
-        value: "",
+        value: 0,
         isValid: false,
       },
       foot: {
@@ -75,7 +75,11 @@ const NewFootballer = () => {
         isValid: false,
       },
       cost: {
-        value: "",
+        value: 0,
+        isValid: false,
+      },
+      image: {
+        value: null,
         isValid: false,
       },
     },

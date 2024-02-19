@@ -138,6 +138,8 @@ const Clubs = () => {
           <Button
             type="primary"
             style={{
+              display: "flex",
+              justifyContent: "flex-start",
               fontSize: "16px",
             }}
           >

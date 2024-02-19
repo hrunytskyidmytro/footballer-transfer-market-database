@@ -51,8 +51,6 @@ const getFootballerById = async (req, res, next) => {
     return next(new HttpError("Could not find footballer.", 404));
   }
 
-  console.log(footballer);
-
   res.json({
     footballer: footballer.toObject({ getters: true }),
   });
@@ -77,8 +75,6 @@ const getFootballersByUserId = async (req, res, next) => {
       new HttpError("Could not find footballers for the provided user id.", 404)
     );
   }
-
-  console.log(userWithFootballers);
 
   res.json({
     footballers: userWithFootballers.footballers.map((footballer) =>
@@ -117,7 +113,7 @@ const createFootballer = async (req, res, next) => {
   let existingFootballer;
   try {
     existingFootballer = await Footballer.findOne({
-      $or: [{ name }, { surname }],
+      $and: [{ name }, { surname }],
     });
   } catch (err) {
     const error = new HttpError(
@@ -153,34 +149,12 @@ const createFootballer = async (req, res, next) => {
     agent,
     image: req.file.path,
     creator: req.userData.userId,
-    transfers: [],
   });
-
-  console.log(req.userData);
-
-  let user;
-  try {
-    user = await User.findById(req.userData.userId);
-  } catch (err) {
-    console.log(err.message);
-    const error = new HttpError(
-      "Creating footballer failed, please try again.",
-      500
-    );
-    return next(error);
-  }
-
-  if (!user) {
-    const error = new HttpError("Could not find user for provided id.", 404);
-    return next(error);
-  }
 
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdFootballer.save({ session: sess });
-    user.footballers.push(createdFootballer);
-    await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
     console.log(err.message);
@@ -264,7 +238,7 @@ const deleteFootballer = async (req, res, next) => {
 
   let footballer;
   try {
-    footballer = await Footballer.findById(footballerId).populate("creator");
+    footballer = await Footballer.findById(footballerId);
   } catch (err) {
     console.log(err);
     const error = new HttpError(
@@ -285,8 +259,6 @@ const deleteFootballer = async (req, res, next) => {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await footballer.deleteOne({ session: sess });
-    footballer.creator.footballers.pull(footballer);
-    await footballer.creator.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
     console.log(err.message);
@@ -370,6 +342,7 @@ const createTransfer = async (req, res, next) => {
     transferType,
     season,
     compensationAmount,
+    contractTransferUntil,
   } = req.body;
 
   if (fromClub === toClub) {
@@ -377,22 +350,6 @@ const createTransfer = async (req, res, next) => {
       "Source and destination clubs cannot be the same.",
       422
     );
-    return next(error);
-  }
-
-  let footballerForTransfer;
-  try {
-    footballerForTransfer = await Footballer.findById(footballer);
-  } catch (err) {
-    const error = new HttpError(
-      "Creating footballer failed, please try again.",
-      500
-    );
-    return next(error);
-  }
-
-  if (!footballerForTransfer) {
-    const error = new HttpError("Could not find user for provided id.", 404);
     return next(error);
   }
 
@@ -405,14 +362,29 @@ const createTransfer = async (req, res, next) => {
     transferType,
     season,
     compensationAmount,
+    contractTransferUntil,
   });
+
+  let updatedFootballer;
+  try {
+    updatedFootballer = await Footballer.findById(footballer);
+  } catch (err) {
+    const error = new HttpError(
+      "Creating transfer failed, please try again.",
+      500
+    );
+    return next(error);
+  }
+
+  updatedFootballer.club = toClub;
+  updatedFootballer.cost = transferFee;
+  updatedFootballer.contractUntil = contractTransferUntil;
 
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await createdTransfer.save({ session: sess });
-    footballerForTransfer.transfers.push(createdTransfer);
-    await footballerForTransfer.save({ session: sess });
+    await updatedFootballer.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
     console.log(err.message);
@@ -441,6 +413,7 @@ const updateTransfer = async (req, res, next) => {
     transferType,
     season,
     compensationAmount,
+    contractTransferUntil,
   } = req.body;
   const transferId = req.params.tid;
 
@@ -460,9 +433,25 @@ const updateTransfer = async (req, res, next) => {
   transfer.transferType = transferType;
   transfer.season = season;
   transfer.compensationAmount = compensationAmount;
+  transfer.contractTransferUntil = contractTransferUntil;
+
+  let updatedFootballer;
+  try {
+    updatedFootballer = await Footballer.findById(transfer.footballer);
+  } catch (err) {
+    const error = new HttpError(
+      "Updating transfer failed, please try again.",
+      500
+    );
+    return next(error);
+  }
+
+  updatedFootballer.cost = transfer.transferFee;
+  updatedFootballer.contractUntil = transfer.contractTransferUntil;
 
   try {
     await transfer.save();
+    await updatedFootballer.save();
   } catch (err) {
     console.log(err.message);
     const error = new HttpError(
@@ -480,7 +469,7 @@ const deleteTransfer = async (req, res, next) => {
 
   let transfer;
   try {
-    transfer = await Transfer.findById(transferId).populate("footballer");
+    transfer = await Transfer.findById(transferId);
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not delete transfer.",
@@ -498,8 +487,6 @@ const deleteTransfer = async (req, res, next) => {
     const sess = await mongoose.startSession();
     sess.startTransaction();
     await transfer.deleteOne({ session: sess });
-    transfer.footballer.transfers.pull(transfer);
-    await transfer.footballer.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
     console.log(err.message);
@@ -552,8 +539,6 @@ const getClubById = async (req, res, next) => {
       new HttpError("Could not find club for the provided user id.", 404)
     );
   }
-
-  console.log(club);
 
   res.json({
     club: club.toObject({ getters: true }),
@@ -668,7 +653,7 @@ const deleteClub = async (req, res, next) => {
     return next(error);
   }
 
-  const imagePath = agent.image;
+  const imagePath = club.image;
 
   try {
     const sess = await mongoose.startSession();
@@ -750,7 +735,7 @@ const createAgent = async (req, res, next) => {
   let existingAgent;
   try {
     existingAgent = await Agent.findOne({
-      $or: [{ name }, { surname }],
+      $and: [{ name }, { surname }],
     });
   } catch (err) {
     const error = new HttpError(
@@ -934,6 +919,22 @@ const createNew = async (req, res, next) => {
   }
 
   const { title, description } = req.body;
+
+  let existingTitle;
+  try {
+    existingTitle = await New.findOne({ title: title });
+  } catch (err) {
+    const error = new HttpError("Creating news failed, please try again.", 500);
+    return next(error);
+  }
+
+  if (existingTitle) {
+    const error = new HttpError(
+      "News with the same title already exists.",
+      422
+    );
+    return next(error);
+  }
 
   const createdNew = new New({
     title,

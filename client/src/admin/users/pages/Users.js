@@ -93,13 +93,6 @@ const Users = () => {
       render: (text) => moment(text).format("MMMM Do YYYY"),
     },
     {
-      title: "Footballer Count",
-      dataIndex: "footballerCount",
-      key: "footballerCount",
-      defaultSortOrder: "descend",
-      sorter: (a, b) => a.footballerCount - b.footballerCount,
-    },
-    {
       key: "action",
       render: (user) => (
         <Space size="middle">
@@ -124,7 +117,6 @@ const Users = () => {
         email: user.email,
         registrationDate: user.registrationDate,
         role: user.role,
-        footballerCount: user.footballers.length,
       }))
     : [];
 

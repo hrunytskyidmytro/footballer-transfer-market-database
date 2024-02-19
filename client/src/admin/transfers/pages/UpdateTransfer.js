@@ -47,6 +47,10 @@ const UpdateTransfer = () => {
         value: 0,
         isValid: false,
       },
+      contractTransferUntil: {
+        value: "",
+        isValid: false,
+      },
     },
     false
   );
@@ -80,6 +84,10 @@ const UpdateTransfer = () => {
               value: responseData.transfer.compensationAmount,
               isValid: true,
             },
+            contractTransferUntil: {
+              value: responseData.transfer.contractTransferUntil,
+              isValid: true,
+            },
           },
           true
         );
@@ -101,6 +109,7 @@ const UpdateTransfer = () => {
           transferDate: formState.inputs.transferDate.value,
           season: formState.inputs.season.value,
           compensationAmount: formState.inputs.compensationAmount.value,
+          contractTransferUntil: formState.inputs.contractTransferUntil.value,
         }),
         {
           "Content-Type": "application/json",
@@ -166,6 +175,17 @@ const UpdateTransfer = () => {
             errorText="Please enter a valid transfer type."
             onInput={inputHandler}
             initialValue={loadedTransfers.transferType}
+            initialValid={true}
+          />
+          <Input
+            id="contractTransferUntil"
+            element="input"
+            type="date"
+            label="Contract transfer until"
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_DATE()]}
+            errorText="Please enter a valid contract transfer."
+            onInput={inputHandler}
+            initialValue={loadedTransfers.contractTransferUntil}
             initialValid={true}
           />
           <Input

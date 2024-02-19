@@ -112,7 +112,7 @@ const UpdateNews = () => {
             element="input"
             type="text"
             label="Title"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(60)]}
+            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(100)]}
             errorText="Please enter a valid title."
             onInput={inputHandler}
             initialValue={loadedNews.title}

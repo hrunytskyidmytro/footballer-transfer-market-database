@@ -40,11 +40,11 @@ const UpdateClub = () => {
         isValid: false,
       },
       cost: {
-        value: "",
+        value: 0,
         isValid: false,
       },
       foundationYear: {
-        value: "",
+        value: 1900,
         isValid: false,
       },
     },

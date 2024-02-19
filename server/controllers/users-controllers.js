@@ -52,7 +52,6 @@ const signup = async (req, res, next) => {
     surname,
     email,
     password: hashedPassword,
-    footballers: [],
   });
 
   try {

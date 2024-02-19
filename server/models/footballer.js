@@ -18,6 +18,8 @@ const footballerSchema = new Schema({
   birthDate: {
     type: Date,
     required: true,
+    min: new Date("1950-01-01"),
+    max: new Date(),
   },
   weight: {
     type: Number,
@@ -54,6 +56,7 @@ const footballerSchema = new Schema({
   contractUntil: {
     type: Date,
     required: true,
+    min: new Date(),
   },
   placeOfBirth: {
     type: String,
@@ -82,13 +85,6 @@ const footballerSchema = new Schema({
     required: true,
     ref: "User",
   },
-  transfers: [
-    {
-      type: mongoose.Types.ObjectId,
-      required: true,
-      ref: "Transfer",
-    },
-  ],
 });
 
 module.exports = mongoose.model("Footballer", footballerSchema);
