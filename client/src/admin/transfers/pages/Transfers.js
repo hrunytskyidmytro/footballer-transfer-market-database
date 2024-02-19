@@ -115,13 +115,19 @@ const Transfers = () => {
       },
     },
     {
-      title: "Transfer Date",
+      title: "Transfer date",
       dataIndex: "transferDate",
       key: "transferDate",
       render: (text) => moment(text).format("MMMM Do YYYY"),
     },
     {
-      title: "Transfer Type",
+      title: "Contact transfer until",
+      dataIndex: "contractTransferUntil",
+      key: "contractTransferUntil",
+      render: (text) => moment(text).format("MMMM Do YYYY"),
+    },
+    {
+      title: "Transfer type",
       dataIndex: "transferType",
       key: "transferType",
     },
@@ -131,7 +137,7 @@ const Transfers = () => {
       key: "season",
     },
     {
-      title: "Compensation Amount",
+      title: "Compensation amount",
       dataIndex: "compensationAmount",
       key: "compensationAmount",
       render: (compensationAmount) => {
@@ -160,7 +166,7 @@ const Transfers = () => {
 
   const data = loadedTransfers
     ? loadedTransfers.map((transfer) => ({
-        key: transfer.id,
+        id: transfer.id,
         image: transfer.footballer ? transfer.footballer.image : "Not found",
         name: transfer.footballer ? transfer.footballer.name : "Not found",
         surname: transfer.footballer
@@ -173,6 +179,7 @@ const Transfers = () => {
         transferType: transfer.transferType,
         season: transfer.season,
         compensationAmount: transfer.compensationAmount,
+        contractTransferUntil: transfer.contractTransferUntil,
       }))
     : [];
 
@@ -188,6 +195,8 @@ const Transfers = () => {
           <Button
             type="primary"
             style={{
+              display: "flex",
+              justifyContent: "flex-start",
               fontSize: "16px",
             }}
           >

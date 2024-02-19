@@ -44,15 +44,15 @@ const UpdateFootballer = () => {
         isValid: false,
       },
       weight: {
-        value: "",
+        value: 0,
         isValid: false,
       },
       height: {
-        value: "",
+        value: 0,
         isValid: false,
       },
       age: {
-        value: "",
+        value: 0,
         isValid: false,
       },
       foot: {
@@ -76,7 +76,7 @@ const UpdateFootballer = () => {
         isValid: false,
       },
       cost: {
-        value: "",
+        value: 0,
         isValid: false,
       },
     },
@@ -199,6 +199,7 @@ const UpdateFootballer = () => {
           <h2>Could not find footballer!</h2>
         </Card>
       </div>
+      // message.error("Could not find footballer!")
     );
   }
 

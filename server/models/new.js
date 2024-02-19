@@ -14,6 +14,8 @@ const newsSchema = new Schema({
   date: {
     type: Date,
     default: Date.now,
+    min: new Date("2000-01-01"),
+    max: new Date(),
   },
   image: {
     type: String,

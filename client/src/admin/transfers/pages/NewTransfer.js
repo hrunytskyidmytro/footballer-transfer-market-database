@@ -45,6 +45,10 @@ const NewTransfer = () => {
         value: 0,
         isValid: false,
       },
+      contractTransferUntil: {
+        value: "",
+        isValid: false,
+      },
     },
     false
   );
@@ -86,6 +90,10 @@ const NewTransfer = () => {
       formData.append(
         "compensationAmount",
         formState.inputs.compensationAmount.value
+      );
+      formData.append(
+        "contractTransferUntil",
+        formState.inputs.contractTransferUntil.value
       );
       await sendRequest(
         "http://localhost:5001/api/admins/transfers/new",
@@ -165,6 +173,15 @@ const NewTransfer = () => {
           label="Transfer type"
           validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(10)]}
           errorText="Please enter a valid transfer type."
+          onInput={inputHandler}
+        />
+        <Input
+          id="contractTransferUntil"
+          element="input"
+          type="date"
+          label="Contract transfer until"
+          validators={[VALIDATOR_REQUIRE(), VALIDATOR_DATE()]}
+          errorText="Please enter a valid contract transfer."
           onInput={inputHandler}
         />
         <Input

@@ -30,14 +30,9 @@ const userSchema = new Schema({
   registrationDate: {
     type: Date,
     default: Date.now,
+    min: new Date("2000-01-01"),
+    max: new Date(),
   },
-  footballers: [
-    {
-      type: mongoose.Types.ObjectId,
-      required: true,
-      ref: "Footballer",
-    },
-  ],
 });
 
 userSchema.plugin(uniqueValidator);
