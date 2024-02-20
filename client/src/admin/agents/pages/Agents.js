@@ -134,18 +134,18 @@ const Agents = () => {
           <LoadingSpinner />
         </div>
       ) : (
-        <Link to="/admins/agents/new">
-          <Button
-            type="primary"
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              fontSize: "16px",
-            }}
-          >
-            Add Agent
-          </Button>
-        </Link>
+        <div style={{ display: "flex", justifyContent: "flex-start" }}>
+          <Link to="/admins/agents/new">
+            <Button
+              type="primary"
+              style={{
+                fontSize: "16px",
+              }}
+            >
+              Add Agent
+            </Button>
+          </Link>
+        </div>
       )}
       <div
         style={{

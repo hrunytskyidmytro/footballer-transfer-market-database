@@ -15,6 +15,8 @@ import { Layout, Menu, theme, Button } from "antd";
 
 import Auth from "./user/pages/Auth";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
+import ErrorModal from "../src/shared/components/UIElements/ErrorModal";
+import LoadingSpinner from "../src/shared/components/UIElements/LoadingSpinner";
 
 import NewFootballer from "../../client/src/admin/footballers/pages/NewFootballer";
 import UpdateFootballer from "../../client/src/admin/footballers/pages/UpdateFootballer";
@@ -34,9 +36,11 @@ import Transfers from "../src/admin/transfers/pages/Transfers";
 import Clubs from "../src/admin/clubs/pages/Clubs";
 import Agents from "../src/admin/agents/pages/Agents";
 import News from "../src/admin/news/pages/News";
+import AdminHome from "./admin/adminHomePage/pages/AdminHome";
 
 import { AuthContext } from "./shared/context/auth-context";
 import { useAuth } from "./shared/hooks/auth-hook";
+import { useHttpClient } from "../src/shared/hooks/http-hook";
 import { Link, useLocation } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -44,8 +48,10 @@ const { Header, Content, Footer, Sider } = Layout;
 const App = () => {
   const location = useLocation();
   const { token, login, logout, userId, role } = useAuth();
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [selectedMenuItem, setSelectedMenuItem] = useState(location.pathname);
   const [collapsed, setCollapsed] = useState(false);
+  const [loadedUser, setLoadedUser] = useState([]);
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -54,6 +60,21 @@ const App = () => {
   useEffect(() => {
     setSelectedMenuItem(location.pathname);
   }, [location.pathname]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        if (userId) {
+          const responseData = await sendRequest(
+            `http://localhost:5001/api/users/${userId}`
+          );
+
+          setLoadedUser(responseData.user);
+        }
+      } catch (err) {}
+    };
+    fetchUser();
+  }, [sendRequest, userId]);
 
   // let routes;
 
@@ -85,6 +106,12 @@ const App = () => {
           logout: logout,
         }}
       >
+        <ErrorModal error={error} onClear={clearError} />
+        {isLoading && (
+          <div className="center">
+            <LoadingSpinner />
+          </div>
+        )}
         <Layout
           style={{
             minHeight: "100vh",
@@ -100,11 +127,11 @@ const App = () => {
               <Menu
                 theme="dark"
                 mode="inline"
-                defaultSelectedKeys={["/admins/users"]}
+                defaultSelectedKeys={["/admins"]}
                 selectedKeys={[selectedMenuItem]}
               >
-                <Menu.Item key="/admins/" icon={<HomeOutlined />}>
-                  <Link to="/admins/">Home</Link>
+                <Menu.Item key="/admins" icon={<HomeOutlined />}>
+                  <Link to="/admins">Home</Link>
                 </Menu.Item>
                 <Menu.Item key="/admins/users" icon={<TeamOutlined />}>
                   <Link to="/admins/users">Users</Link>
@@ -142,6 +169,10 @@ const App = () => {
                   padding: 0,
                   background: colorBgContainer,
                   margin: "10px 16px 10px 16px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  // flexDirection: "row-reverse",
                 }}
               >
                 <Button
@@ -156,6 +187,18 @@ const App = () => {
                 >
                   <LeftSquareOutlined />
                 </Button>
+                <strong
+                  style={{
+                    fontSize: "16px",
+                    width: 64,
+                    height: 64,
+                    marginRight: 90,
+                  }}
+                >
+                  {loadedUser.email
+                    ? loadedUser.email
+                    : "Email\u00A0not\u00A0found!"}
+                </strong>
               </Header>
             )}
             <Content
@@ -174,6 +217,7 @@ const App = () => {
                 <Routes>
                   {token && role === "admin" && (
                     <>
+                      <Route path="/admins" element={<AdminHome />} />
                       <Route path="/admins/users/" element={<Outlet />}>
                         <Route index element={<Users />} />
                         <Route path=":userId" element={<UpdateUser />} />
@@ -209,10 +253,7 @@ const App = () => {
                         <Route path="new" element={<NewNews />} />
                         <Route path=":newId" element={<UpdateNews />} />
                       </Route>
-                      <Route
-                        path="*"
-                        element={<Navigate to="/admins/users" />}
-                      />
+                      <Route path="*" element={<Navigate to="/admins" />} />
                     </>
                   )}
                   {!token && <Route path="/auth" element={<Auth />} />}
