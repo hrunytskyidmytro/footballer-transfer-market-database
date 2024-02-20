@@ -217,18 +217,18 @@ const Footballers = () => {
           <LoadingSpinner />
         </div>
       ) : (
-        <Link to="/admins/footballers/new">
-          <Button
-            type="primary"
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              fontSize: "16px",
-            }}
-          >
-            Add Footballer
-          </Button>
-        </Link>
+        <div style={{ display: "flex", justifyContent: "flex-start" }}>
+          <Link to="/admins/footballers/new">
+            <Button
+              type="primary"
+              style={{
+                fontSize: "16px",
+              }}
+            >
+              Add Footballer
+            </Button>
+          </Link>
+        </div>
       )}
       <div
         style={{

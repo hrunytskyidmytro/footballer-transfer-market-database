@@ -134,18 +134,18 @@ const Clubs = () => {
           <LoadingSpinner />
         </div>
       ) : (
-        <Link to="/admins/clubs/new">
-          <Button
-            type="primary"
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              fontSize: "16px",
-            }}
-          >
-            Add Club
-          </Button>
-        </Link>
+        <div style={{ display: "flex", justifyContent: "flex-start" }}>
+          <Link to="/admins/clubs/new">
+            <Button
+              type="primary"
+              style={{
+                fontSize: "16px",
+              }}
+            >
+              Add Club
+            </Button>
+          </Link>
+        </div>
       )}
       <div
         style={{

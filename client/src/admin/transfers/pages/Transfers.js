@@ -191,18 +191,18 @@ const Transfers = () => {
           <LoadingSpinner />
         </div>
       ) : (
-        <Link to="/admins/transfers/new">
-          <Button
-            type="primary"
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              fontSize: "16px",
-            }}
-          >
-            Add Transfer
-          </Button>
-        </Link>
+        <div style={{ display: "flex", justifyContent: "flex-start" }}>
+          <Link to="/admins/transfers/new">
+            <Button
+              type="primary"
+              style={{
+                fontSize: "16px",
+              }}
+            >
+              Add Transfer
+            </Button>
+          </Link>
+        </div>
       )}
       <div
         style={{

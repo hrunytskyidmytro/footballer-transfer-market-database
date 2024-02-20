@@ -124,18 +124,18 @@ const News = () => {
           <LoadingSpinner />
         </div>
       ) : (
-        <Link to="/admins/news/new">
-          <Button
-            type="primary"
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              fontSize: "16px",
-            }}
-          >
-            Add News
-          </Button>
-        </Link>
+        <div style={{ display: "flex", justifyContent: "flex-start" }}>
+          <Link to="/admins/news/new">
+            <Button
+              type="primary"
+              style={{
+                fontSize: "16px",
+              }}
+            >
+              Add News
+            </Button>
+          </Link>
+        </div>
       )}
       <div
         style={{

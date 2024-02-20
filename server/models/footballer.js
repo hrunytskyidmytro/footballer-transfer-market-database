@@ -18,8 +18,7 @@ const footballerSchema = new Schema({
   birthDate: {
     type: Date,
     required: true,
-    min: new Date("1950-01-01"),
-    max: new Date(),
+    min: "1950-01-01",
   },
   weight: {
     type: Number,
@@ -56,7 +55,7 @@ const footballerSchema = new Schema({
   contractUntil: {
     type: Date,
     required: true,
-    min: new Date(),
+    min: "2000-01-01",
   },
   placeOfBirth: {
     type: String,
