@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Space, Table, Image, Button, Modal, Flex, message } from "antd";
+import { EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
 import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
@@ -176,10 +177,12 @@ const Footballers = () => {
         <Space size="middle">
           <Flex gap="small">
             <Link to={`/admins/footballers/${footballer.key}`}>
-              <Button>Edit</Button>
+              <Button>
+                <EditTwoTone />
+              </Button>
             </Link>
             <Button danger onClick={() => showModalForDelete(footballer.key)}>
-              Delete
+              <DeleteTwoTone twoToneColor="#eb2f96" />
             </Button>
           </Flex>
         </Space>
@@ -219,14 +222,7 @@ const Footballers = () => {
       ) : (
         <div style={{ display: "flex", justifyContent: "flex-start" }}>
           <Link to="/admins/footballers/new">
-            <Button
-              type="primary"
-              style={{
-                fontSize: "16px",
-              }}
-            >
-              Add Footballer
-            </Button>
+            <Button type="primary">Add Footballer</Button>
           </Link>
         </div>
       )}

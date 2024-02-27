@@ -1,21 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { message, Form, Input, Button, Card } from "antd";
 
-import Input from "../../../shared/components/FormElements/Input";
-import Button from "../../../shared/components/FormElements/Button";
-import Card from "../../../shared/components/UIElements/Card";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
-import {
-  VALIDATOR_REQUIRE,
-  VALIDATOR_MINLENGTH,
-  VALIDATOR_MAXLENGTH,
-} from "../../../shared/util/validators";
-import { useForm } from "../../../shared/hooks/form-hook";
+
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
-// import "./FootballerForm.css";
 
 const UpdateNews = () => {
   const navigate = useNavigate();
@@ -23,20 +14,7 @@ const UpdateNews = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedNews, setLoadedNews] = useState();
   const { newId } = useParams();
-
-  const [formState, inputHandler, setFormData] = useForm(
-    {
-      title: {
-        value: "",
-        isValid: false,
-      },
-      description: {
-        value: "",
-        isValid: false,
-      },
-    },
-    false
-  );
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -45,34 +23,24 @@ const UpdateNews = () => {
           `http://localhost:5001/api/admins/news/${newId}`
         );
         setLoadedNews(responseData.n);
-        setFormData(
-          {
-            title: {
-              value: responseData.n.title,
-              isValid: true,
-            },
-            description: {
-              value: responseData.n.description,
-              isValid: true,
-            },
-          },
-          true
-        );
+        form.setFieldsValue({
+          title: responseData.n.title,
+          description: responseData.n.description,
+        });
       } catch (err) {}
     };
 
     fetchNews();
-  }, [sendRequest, newId, setFormData]);
+  }, [sendRequest, newId, form]);
 
-  const footballerSubmitHandler = async (event) => {
-    event.preventDefault();
+  const newsSubmitHandler = async (values) => {
     try {
       await sendRequest(
         `http://localhost:5001/api/admins/news/${newId}`,
         "PATCH",
         JSON.stringify({
-          title: formState.inputs.title.value,
-          description: formState.inputs.description.value,
+          title: values.title,
+          description: values.description,
         }),
         {
           "Content-Type": "application/json",
@@ -106,32 +74,47 @@ const UpdateNews = () => {
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
       {!isLoading && loadedNews && (
-        <form className="news-form" onSubmit={footballerSubmitHandler}>
-          <Input
-            id="title"
-            element="input"
-            type="text"
+        <Form
+          form={form}
+          onFinish={newsSubmitHandler}
+          initialValues={{
+            remember: true,
+          }}
+        >
+          <Form.Item
             label="Title"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(100)]}
-            errorText="Please enter a valid title."
-            onInput={inputHandler}
-            initialValue={loadedNews.title}
-            initialValid={true}
-          />
-          <Input
-            id="description"
-            element="textarea"
+            name="title"
+            rules={[
+              { required: true, message: "Please input the new's title!" },
+              { max: 100, message: "Title must be at most 100 characters!" },
+            ]}
+          >
+            <Input
+              count={{
+                show: true,
+                max: 100,
+              }}
+            />
+          </Form.Item>
+          <Form.Item
             label="Description"
-            validators={[VALIDATOR_MINLENGTH(5)]}
-            errorText="Please enter a valid description."
-            onInput={inputHandler}
-            initialValue={loadedNews.description}
-            initialValid={true}
-          />
-          <Button type="submit" disabled={!formState.isValid}>
-            Update News
-          </Button>
-        </form>
+            name="description"
+            rules={[
+              {
+                required: true,
+                message: "Please input the new's description!",
+              },
+              { min: 5, message: "Description must be at least 5 characters!" },
+            ]}
+          >
+            <Input.TextArea rows={5} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Update News
+            </Button>
+          </Form.Item>
+        </Form>
       )}
     </React.Fragment>
   );

@@ -1,12 +1,17 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useLayoutEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { message } from "antd";
 
 let logoutTimer;
 
 export const useAuth = () => {
-  const [token, setToken] = useState(false);
+  const navigate = useNavigate();
+  const storedData = JSON.parse(localStorage.getItem("userData"));
+  const [token, setToken] = useState(storedData?.token);
   const [tokenExpirationDate, setTokenExpirationDate] = useState();
-  const [userId, setUserId] = useState(false);
-  const [role, setRole] = useState(false);
+  const [userId, setUserId] = useState(storedData?.userId);
+  const [role, setRole] = useState(storedData?.role);
 
   const login = useCallback((uid, token, userRole, expirationDate) => {
     setToken(token);
@@ -40,17 +45,21 @@ export const useAuth = () => {
     localStorage.removeItem("userData");
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (token && tokenExpirationDate) {
       const remainingTime =
         tokenExpirationDate.getTime() - new Date().getTime();
-      logoutTimer = setTimeout(logout, remainingTime);
+      logoutTimer = setTimeout(() => {
+        logout();
+        navigate("/");
+        message.warning("Your login time has expired, please log in again.");
+      }, remainingTime);
     } else {
       clearTimeout(logoutTimer);
     }
   }, [token, logout, tokenExpirationDate]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const storedData = JSON.parse(localStorage.getItem("userData"));
     if (
       storedData &&

@@ -1,22 +1,14 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { message, Form, Input, Button, DatePicker, Card } from "antd";
+import { EuroCircleOutlined } from "@ant-design/icons";
+import moment from "moment";
 
-import Input from "../../../shared/components/FormElements/Input";
-import Button from "../../../shared/components/FormElements/Button";
-import Card from "../../../shared/components/UIElements/Card";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
-import {
-  VALIDATOR_REQUIRE,
-  VALIDATOR_DATE,
-  VALIDATOR_NUMBER,
-  VALIDATOR_MAXLENGTH,
-} from "../../../shared/util/validators";
-import { useForm } from "../../../shared/hooks/form-hook";
+
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
-// import "./FootballerForm.css";
 
 const UpdateTransfer = () => {
   const navigate = useNavigate();
@@ -24,36 +16,7 @@ const UpdateTransfer = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedTransfers, setLoadedTransfers] = useState();
   const { transferId } = useParams();
-
-  const [formState, inputHandler, setFormData] = useForm(
-    {
-      transferFee: {
-        value: 0,
-        isValid: false,
-      },
-      transferType: {
-        value: "",
-        isValid: false,
-      },
-      transferDate: {
-        value: "",
-        isValid: false,
-      },
-      season: {
-        value: "",
-        isValid: false,
-      },
-      compensationAmount: {
-        value: 0,
-        isValid: false,
-      },
-      contractTransferUntil: {
-        value: "",
-        isValid: false,
-      },
-    },
-    false
-  );
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const fetchTransfer = async () => {
@@ -62,54 +25,35 @@ const UpdateTransfer = () => {
           `http://localhost:5001/api/admins/transfers/${transferId}`
         );
         setLoadedTransfers(responseData.transfer);
-        setFormData(
-          {
-            transferFee: {
-              value: responseData.transfer.transferFee,
-              isValid: true,
-            },
-            transferType: {
-              value: responseData.transfer.transferType,
-              isValid: true,
-            },
-            transferDate: {
-              value: responseData.transfer.transferDate,
-              isValid: true,
-            },
-            season: {
-              value: responseData.transfer.season,
-              isValid: true,
-            },
-            compensationAmount: {
-              value: responseData.transfer.compensationAmount,
-              isValid: true,
-            },
-            contractTransferUntil: {
-              value: responseData.transfer.contractTransferUntil,
-              isValid: true,
-            },
-          },
-          true
-        );
+        form.setFieldsValue({
+          transferFee: responseData.transfer.transferFee,
+          transferType: responseData.transfer.transferType,
+          transferDate: moment(responseData.transfer.transferDate),
+          season: responseData.transfer.season,
+          compensationAmount: responseData.transfer.compensationAmount,
+          contractTransferUntil: moment(
+            responseData.transfer.contractTransferUntil
+          ),
+        });
       } catch (err) {}
     };
 
     fetchTransfer();
-  }, [sendRequest, transferId, setFormData]);
+  }, [sendRequest, transferId, form]);
 
-  const transferSubmitHandler = async (event) => {
-    event.preventDefault();
+  const transferSubmitHandler = async (values) => {
     try {
       await sendRequest(
         `http://localhost:5001/api/admins/transfers/${transferId}`,
         "PATCH",
         JSON.stringify({
-          transferFee: formState.inputs.transferFee.value,
-          transferType: formState.inputs.transferType.value,
-          transferDate: formState.inputs.transferDate.value,
-          season: formState.inputs.season.value,
-          compensationAmount: formState.inputs.compensationAmount.value,
-          contractTransferUntil: formState.inputs.contractTransferUntil.value,
+          transferFee: values.transferFee,
+          transferType: values.transferType,
+          transferDate: values.transferDate.format("YYYY-MM-DD"),
+          season: values.season,
+          compensationAmount: values.compensationAmount,
+          contractTransferUntil:
+            values.contractTransferUntil.format("YYYY-MM-DD"),
         }),
         {
           "Content-Type": "application/json",
@@ -143,77 +87,94 @@ const UpdateTransfer = () => {
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
       {!isLoading && loadedTransfers && (
-        <form className="transfer-form" onSubmit={transferSubmitHandler}>
-          <Input
-            id="transferFee"
-            element="input"
-            type="number"
-            label="Transfer fee"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
-            errorText="Please enter a valid transfer fee."
-            onInput={inputHandler}
-            initialValue={loadedTransfers.transferFee}
-            initialValid={true}
-          />
-          <Input
-            id="transferDate"
-            element="input"
-            type="date"
-            label="Transfer date"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_DATE()]}
-            errorText="Please enter a valid transfer date."
-            onInput={inputHandler}
-            initialValue={loadedTransfers.transferDate}
-            initialValid={true}
-          />
-          <Input
-            id="transferType"
-            element="input"
-            type="text"
-            label="Transfer type"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(10)]}
-            errorText="Please enter a valid transfer type."
-            onInput={inputHandler}
-            initialValue={loadedTransfers.transferType}
-            initialValid={true}
-          />
-          <Input
-            id="contractTransferUntil"
-            element="input"
-            type="date"
+        <Form
+          form={form}
+          onFinish={transferSubmitHandler}
+          initialValues={{
+            remember: true,
+          }}
+        >
+          <Form.Item
+            name="transferFee"
+            label="Transfer Fee"
+            rules={[
+              { required: true, message: "Please input the transfer's fee!" },
+            ]}
+          >
+            <Input type="number" addonAfter={<EuroCircleOutlined />} />
+          </Form.Item>
+          <Form.Item
+            name="transferDate"
+            label="Transfer Date"
+            rules={[
+              { required: true, message: "Please select the transfer's date!" },
+            ]}
+          >
+            <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item
+            name="transferType"
+            label="Transfer Type"
+            rules={[
+              { required: true, message: "Please input the transfer's type!" },
+              {
+                max: 20,
+                message: "Transfer type must be at most 20 characters!",
+              },
+            ]}
+          >
+            <Input
+              count={{
+                show: true,
+                max: 20,
+              }}
+            />
+          </Form.Item>
+          <Form.Item
+            name="contractTransferUntil"
             label="Contract transfer until"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_DATE()]}
-            errorText="Please enter a valid contract transfer."
-            onInput={inputHandler}
-            initialValue={loadedTransfers.contractTransferUntil}
-            initialValid={true}
-          />
-          <Input
-            id="season"
-            element="input"
-            type="text"
+            rules={[
+              {
+                required: true,
+                message: "Please select the transfer's contract until!",
+              },
+            ]}
+          >
+            <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item
+            name="season"
             label="Season"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(10)]}
-            errorText="Please enter a valid season."
-            onInput={inputHandler}
-            initialValue={loadedTransfers.season}
-            initialValid={true}
-          />
-          <Input
-            id="compensationAmount"
-            element="input"
-            type="number"
-            label="Compensation amount"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
-            errorText="Please enter a valid compensation amount."
-            onInput={inputHandler}
-            initialValue={loadedTransfers.compensationAmount}
-            initialValid={true}
-          />
-          <Button type="submit" disabled={!formState.isValid}>
-            Update Transfer
-          </Button>
-        </form>
+            rules={[
+              { required: true, message: "Please input the season!" },
+              { max: 10, message: "Season must be at most 10 characters!" },
+            ]}
+          >
+            <Input
+              count={{
+                show: true,
+                max: 10,
+              }}
+            />
+          </Form.Item>
+          <Form.Item
+            name="compensationAmount"
+            label="Compensation Amount"
+            rules={[
+              {
+                required: true,
+                message: "Please input the transfer's compensation amount!",
+              },
+            ]}
+          >
+            <Input type="number" addonAfter={<EuroCircleOutlined />} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Update Transfer
+            </Button>
+          </Form.Item>
+        </Form>
       )}
     </React.Fragment>
   );

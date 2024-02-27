@@ -27,7 +27,7 @@ const getFootballers = async (req, res, next) => {
 };
 
 const getFootballerById = async (req, res, next) => {
-  const footballerId = req.params.fid; // { fid: 'f1' }
+  const footballerId = req.params.fid;
 
   let footballer;
   try {

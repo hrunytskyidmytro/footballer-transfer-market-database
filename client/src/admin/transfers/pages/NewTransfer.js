@@ -1,21 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { Select, message, Form, Input, Button, DatePicker } from "antd";
+import { EuroCircleOutlined } from "@ant-design/icons";
 
-import Input from "../../../shared/components//FormElements/Input";
-import Button from "../../../shared/components/FormElements/Button";
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
-import {
-  VALIDATOR_REQUIRE,
-  VALIDATOR_NUMBER,
-  VALIDATOR_DATE,
-  VALIDATOR_MAXLENGTH,
-} from "../../../shared/util/validators";
-import { useForm } from "../../../shared/hooks/form-hook";
+
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
-// import "./FootballerForm.css";
+
+const { Option } = Select;
 
 const NewTransfer = () => {
   const navigate = useNavigate();
@@ -23,35 +17,7 @@ const NewTransfer = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [footballers, setFootballers] = useState([]);
   const [clubs, setClubs] = useState([]);
-  const [formState, inputHandler, setFormData] = useForm(
-    {
-      transferFee: {
-        value: 0,
-        isValid: false,
-      },
-      transferDate: {
-        value: "",
-        isValid: false,
-      },
-      transferType: {
-        value: "",
-        isValid: false,
-      },
-      season: {
-        value: "",
-        isValid: false,
-      },
-      compensationAmount: {
-        value: 0,
-        isValid: false,
-      },
-      contractTransferUntil: {
-        value: "",
-        isValid: false,
-      },
-    },
-    false
-  );
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const fetchFootballersAndClubs = async () => {
@@ -70,9 +36,7 @@ const NewTransfer = () => {
     fetchFootballersAndClubs();
   }, [sendRequest]);
 
-  const transferSubmitHandler = async (event) => {
-    event.preventDefault();
-
+  const transferSubmitHandler = async (values) => {
     if (auth.role !== "admin") {
       console.log("You do not have permission to perform this action.");
       return;
@@ -80,21 +44,15 @@ const NewTransfer = () => {
 
     try {
       const formData = new FormData();
-      formData.append("footballer", formState.inputs.footballer.value);
-      formData.append("fromClub", formState.inputs.fromClub.value);
-      formData.append("toClub", formState.inputs.toClub.value);
-      formData.append("transferFee", formState.inputs.transferFee.value);
-      formData.append("transferDate", formState.inputs.transferDate.value);
-      formData.append("transferType", formState.inputs.transferType.value);
-      formData.append("season", formState.inputs.season.value);
-      formData.append(
-        "compensationAmount",
-        formState.inputs.compensationAmount.value
-      );
-      formData.append(
-        "contractTransferUntil",
-        formState.inputs.contractTransferUntil.value
-      );
+      formData.append("footballer", values.footballer);
+      formData.append("fromClub", values.fromClub);
+      formData.append("toClub", values.toClub);
+      formData.append("transferFee", values.transferFee);
+      formData.append("transferDate", values.transferDate);
+      formData.append("transferType", values.transferType);
+      formData.append("season", values.season);
+      formData.append("compensationAmount", values.compensationAmount);
+      formData.append("contractTransferUntil", values.contractTransferUntil);
       await sendRequest(
         "http://localhost:5001/api/admins/transfers/new",
         "POST",
@@ -108,104 +66,143 @@ const NewTransfer = () => {
     } catch (err) {}
   };
 
-  const selectHandler = (event) => {
-    const id = event.target.id;
-    const value = event.target.value;
-    const isValid = !!value;
-
-    setFormData({
-      ...formState.inputs,
-      [id]: { value: value, isValid: isValid },
-    });
-  };
-
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      <form onSubmit={transferSubmitHandler}>
+      <Form
+        form={form}
+        onFinish={transferSubmitHandler}
+        initialValues={{ remember: true }}
+        encType="multipart/form-data"
+      >
         {isLoading && <LoadingSpinner asOverlay />}
-        <select id="footballer" onChange={selectHandler}>
-          <option value="">Choose footballer</option>
-          {footballers.map((footballer) => (
-            <option key={footballer.id} value={footballer.id}>
-              {footballer.name} {footballer.surname}
-            </option>
-          ))}
-        </select>
-        <select id="fromClub" onChange={selectHandler}>
-          <option value="">Choose from club</option>
-          {clubs.map((club) => (
-            <option key={club.id} value={club.id}>
-              {club.name}
-            </option>
-          ))}
-        </select>
-        <select id="toClub" onChange={selectHandler}>
-          <option value="">Choose to club</option>
-          {clubs.map((club) => (
-            <option key={club.id} value={club.id}>
-              {club.name}
-            </option>
-          ))}
-        </select>
-        <Input
-          id="transferFee"
-          element="input"
-          type="number"
+        <Form.Item
+          name="footballer"
+          rules={[{ required: true, message: "Please select an footballer!" }]}
+        >
+          <Select placeholder="Select footballer">
+            {footballers.map((footballer) => (
+              <Option key={footballer.id} value={footballer.id}>
+                {footballer.name} {footballer.surname}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item
+          name="fromClub"
+          rules={[{ required: true, message: "Please select an from club!" }]}
+        >
+          <Select id="fromClub" placeholder="Select from club">
+            {clubs.map((club) => (
+              <Option key={club.id} value={club.id}>
+                {club.name}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item
+          name="toClub"
+          rules={[{ required: true, message: "Please select an to club!" }]}
+        >
+          <Select id="toClub" placeholder="Select to club">
+            {clubs.map((club) => (
+              <Option key={club.id} value={club.id}>
+                {club.name}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item
           label="Transfer Fee"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
-          errorText="Please enter a valid transfer fee."
-          onInput={inputHandler}
-        />
-        <Input
-          id="transferDate"
-          element="input"
-          type="date"
-          label="Transfer date"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_DATE()]}
-          errorText="Please enter a valid transfer date."
-          onInput={inputHandler}
-        />
-        <Input
-          id="transferType"
-          element="input"
-          type="text"
-          label="Transfer type"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(10)]}
-          errorText="Please enter a valid transfer type."
-          onInput={inputHandler}
-        />
-        <Input
-          id="contractTransferUntil"
-          element="input"
-          type="date"
+          name="transferFee"
+          rules={[
+            { required: true, message: "Please input the transfer's fee!" },
+          ]}
+        >
+          <Input
+            type="number"
+            addonAfter={<EuroCircleOutlined />}
+            placeholder="Enter the transfer fee"
+          />
+        </Form.Item>
+        <Form.Item
+          label="Transfer Date"
+          name="transferDate"
+          rules={[
+            { required: true, message: "Please select the transfer's date!" },
+          ]}
+        >
+          <DatePicker style={{ width: "100%" }} />
+        </Form.Item>
+        <Form.Item
+          label="Transfer Type"
+          name="transferType"
+          rules={[
+            { required: true, message: "Please input the transfer's type!" },
+            {
+              max: 20,
+              message: "Transfer type must be at most 20 characters!",
+            },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the type"
+          />
+        </Form.Item>
+        <Form.Item
           label="Contract transfer until"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_DATE()]}
-          errorText="Please enter a valid contract transfer."
-          onInput={inputHandler}
-        />
-        <Input
-          id="season"
-          element="input"
-          type="text"
+          name="contractTransferUntil"
+          rules={[
+            {
+              required: true,
+              message: "Please select the transfer's contract until!",
+            },
+          ]}
+        >
+          <DatePicker style={{ width: "100%" }} />
+        </Form.Item>
+        <Form.Item
           label="Season"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(10)]}
-          errorText="Please enter a valid season."
-          onInput={inputHandler}
-        />
-        <Input
-          id="compensationAmount"
-          element="input"
-          type="number"
+          name="season"
+          rules={[
+            { required: true, message: "Please input the season!" },
+            { max: 10, message: "Season must be at most 10 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 10,
+            }}
+            placeholder="Enter the season"
+          />
+        </Form.Item>
+        <Form.Item
           label="Compensation Amount"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
-          errorText="Please enter a valid compensation amount."
-          onInput={inputHandler}
-        />
-        <Button type="submit" disabled={!formState.isValid}>
-          Add Transfer
-        </Button>
-      </form>
+          name="compensationAmount"
+          rules={[
+            {
+              required: true,
+              message: "Please input the transfer's compensation amount!",
+            },
+          ]}
+        >
+          <Input
+            type="number"
+            addonAfter={<EuroCircleOutlined />}
+            placeholder="Enter the amount"
+          />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Add Transfer
+          </Button>
+        </Form.Item>
+      </Form>
     </React.Fragment>
   );
 };

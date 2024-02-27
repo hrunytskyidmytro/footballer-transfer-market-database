@@ -1,57 +1,32 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { message, Form, Input, Button, Upload } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 
-import Input from "../../../shared/components//FormElements/Input";
-import Button from "../../../shared/components/FormElements/Button";
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
-import ImageUpload from "../../../shared/components/FormElements/ImageUpload";
-import {
-  VALIDATOR_REQUIRE,
-  VALIDATOR_MINLENGTH,
-  VALIDATOR_MAXLENGTH,
-} from "../../../shared/util/validators";
-import { useForm } from "../../../shared/hooks/form-hook";
+
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
-// import "./FootballerForm.css";
 
 const NewNews = () => {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [formState, inputHandler] = useForm(
-    {
-      title: {
-        value: "",
-        isValid: false,
-      },
-      description: {
-        value: "",
-        isValid: false,
-      },
-      image: {
-        value: null,
-        isValid: false,
-      },
-    },
-    false
-  );
+  const [form] = Form.useForm();
 
-  const NewsSubmitHandler = async (event) => {
-    event.preventDefault();
-
+  const NewsSubmitHandler = async (values) => {
     if (auth.role !== "admin") {
       console.log("You do not have permission to perform this action.");
       return;
     }
 
     try {
+      const imageFile = values.image[0].originFileObj;
       const formData = new FormData();
-      formData.append("title", formState.inputs.title.value);
-      formData.append("description", formState.inputs.description.value);
-      formData.append("image", formState.inputs.image.value);
+      formData.append("title", values.title);
+      formData.append("description", values.description);
+      formData.append("image", imageFile);
       await sendRequest(
         "http://localhost:5001/api/admins/news/new",
         "POST",
@@ -65,37 +40,79 @@ const NewNews = () => {
     } catch (err) {}
   };
 
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  };
+
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      <form onSubmit={NewsSubmitHandler}>
+      <Form
+        form={form}
+        onFinish={NewsSubmitHandler}
+        initialValues={{ remember: true }}
+        encType="multipart/form-data"
+      >
         {isLoading && <LoadingSpinner asOverlay />}
-        <Input
-          id="title"
-          element="input"
-          type="text"
+        <Form.Item
           label="Title"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(100)]}
-          errorText="Please enter a valid title."
-          onInput={inputHandler}
-        />
-        <Input
-          id="description"
-          element="textarea"
+          name="title"
+          rules={[
+            { required: true, message: "Please input the new's title!" },
+            { max: 100, message: "Title must be at most 100 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 100,
+            }}
+            placeholder="Enter the title"
+          />
+        </Form.Item>
+        <Form.Item
           label="Description"
-          validators={[VALIDATOR_MINLENGTH(5)]}
-          errorText="Please enter a valid description."
-          onInput={inputHandler}
-        />
-        <ImageUpload
-          id="image"
-          onInput={inputHandler}
-          errorText="PLease provide an image."
-        />
-        <Button type="submit" disabled={!formState.isValid}>
-          Add News
-        </Button>
-      </form>
+          name="description"
+          rules={[
+            {
+              required: true,
+              message: "Please input the new's description!",
+            },
+            { min: 5, message: "Description must be at least 5 characters!" },
+          ]}
+        >
+          <Input.TextArea rows={5} placeholder="Enter the description..." />
+        </Form.Item>
+        <Form.Item
+          name="image"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
+          rules={[
+            {
+              required: true,
+              message: "Please upload the new's image!",
+            },
+          ]}
+        >
+          <Upload
+            name="image"
+            action="/news/new"
+            listType="picture"
+            beforeUpload={() => false}
+            maxCount={1}
+          >
+            <Button icon={<UploadOutlined />}>Upload Image</Button>
+          </Upload>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Add News
+          </Button>
+        </Form.Item>
+      </Form>
     </React.Fragment>
   );
 };

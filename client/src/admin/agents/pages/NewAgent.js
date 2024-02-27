@@ -1,78 +1,36 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { message, Form, Input, Button, Upload } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 
-import Input from "../../../shared/components//FormElements/Input";
-import Button from "../../../shared/components/FormElements/Button";
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
-import ImageUpload from "../../../shared/components/FormElements/ImageUpload";
-import {
-  VALIDATOR_REQUIRE,
-  VALIDATOR_EMAIL,
-  VALIDATOR_MINLENGTH,
-  VALIDATOR_MAXLENGTH,
-} from "../../../shared/util/validators";
-import { useForm } from "../../../shared/hooks/form-hook";
+
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
-// import "./FootballerForm.css";
 
 const NewAgent = () => {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [formState, inputHandler] = useForm(
-    {
-      name: {
-        value: "",
-        isValid: false,
-      },
-      surname: {
-        value: "",
-        isValid: false,
-      },
-      country: {
-        value: "",
-        isValid: false,
-      },
-      email: {
-        value: "",
-        isValid: false,
-      },
-      phoneNumber: {
-        value: "",
-        isValid: false,
-      },
-      description: {
-        value: "",
-        isValid: false,
-      },
-      image: {
-        value: null,
-        isValid: false,
-      },
-    },
-    false
-  );
+  const [form] = Form.useForm();
 
-  const agentSubmitHandler = async (event) => {
-    event.preventDefault();
-
+  const agentSubmitHandler = async (values) => {
     if (auth.role !== "admin") {
       console.log("You do not have permission to perform this action.");
       return;
     }
 
     try {
+      const imageFile = values.image[0].originFileObj;
       const formData = new FormData();
-      formData.append("name", formState.inputs.name.value);
-      formData.append("surname", formState.inputs.surname.value);
-      formData.append("country", formState.inputs.country.value);
-      formData.append("email", formState.inputs.email.value);
-      formData.append("phoneNumber", formState.inputs.phoneNumber.value);
-      formData.append("description", formState.inputs.description.value);
-      formData.append("image", formState.inputs.image.value);
+      formData.append("name", values.name);
+      formData.append("surname", values.surname);
+      formData.append("country", values.country);
+      formData.append("email", values.email);
+      formData.append("phoneNumber", values.phoneNumber);
+      formData.append("description", values.description);
+      formData.append("image", imageFile);
       await sendRequest(
         "http://localhost:5001/api/admins/agents/new",
         "POST",
@@ -86,77 +44,149 @@ const NewAgent = () => {
     } catch (err) {}
   };
 
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  };
+
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      <form onSubmit={agentSubmitHandler}>
+      <Form
+        form={form}
+        onFinish={agentSubmitHandler}
+        initialValues={{ remember: true }}
+        encType="multipart/form-data"
+      >
         {isLoading && <LoadingSpinner asOverlay />}
-        <Input
-          id="name"
-          element="input"
-          type="text"
+        <Form.Item
           label="Name"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid name."
-          onInput={inputHandler}
-        />
-        <Input
-          id="surname"
-          element="input"
-          type="text"
-          label="Surname"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid surname."
-          onInput={inputHandler}
-        />
-        <Input
-          id="country"
-          element="input"
-          type="text"
-          label="Country"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid country."
-          onInput={inputHandler}
-        />
-        <Input
-          id="email"
-          element="input"
-          type="text"
-          label="E-mail"
-          validators={[
-            VALIDATOR_REQUIRE(),
-            VALIDATOR_EMAIL(),
-            VALIDATOR_MAXLENGTH(20),
+          name="name"
+          rules={[
+            { required: true, message: "Please input the agent's name!" },
+            { max: 20, message: "Name must be at most 20 characters!" },
           ]}
-          errorText="Please enter a valid email."
-          onInput={inputHandler}
-        />
-        <Input
-          id="phoneNumber"
-          element="input"
-          type="text"
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the name"
+          />
+        </Form.Item>
+        <Form.Item
+          label="Surname"
+          name="surname"
+          rules={[
+            {
+              required: true,
+              message: "Please input the agent's surname!",
+            },
+            { max: 20, message: "Surname must be at most 20 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the surname"
+          />
+        </Form.Item>
+        <Form.Item
+          label="Country"
+          name="country"
+          rules={[
+            {
+              required: true,
+              message: "Please input the agent's country!",
+            },
+            { max: 20, message: "Country must be at most 20 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the country"
+          />
+        </Form.Item>
+        <Form.Item
+          label="Email"
+          name="email"
+          rules={[
+            {
+              required: true,
+              message: "Please input the agent's email!",
+            },
+            {
+              type: "email",
+              message: "Please enter a valid email address!",
+            },
+            {
+              max: 20,
+              message: "Email must be at most 20 characters!",
+            },
+          ]}
+        >
+          <Input type="email" addonAfter={"@"} placeholder="Enter the email" />
+        </Form.Item>
+        <Form.Item
           label="Phone number"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid phone number."
-          onInput={inputHandler}
-        />
-        <Input
-          id="description"
-          element="textarea"
+          name="phoneNumber"
+          rules={[
+            {
+              required: true,
+              message: "Please input the agent's phone number!",
+            },
+          ]}
+        >
+          <Input addonBefore="+380" placeholder="Enter the phone number" />
+        </Form.Item>
+        <Form.Item
           label="Description"
-          validators={[VALIDATOR_MINLENGTH(5)]}
-          errorText="Please enter a valid description."
-          onInput={inputHandler}
-        />
-        <ImageUpload
-          id="image"
-          onInput={inputHandler}
-          errorText="PLease provide an image."
-        />
-        <Button type="submit" disabled={!formState.isValid}>
-          Add Agent
-        </Button>
-      </form>
+          name="description"
+          rules={[
+            {
+              required: true,
+              message: "Please input the agent's description!",
+            },
+            { min: 5, message: "Description must be at least 5 characters!" },
+          ]}
+        >
+          <Input.TextArea rows={5} placeholder="Enter the description..." />
+        </Form.Item>
+        <Form.Item
+          name="image"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
+          rules={[
+            {
+              required: true,
+              message: "Please upload the agent's image!",
+            },
+          ]}
+        >
+          <Upload
+            name="image"
+            action="/agents/new"
+            listType="picture"
+            beforeUpload={() => false}
+            maxCount={1}
+          >
+            <Button icon={<UploadOutlined />}>Upload Image</Button>
+          </Upload>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Add Agent
+          </Button>
+        </Form.Item>
+      </Form>
     </React.Fragment>
   );
 };

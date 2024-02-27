@@ -1,73 +1,35 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { message, Form, Input, Button, Upload } from "antd";
+import { UploadOutlined, EuroCircleOutlined } from "@ant-design/icons";
 
-import Input from "../../../shared/components//FormElements/Input";
-import Button from "../../../shared/components/FormElements/Button";
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
-import ImageUpload from "../../../shared/components/FormElements/ImageUpload";
-import {
-  VALIDATOR_REQUIRE,
-  VALIDATOR_NUMBER,
-  VALIDATOR_MAXLENGTH,
-  VALIDATOR_MINLENGTH,
-} from "../../../shared/util/validators";
-import { useForm } from "../../../shared/hooks/form-hook";
+
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
-// import "./FootballerForm.css";
 
 const NewClub = () => {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [formState, inputHandler] = useForm(
-    {
-      name: {
-        value: "",
-        isValid: false,
-      },
-      country: {
-        value: "",
-        isValid: false,
-      },
-      description: {
-        value: "",
-        isValid: false,
-      },
-      cost: {
-        value: 0,
-        isValid: false,
-      },
-      foundationYear: {
-        value: 1900,
-        isValid: false,
-      },
-      image: {
-        value: null,
-        isValid: false,
-      },
-    },
-    false
-  );
+  const [form] = Form.useForm();
 
-  const clubSubmitHandler = async (event) => {
-    event.preventDefault();
-
+  const clubSubmitHandler = async (values) => {
     if (auth.role !== "admin") {
       console.log("You do not have permission to perform this action.");
       return;
     }
 
     try {
+      const imageFile = values.image[0].originFileObj;
       const formData = new FormData();
-      formData.append("name", formState.inputs.name.value);
-      formData.append("country", formState.inputs.country.value);
-      formData.append("description", formState.inputs.description.value);
-      formData.append("cost", formState.inputs.cost.value);
-      formData.append("foundationYear", formState.inputs.foundationYear.value);
-      formData.append("image", formState.inputs.image.value);
+      formData.append("name", values.name);
+      formData.append("country", values.country);
+      formData.append("description", values.description);
+      formData.append("cost", values.cost);
+      formData.append("foundationYear", values.foundationYear);
+      formData.append("image", imageFile);
       await sendRequest(
         "http://localhost:5001/api/admins/clubs/new",
         "POST",
@@ -81,64 +43,122 @@ const NewClub = () => {
     } catch (err) {}
   };
 
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  };
+
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      <form onSubmit={clubSubmitHandler}>
+      <Form
+        form={form}
+        onFinish={clubSubmitHandler}
+        initialValues={{ remember: true }}
+        encType="multipart/form-data"
+      >
         {isLoading && <LoadingSpinner asOverlay />}
-        <Input
-          id="name"
-          element="input"
-          type="text"
+        <Form.Item
           label="Name"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid name."
-          onInput={inputHandler}
-        />
-        <Input
-          id="country"
-          element="input"
-          type="text"
+          name="name"
+          rules={[
+            { required: true, message: "Please input the club's name!" },
+            { max: 20, message: "Name must be at most 20 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the name"
+          />
+        </Form.Item>
+        <Form.Item
           label="Country"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid country."
-          onInput={inputHandler}
-        />
-        <Input
-          id="cost"
-          element="input"
-          type="number"
+          name="country"
+          rules={[
+            { required: true, message: "Please input the club's country!" },
+            { max: 20, message: "Country must be at most 20 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the country"
+          />
+        </Form.Item>
+        <Form.Item
           label="Cost"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
-          errorText="Please enter a valid cost."
-          onInput={inputHandler}
-        />
-        <Input
-          id="foundationYear"
-          element="input"
-          type="number"
+          name="cost"
+          rules={[{ required: true, message: "Please input the club's cost!" }]}
+        >
+          <Input
+            type="number"
+            addonAfter={<EuroCircleOutlined />}
+            placeholder="Enter the cost"
+          />
+        </Form.Item>
+        <Form.Item
           label="Foundation year"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
-          errorText="Please enter a valid foundation year."
-          onInput={inputHandler}
-        />
-        <Input
-          id="description"
-          element="textarea"
+          name="foundationYear"
+          rules={[
+            {
+              required: true,
+              message: "Please input the club's foundation year!",
+            },
+          ]}
+        >
+          <Input
+            type="number"
+            addonAfter={"year"}
+            placeholder="Enter the foundation year"
+          />
+        </Form.Item>
+        <Form.Item
           label="Description"
-          validators={[VALIDATOR_MINLENGTH(5)]}
-          errorText="Please enter a valid description."
-          onInput={inputHandler}
-        />
-        <ImageUpload
-          id="image"
-          onInput={inputHandler}
-          errorText="PLease provide an image."
-        />
-        <Button type="submit" disabled={!formState.isValid}>
-          Add Club
-        </Button>
-      </form>
+          name="description"
+          rules={[
+            {
+              required: true,
+              message: "Please input the club's description!",
+            },
+            { min: 5, message: "Description must be at least 5 characters!" },
+          ]}
+        >
+          <Input.TextArea rows={5} placeholder="Enter the description..." />
+        </Form.Item>
+        <Form.Item
+          name="image"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
+          rules={[
+            {
+              required: true,
+              message: "Please upload the club's image!",
+            },
+          ]}
+        >
+          <Upload
+            name="image"
+            action="/clubs/new"
+            listType="picture"
+            beforeUpload={() => false}
+            maxCount={1}
+          >
+            <Button icon={<UploadOutlined />}>Upload Image</Button>
+          </Upload>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Add Club
+          </Button>
+        </Form.Item>
+      </Form>
     </React.Fragment>
   );
 };

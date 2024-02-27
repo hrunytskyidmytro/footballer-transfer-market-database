@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Table, Space, Flex, Button, Modal, message } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
 import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
@@ -98,10 +98,12 @@ const Users = () => {
         <Space size="middle">
           <Flex gap="small">
             <Link to={`/admins/users/${user.key}`}>
-              <Button>Edit</Button>
+              <Button>
+                <EditTwoTone />
+              </Button>
             </Link>
             <Button danger onClick={() => showModalForDelete(user.key)}>
-              Delete
+              <DeleteTwoTone twoToneColor="#eb2f96" />
             </Button>
           </Flex>
         </Space>

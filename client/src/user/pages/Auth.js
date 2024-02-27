@@ -1,17 +1,10 @@
 import React, { useState, useContext } from "react";
+import { Card, Form, Input, Button } from "antd";
+import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 
-import Card from "../../shared/components/UIElements/Card";
-import Input from "../../shared/components/FormElements/Input";
-import Button from "../../shared/components/FormElements/Button";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
-import {
-  VALIDATOR_EMAIL,
-  VALIDATOR_MAXLENGTH,
-  VALIDATOR_MINLENGTH,
-  VALIDATOR_REQUIRE,
-} from "../../shared/util/validators";
-import { useForm } from "../../shared/hooks/form-hook";
+
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import "./Auth.css";
@@ -20,61 +13,21 @@ const Auth = () => {
   const auth = useContext(AuthContext);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-
-  const [formState, inputHandler, setFormData] = useForm(
-    {
-      email: {
-        value: "",
-        isValid: false,
-      },
-      password: {
-        value: "",
-        isValid: false,
-      },
-    },
-    false
-  );
+  const [form] = Form.useForm();
 
   const switchModeHandler = () => {
-    if (!isLoginMode) {
-      setFormData(
-        {
-          ...formState.inputs,
-          name: undefined,
-          surname: undefined,
-        },
-        formState.inputs.email.isValid && formState.inputs.password.isValid
-      );
-    } else {
-      setFormData(
-        {
-          ...formState.inputs,
-          name: {
-            value: "",
-            isValid: false,
-          },
-          surname: {
-            value: "",
-            isValid: false,
-          },
-        },
-        false
-      );
-    }
     setIsLoginMode((prevMode) => !prevMode);
   };
 
-  const authSubmitHandler = async (event) => {
-    event.preventDefault();
-
+  const authSubmitHandler = async (values) => {
     if (isLoginMode) {
       try {
         const responseData = await sendRequest(
           "http://localhost:5001/api/users/login",
           "POST",
           JSON.stringify({
-            email: formState.inputs.email.value,
-            password: formState.inputs.password.value,
+            email: values.email,
+            password: values.password,
           }),
           {
             "Content-Type": "application/json",
@@ -86,10 +39,10 @@ const Auth = () => {
     } else {
       try {
         const formData = new FormData();
-        formData.append("email", formState.inputs.email.value);
-        formData.append("name", formState.inputs.name.value);
-        formData.append("password", formState.inputs.password.value);
-        formData.append("surname", formState.inputs.surname.value);
+        formData.append("email", values.email);
+        formData.append("name", values.name);
+        formData.append("password", values.password);
+        formData.append("surname", values.surname);
         const responseData = await sendRequest(
           "http://localhost:5001/api/users/signup",
           "POST",
@@ -105,59 +58,74 @@ const Auth = () => {
       <ErrorModal error={error} onClear={clearError} />
       <Card className="authentication">
         {isLoading && <LoadingSpinner asOverlay />}
-        <h2>Login Required</h2>
-        <hr />
-        <form onSubmit={authSubmitHandler}>
+        <h2>{isLoginMode ? "Log In" : "Sign Up"}</h2>
+        <Form form={form} onFinish={authSubmitHandler}>
           {!isLoginMode && (
-            <Input
-              element="input"
-              id="name"
-              type="text"
-              label="Your Name"
-              validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-              errorText="Please enter a name."
-              onInput={inputHandler}
-            />
+            <Form.Item
+              name="name"
+              rules={[
+                { required: true, message: "Please input your name!" },
+                { max: 20, message: "Name must be at most 20 characters!" },
+              ]}
+            >
+              <Input
+                prefix={<UserOutlined className="site-form-item-icon" />}
+                placeholder="Your Name"
+              />
+            </Form.Item>
           )}
           {!isLoginMode && (
-            <Input
-              element="input"
-              id="surname"
-              type="text"
-              label="Your Surname"
-              validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-              errorText="Please enter a surname."
-              onInput={inputHandler}
-            />
+            <Form.Item
+              name="surname"
+              rules={[
+                { required: true, message: "Please input your surname!" },
+                { max: 20, message: "Surname must be at most 20 characters!" },
+              ]}
+            >
+              <Input
+                prefix={<UserOutlined className="site-form-item-icon" />}
+                placeholder="Your Surname"
+              />
+            </Form.Item>
           )}
-          <Input
-            element="input"
-            id="email"
-            type="email"
-            label="E-Mail"
-            validators={[
-              VALIDATOR_REQUIRE(),
-              VALIDATOR_EMAIL(),
-              VALIDATOR_MAXLENGTH(20),
+          <Form.Item
+            name="email"
+            rules={[
+              { required: true, message: "Please input your email!" },
+              { type: "email", message: "Please input a valid email address!" },
+              { max: 20, message: "Email must be at most 20 characters!" },
             ]}
-            errorText="Please enter a valid email address."
-            onInput={inputHandler}
-          />
-          <Input
-            element="input"
-            id="password"
-            type="password"
-            label="Password"
-            validators={[VALIDATOR_MINLENGTH(6), VALIDATOR_MAXLENGTH(20)]}
-            errorText="Please enter a valid password, at least 6 characters."
-            onInput={inputHandler}
-          />
-          <Button type="submit" disabled={!formState.isValid}>
-            {isLoginMode ? "LOGIN" : "SIGNUP"}
-          </Button>
-        </form>
-        <Button inverse onClick={switchModeHandler}>
-          SWITCH TO {isLoginMode ? "SIGNUP" : "LOGIN"}
+          >
+            <Input
+              prefix={<MailOutlined className="site-form-item-icon" />}
+              placeholder="E-Mail"
+            />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            rules={[
+              { required: true, message: "Please input your password!" },
+              { min: 6, message: "Password must be at least 6 characters!" },
+              { max: 20, message: "Password must be at most 20 characters!" },
+            ]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              placeholder="Password"
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+            >
+              {isLoginMode ? "Log In" : "Sign Up"}
+            </Button>
+          </Form.Item>
+        </Form>
+        <Button type="link" onClick={switchModeHandler}>
+          {isLoginMode ? "Sign Up" : "Log In"}
         </Button>
       </Card>
     </React.Fragment>

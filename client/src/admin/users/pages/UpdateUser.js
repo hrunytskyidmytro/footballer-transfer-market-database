@@ -1,21 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { message, Form, Input, Button, Card } from "antd";
 
-import Input from "../../../shared/components/FormElements/Input";
-import Button from "../../../shared/components/FormElements/Button";
-import Card from "../../../shared/components/UIElements/Card";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
-import {
-  VALIDATOR_EMAIL,
-  VALIDATOR_MAXLENGTH,
-  VALIDATOR_REQUIRE,
-} from "../../../shared/util/validators";
-import { useForm } from "../../../shared/hooks/form-hook";
+
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
-// import "./FootballerForm.css";
 
 const UpdateUser = () => {
   const navigate = useNavigate();
@@ -23,24 +14,7 @@ const UpdateUser = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedUsers, setLoadedUsers] = useState();
   const userId = useParams().userId;
-
-  const [formState, inputHandler, setFormData] = useForm(
-    {
-      name: {
-        value: "",
-        isValid: false,
-      },
-      surname: {
-        value: "",
-        isValid: false,
-      },
-      email: {
-        value: "",
-        isValid: false,
-      },
-    },
-    false
-  );
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -49,39 +23,26 @@ const UpdateUser = () => {
           `http://localhost:5001/api/admins/users/${userId}`
         );
         setLoadedUsers(responseData.user);
-        setFormData(
-          {
-            name: {
-              value: responseData.user.name,
-              isValid: true,
-            },
-            surname: {
-              value: responseData.user.surname,
-              isValid: true,
-            },
-            email: {
-              value: responseData.user.email,
-              isValid: true,
-            },
-          },
-          true
-        );
+        form.setFieldsValue({
+          name: responseData.user.name,
+          surname: responseData.user.surname,
+          email: responseData.user.email,
+        });
       } catch (err) {}
     };
 
     fetchUser();
-  }, [sendRequest, userId, setFormData]);
+  }, [sendRequest, userId, form]);
 
-  const userSubmitHandler = async (event) => {
-    event.preventDefault();
+  const userSubmitHandler = async (values) => {
     try {
       await sendRequest(
         `http://localhost:5001/api/admins/users/${userId}`,
         "PATCH",
         JSON.stringify({
-          name: formState.inputs.name.value,
-          surname: formState.inputs.surname.value,
-          email: formState.inputs.email.value,
+          name: values.name,
+          surname: values.surname,
+          email: values.email,
         }),
         {
           "Content-Type": "application/json",
@@ -115,48 +76,75 @@ const UpdateUser = () => {
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
       {!isLoading && loadedUsers && (
-        <form className="user-form" onSubmit={userSubmitHandler}>
-          <Input
-            id="name"
-            element="input"
-            type="text"
+        <Form
+          form={form}
+          onFinish={userSubmitHandler}
+          initialValues={{
+            remember: true,
+          }}
+        >
+          <Form.Item
             label="Name"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-            errorText="Please enter a valid name."
-            onInput={inputHandler}
-            initialValue={loadedUsers.name}
-            initialValid={true}
-          />
-          <Input
-            id="surname"
-            element="input"
-            type="text"
-            label="Surname"
-            validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-            errorText="Please enter a valid surname."
-            onInput={inputHandler}
-            initialValue={loadedUsers.surname}
-            initialValid={true}
-          />
-          <Input
-            id="email"
-            element="input"
-            type="text"
-            label="E-mail"
-            validators={[
-              VALIDATOR_REQUIRE(),
-              VALIDATOR_EMAIL(),
-              VALIDATOR_MAXLENGTH(20),
+            name="name"
+            rules={[
+              {
+                required: true,
+                message: "Please input the user's name!",
+              },
+              { max: 20, message: "Name must be at most 20 characters!" },
             ]}
-            errorText="Please enter a valid email."
-            onInput={inputHandler}
-            initialValue={loadedUsers.email}
-            initialValid={true}
-          />
-          <Button type="submit" disabled={!formState.isValid}>
-            Update User
-          </Button>
-        </form>
+          >
+            <Input
+              count={{
+                show: true,
+                max: 20,
+              }}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Surname"
+            name="surname"
+            rules={[
+              {
+                required: true,
+                message: "Please input the user's surname!",
+              },
+              { max: 20, message: "Surname must be at most 20 characters!" },
+            ]}
+          >
+            <Input
+              count={{
+                show: true,
+                max: 20,
+              }}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: "Please input the user's email!",
+              },
+              {
+                type: "email",
+                message: "Please enter a valid email address!",
+              },
+              {
+                max: 20,
+                message: "Email must be at most 20 characters!",
+              },
+            ]}
+          >
+            <Input type="email" addonAfter={"@"} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Update User
+            </Button>
+          </Form.Item>
+        </Form>
       )}
     </React.Fragment>
   );

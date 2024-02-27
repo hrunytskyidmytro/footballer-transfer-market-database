@@ -1,45 +1,17 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Menu, Layout, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
-import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
-import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
-
-import { AuthContext } from "../../context/auth-context";
-import { useHttpClient } from "../../hooks/http-hook";
-import "./MainNavigation.css";
+import { AuthContext } from "../../shared/context/auth-context";
 
 const { Header } = Layout;
 
 const MainNavigation = () => {
-  const auth = useContext(AuthContext);
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [loadedUser, setLoadedUser] = useState([]);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        if (auth.userId) {
-          const responseData = await sendRequest(
-            `http://localhost:5001/api/users/${auth.userId}`
-          );
-
-          setLoadedUser(responseData.user);
-        }
-      } catch (err) {}
-    };
-    fetchUser();
-  }, [sendRequest, auth.userId]);
+  const { user, logout, token, role } = useContext(AuthContext);
 
   return (
     <>
-      <ErrorModal error={error} onClear={clearError} />
-      {isLoading && (
-        <div className="center">
-          <LoadingSpinner />
-        </div>
-      )}
       <Layout>
         <Header>
           <div className="demo-logo" />
@@ -62,7 +34,7 @@ const MainNavigation = () => {
             <Menu.Item key="about">
               <Link to="/about">About us</Link>
             </Menu.Item>
-            {auth.token ? (
+            {token ? (
               <Menu.SubMenu
                 key="userMenu"
                 style={{
@@ -88,44 +60,39 @@ const MainNavigation = () => {
                       icon={<UserOutlined />}
                       style={{ marginBottom: 5, marginRight: 5 }}
                     />
-                    {loadedUser.name ? loadedUser.name : ""}
+                    {user.name || ""}
                   </span>
                 }
               >
                 <Menu.Item
                   key="profile"
                   disabled
-                  style={{ width: 200, height: 120, textAlign: "center" }}
+                  style={{ height: "100%", padding: "0 20px", textAlign: "center" }}
                 >
                   <div>
                     <div>
-                      {loadedUser.name ? loadedUser.name : ""}{" "}
-                      {loadedUser.surname ? loadedUser.surname : ""}
+                      {user.name || ""} {user.surname || ""}
                     </div>
                     <div>
-                      {loadedUser.email ? (
-                        <span
-                          onClick={() => {
-                            navigator.clipboard.writeText(loadedUser.email);
-                          }}
-                          style={{ cursor: "pointer" }}
-                        >
-                          {loadedUser.email}
-                        </span>
-                      ) : (
-                        ""
-                      )}
+                      <span
+                        onClick={() => {
+                          navigator.clipboard.writeText(user.email);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {user.email || ""}
+                      </span>
                     </div>
                   </div>
                 </Menu.Item>
-                {auth.role === "admin" && (
+                {role === "admin" && (
                   <Menu.Item key="admin" style={{ textAlign: "center" }}>
                     <Link to="/admins">Admin Panel</Link>
                   </Menu.Item>
                 )}
                 <Menu.Item
                   key="logout"
-                  onClick={auth.logout}
+                  onClick={logout}
                   style={{ textAlign: "center" }}
                 >
                   Logout
