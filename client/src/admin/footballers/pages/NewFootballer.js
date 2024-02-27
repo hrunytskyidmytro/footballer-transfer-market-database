@@ -1,22 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {  message } from "antd";
+import { Select, message, Form, Input, Button, Upload, DatePicker } from "antd";
+import { UploadOutlined, EuroCircleOutlined } from "@ant-design/icons";
 
-import Input from "../../../shared/components//FormElements/Input";
-import Button from "../../../shared/components/FormElements/Button";
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
-import ImageUpload from "../../../shared/components/FormElements/ImageUpload";
-import {
-  VALIDATOR_REQUIRE,
-  VALIDATOR_DATE,
-  VALIDATOR_NUMBER,
-  VALIDATOR_MAXLENGTH,
-} from "../../../shared/util/validators";
-import { useForm } from "../../../shared/hooks/form-hook";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
-// import "./FootballerForm.css";
+
+const { Option } = Select;
 
 const NewFootballer = () => {
   const navigate = useNavigate();
@@ -24,67 +16,7 @@ const NewFootballer = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [agents, setAgents] = useState([]);
   const [clubs, setClubs] = useState([]);
-  const [formState, inputHandler, setFormData] = useForm(
-    {
-      name: {
-        value: "",
-        isValid: false,
-      },
-      surname: {
-        value: "",
-        isValid: false,
-      },
-      nationality: {
-        value: "",
-        isValid: false,
-      },
-      birthDate: {
-        value: "",
-        isValid: false,
-      },
-      weight: {
-        value: 0,
-        isValid: false,
-      },
-      height: {
-        value: 0,
-        isValid: false,
-      },
-      age: {
-        value: 0,
-        isValid: false,
-      },
-      foot: {
-        value: "",
-        isValid: false,
-      },
-      contractUntil: {
-        value: "",
-        isValid: false,
-      },
-      placeOfBirth: {
-        value: "",
-        isValid: false,
-      },
-      mainPosition: {
-        value: "",
-        isValid: false,
-      },
-      additionalPosition: {
-        value: "",
-        isValid: false,
-      },
-      cost: {
-        value: 0,
-        isValid: false,
-      },
-      image: {
-        value: null,
-        isValid: false,
-      },
-    },
-    false
-  );
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const fetchAgentsAndClubs = async () => {
@@ -103,35 +35,32 @@ const NewFootballer = () => {
     fetchAgentsAndClubs();
   }, [sendRequest]);
 
-  const footballerSubmitHandler = async (event) => {
-    event.preventDefault();
-
+  const footballerSubmitHandler = async (values) => {
     if (auth.role !== "admin") {
       console.log("You do not have permission to perform this action.");
       return;
     }
 
     try {
+      const imageFile = values.image[0].originFileObj;
       const formData = new FormData();
-      formData.append("name", formState.inputs.name.value);
-      formData.append("surname", formState.inputs.surname.value);
-      formData.append("nationality", formState.inputs.nationality.value);
-      formData.append("birthDate", formState.inputs.birthDate.value);
-      formData.append("weight", formState.inputs.weight.value);
-      formData.append("height", formState.inputs.height.value);
-      formData.append("age", formState.inputs.age.value);
-      formData.append("foot", formState.inputs.foot.value);
-      formData.append("contractUntil", formState.inputs.contractUntil.value);
-      formData.append("placeOfBirth", formState.inputs.placeOfBirth.value);
-      formData.append("mainPosition", formState.inputs.mainPosition.value);
-      formData.append(
-        "additionalPosition",
-        formState.inputs.additionalPosition.value
-      );
-      formData.append("cost", formState.inputs.cost.value);
-      formData.append("agent", formState.inputs.agent.value);
-      formData.append("club", formState.inputs.club.value);
-      formData.append("image", formState.inputs.image.value);
+      formData.append("name", values.name);
+      formData.append("surname", values.surname);
+      formData.append("nationality", values.nationality);
+      formData.append("birthDate", values.birthDate);
+      formData.append("weight", values.weight);
+      formData.append("height", values.height);
+      formData.append("age", values.age);
+      formData.append("foot", values.foot);
+      formData.append("contractUntil", values.contractUntil);
+      formData.append("placeOfBirth", values.placeOfBirth);
+      formData.append("mainPosition", values.mainPosition);
+      formData.append("additionalPosition", values.additionalPosition);
+      formData.append("cost", values.cost);
+      formData.append("agent", values.agent);
+      formData.append("club", values.club);
+      formData.append("image", imageFile);
+
       await sendRequest(
         "http://localhost:5001/api/admins/footballers/new",
         "POST",
@@ -145,164 +74,279 @@ const NewFootballer = () => {
     } catch (err) {}
   };
 
-  const selectHandler = (event) => {
-    const id = event.target.id;
-    const value = event.target.value;
-    const isValid = !!value;
-
-    setFormData({
-      ...formState.inputs,
-      [id]: { value: value, isValid: isValid },
-    });
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
   };
 
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      <form onSubmit={footballerSubmitHandler}>
+      <Form
+        form={form}
+        onFinish={footballerSubmitHandler}
+        initialValues={{ remember: true }}
+        encType="multipart/form-data"
+      >
         {isLoading && <LoadingSpinner asOverlay />}
-        <select id="agent" onChange={selectHandler}>
-          <option value="">Choose agent</option>
-          {agents.map((agent) => (
-            <option key={agent.id} value={agent.id}>
-              {agent.name} {agent.surname}
-            </option>
-          ))}
-        </select>
-        <select id="club" onChange={selectHandler}>
-          <option value="">Choose club</option>
-          {clubs.map((club) => (
-            <option key={club.id} value={club.id}>
-              {club.name}
-            </option>
-          ))}
-        </select>
-        <Input
-          id="name"
-          element="input"
-          type="text"
+        <Form.Item
+          name="agent"
+          rules={[{ required: true, message: "Please select an agent!" }]}
+        >
+          <Select placeholder="Select agent">
+            {agents.map((agent) => (
+              <Option key={agent.id} value={agent.id}>
+                {agent.name} {agent.surname}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item
+          name="club"
+          rules={[{ required: true, message: "Please select a club!" }]}
+        >
+          <Select placeholder="Select club">
+            {clubs.map((club) => (
+              <Option key={club.id} value={club.id}>
+                {club.name}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item
           label="Name"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid name."
-          onInput={inputHandler}
-        />
-        <Input
-          id="surname"
-          element="input"
-          type="text"
+          name="name"
+          rules={[
+            { required: true, message: "Please input the footballer's name!" },
+            { max: 20, message: "Name must be at most 20 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the name"
+          />
+        </Form.Item>
+        <Form.Item
           label="Surname"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid surname."
-          onInput={inputHandler}
-        />
-        <Input
-          id="nationality"
-          element="input"
-          type="text"
+          name="surname"
+          rules={[
+            {
+              required: true,
+              message: "Please input the footballer's surname!",
+            },
+            { max: 20, message: "Surname must be at most 20 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the surname"
+          />
+        </Form.Item>
+        <Form.Item
           label="Nationality"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid nationality."
-          onInput={inputHandler}
-        />
-        <Input
-          id="birthDate"
-          element="input"
-          type="date"
+          name="nationality"
+          rules={[
+            {
+              required: true,
+              message: "Please input the footballer's nationality!",
+            },
+            { max: 20, message: "Nationality must be at most 20 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the nationality"
+          />
+        </Form.Item>
+        <Form.Item
           label="Date of birth"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_DATE()]}
-          errorText="Please enter a valid date of birth."
-          onInput={inputHandler}
-        />
-        <Input
-          id="weight"
-          element="input"
-          type="number"
+          name="birthDate"
+          rules={[
+            {
+              required: true,
+              message: "Please input the footballer's birth date!",
+            },
+          ]}
+        >
+          <DatePicker style={{ width: "100%" }} />
+        </Form.Item>
+        <Form.Item
           label="Weight"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
-          errorText="Please enter a valid weight."
-          onInput={inputHandler}
-        />
-        <Input
-          id="height"
-          element="input"
-          type="number"
+          name="weight"
+          rules={[
+            {
+              required: true,
+              message: "Please input the footballer's weight!",
+            },
+          ]}
+        >
+          <Input
+            type="number"
+            placeholder="Enter the weight"
+            addonAfter={"kg"}
+          />
+        </Form.Item>
+        <Form.Item
           label="Height"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
-          errorText="Please enter a valid height."
-          onInput={inputHandler}
-        />
-        <Input
-          id="age"
-          element="input"
-          type="number"
+          name="height"
+          rules={[
+            {
+              required: true,
+              message: "Please input the footballer's height!",
+            },
+          ]}
+        >
+          <Input
+            type="number"
+            placeholder="Enter the height"
+            addonAfter={"m"}
+          />
+        </Form.Item>
+        <Form.Item
           label="Age"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
-          errorText="Please enter a valid age."
-          onInput={inputHandler}
-        />
-        <Input
-          id="foot"
-          element="input"
-          type="text"
+          name="age"
+          rules={[
+            { required: true, message: "Please input the footballer's age!" },
+          ]}
+        >
+          <Input type="number" placeholder="Enter the age" addonAfter="years" />
+        </Form.Item>
+        <Form.Item
           label="Foot"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(10)]}
-          errorText="Please enter a valid foot."
-          onInput={inputHandler}
-        />
-        <Input
-          id="contractUntil"
-          element="input"
-          type="date"
+          name="foot"
+          rules={[
+            { required: true, message: "Please input the footballer's foot!" },
+            { max: 10, message: "Foot must be at most 10 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 10,
+            }}
+            placeholder="Enter the foot"
+          />
+        </Form.Item>
+        <Form.Item
           label="Contract until"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_DATE()]}
-          errorText="Please enter a valid contract until."
-          onInput={inputHandler}
-        />
-        <Input
-          id="placeOfBirth"
-          element="input"
-          type="text"
+          name="contractUntil"
+          rules={[
+            {
+              required: true,
+              message: "Please input the footballer's contract until!",
+            },
+          ]}
+        >
+          <DatePicker style={{ width: "100%" }} />
+        </Form.Item>
+        <Form.Item
           label="Place of birth"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid place."
-          onInput={inputHandler}
-        />
-        <Input
-          id="mainPosition"
-          element="input"
-          type="text"
+          name="placeOfBirth"
+          rules={[
+            {
+              required: true,
+              message: "Please input the footballer's place of birth!",
+            },
+            { max: 20, message: "Foot must be at most 20 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the place of birth"
+          />
+        </Form.Item>
+        <Form.Item
           label="Main position"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid main position."
-          onInput={inputHandler}
-        />
-        <Input
-          id="additionalPosition"
-          element="input"
-          type="text"
+          name="mainPosition"
+          rules={[
+            {
+              required: true,
+              message: "Please input the footballer's main position!",
+            },
+            { max: 20, message: "Foot must be at most 20 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the main position"
+          />
+        </Form.Item>
+        <Form.Item
           label="Additional position"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_MAXLENGTH(20)]}
-          errorText="Please enter a valid additional position."
-          onInput={inputHandler}
-        />
-        <Input
-          id="cost"
-          element="input"
-          type="number"
+          name="additionalPosition"
+          rules={[
+            {
+              required: true,
+              message: "Please input the footballer's additional position!",
+            },
+            { max: 20, message: "Foot must be at most 20 characters!" },
+          ]}
+        >
+          <Input
+            count={{
+              show: true,
+              max: 20,
+            }}
+            placeholder="Enter the additional position"
+          />
+        </Form.Item>
+        <Form.Item
           label="Cost"
-          validators={[VALIDATOR_REQUIRE(), VALIDATOR_NUMBER()]}
-          errorText="Please enter a valid cost."
-          onInput={inputHandler}
-        />
-        <ImageUpload
-          id="image"
-          onInput={inputHandler}
-          errorText="PLease provide an image."
-        />
-        <Button type="submit" disabled={!formState.isValid}>
-          Add Footballer
-        </Button>
-      </form>
+          name="cost"
+          rules={[
+            { required: true, message: "Please input the footballer's cost!" },
+          ]}
+        >
+          <Input
+            type="number"
+            addonAfter={<EuroCircleOutlined />}
+            placeholder="Enter the cost"
+          />
+        </Form.Item>
+        <Form.Item
+          name="image"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
+          rules={[
+            {
+              required: true,
+              message: "Please upload the footballer's image!",
+            },
+          ]}
+        >
+          <Upload
+            name="image"
+            action="/footballers/new"
+            listType="picture"
+            beforeUpload={() => false}
+            maxCount={1}
+          >
+            <Button icon={<UploadOutlined />}>Upload Image</Button>
+          </Upload>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Add Footballer
+          </Button>
+        </Form.Item>
+      </Form>
     </React.Fragment>
   );
 };

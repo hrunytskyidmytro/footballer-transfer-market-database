@@ -138,7 +138,7 @@ router.post(
     check("country").not().isEmpty(),
     check("email").normalizeEmail().isEmail(),
     check("phoneNumber").custom((value) => {
-      const phoneRegExp = /^\+\d{1,3}-\d{1,4}-\d{1,4}-\d{4}$/;
+      const phoneRegExp = /^\d{1,4}-\d{1,4}-\d{4}$/;
       if (!phoneRegExp.test(value)) {
         throw new Error("Invalid phone number format.");
       }
@@ -157,7 +157,7 @@ router.patch(
     check("country").not().isEmpty(),
     check("email").normalizeEmail().isEmail(),
     check("phoneNumber").custom((value) => {
-      const phoneRegExp = /^\+\d{1,3}-\d{1,4}-\d{1,4}-\d{4}$/;
+      const phoneRegExp = /^\d{1,4}-\d{1,4}-\d{4}$/;
       if (!phoneRegExp.test(value)) {
         throw new Error("Invalid phone number format.");
       }

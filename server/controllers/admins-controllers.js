@@ -92,6 +92,11 @@ const createFootballer = async (req, res, next) => {
     );
   }
 
+  if (!req.file) {
+    const error = new HttpError("No image provided.", 422);
+    return next(error);
+  }
+
   const {
     name,
     surname,

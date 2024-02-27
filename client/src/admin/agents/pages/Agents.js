@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Table, Space, Flex, Button, Modal, Image, message } from "antd";
+import { EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
@@ -90,6 +91,9 @@ const Agents = () => {
       title: "Phone number",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
+      render: (number) => {
+        return `+380-${number}`;
+      },
     },
     {
       title: "Description",
@@ -102,10 +106,12 @@ const Agents = () => {
         <Space size="middle">
           <Flex gap="small">
             <Link to={`/admins/agents/${agent.key}`}>
-              <Button>Edit</Button>
+              <Button>
+                <EditTwoTone />
+              </Button>
             </Link>
             <Button danger onClick={() => showModalForDelete(agent.key)}>
-              Delete
+              <DeleteTwoTone twoToneColor="#eb2f96" />
             </Button>
           </Flex>
         </Space>
@@ -136,14 +142,7 @@ const Agents = () => {
       ) : (
         <div style={{ display: "flex", justifyContent: "flex-start" }}>
           <Link to="/admins/agents/new">
-            <Button
-              type="primary"
-              style={{
-                fontSize: "16px",
-              }}
-            >
-              Add Agent
-            </Button>
+            <Button type="primary">Add Agent</Button>
           </Link>
         </div>
       )}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Space, Table, Image, Flex, Button, Modal, message } from "antd";
+import { EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
 import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
@@ -153,10 +154,12 @@ const Transfers = () => {
         <Space size="middle">
           <Flex gap="small">
             <Link to={`/admins/transfers/${transfer.key}`}>
-              <Button>Edit</Button>
+              <Button>
+                <EditTwoTone />
+              </Button>
             </Link>
             <Button danger onClick={() => showModalForDelete(transfer.key)}>
-              Delete
+              <DeleteTwoTone twoToneColor="#eb2f96" />
             </Button>
           </Flex>
         </Space>
@@ -193,14 +196,7 @@ const Transfers = () => {
       ) : (
         <div style={{ display: "flex", justifyContent: "flex-start" }}>
           <Link to="/admins/transfers/new">
-            <Button
-              type="primary"
-              style={{
-                fontSize: "16px",
-              }}
-            >
-              Add Transfer
-            </Button>
+            <Button type="primary">Add Transfer</Button>
           </Link>
         </div>
       )}
