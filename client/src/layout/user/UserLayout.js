@@ -1,9 +1,8 @@
 import React, { useContext } from "react";
 import { Outlet } from "react-router-dom";
-import { Layout, theme } from "antd";
+import { Layout, theme, Spin } from "antd";
 
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
-import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 import MainHeader from "../header/MainHeader";
 import MainFooter from "../footer/MainFooter";
@@ -44,7 +43,7 @@ const UserLayout = () => {
               <ErrorModal error={error} onClear={clearError} />
               {isLoadingApp && (
                 <div className="center">
-                  <LoadingSpinner />
+                  <Spin size="large" />
                 </div>
               )}
               <Outlet />

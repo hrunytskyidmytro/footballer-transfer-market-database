@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Layout, Menu } from "antd";
 import { FaPersonRunning } from "react-icons/fa6";
 import { MdTransferWithinAStation } from "react-icons/md";
@@ -12,17 +12,74 @@ import {
 } from "@ant-design/icons";
 
 import { Link, useLocation } from "react-router-dom";
+import { AuthContext } from "../../../shared/context/auth-context";
 
 const { Sider } = Layout;
 
 const AdminMenu = () => {
+  const { role } = useContext(AuthContext);
   const location = useLocation();
   const [selectedMenuItem, setSelectedMenuItem] = useState(location.pathname);
   const [collapsed, setCollapsed] = useState(false);
+  const [menuItems, setMenuItems] = useState([]);
+
+  const isAdmin = role === "admin";
+  const isFootballManager = role === "football_manager";
 
   useEffect(() => {
     setSelectedMenuItem(location.pathname);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      setMenuItems([
+        { key: "/admins", label: "Home", icon: <HomeOutlined /> },
+        { key: "/admins/users", label: "Users", icon: <TeamOutlined /> },
+        {
+          key: "/admins/footballers",
+          label: "Footballers",
+          icon: <FaPersonRunning />,
+        },
+        {
+          key: "/admins/transfers",
+          label: "Transfers",
+          icon: <MdTransferWithinAStation />,
+        },
+        { key: "/admins/clubs", label: "Clubs", icon: <ShopOutlined /> },
+        {
+          key: "/admins/agents",
+          label: "Agents",
+          icon: <UserSwitchOutlined />,
+        },
+        { key: "/admins/news", label: "News", icon: <ReadOutlined /> },
+        {
+          key: "/admins/statistics",
+          label: "Statistics",
+          icon: <BarChartOutlined />,
+        },
+      ]);
+    } else if (isFootballManager) {
+      setMenuItems([
+        { key: "/admins", label: "Home", icon: <HomeOutlined /> },
+        {
+          key: "/admins/footballers",
+          label: "Footballers",
+          icon: <FaPersonRunning />,
+        },
+        {
+          key: "/admins/transfers",
+          label: "Transfers",
+          icon: <MdTransferWithinAStation />,
+        },
+        { key: "/admins/clubs", label: "Clubs", icon: <ShopOutlined /> },
+        {
+          key: "/admins/agents",
+          label: "Agents",
+          icon: <UserSwitchOutlined />,
+        },
+      ]);
+    }
+  }, [role]);
 
   return (
     <>
@@ -46,33 +103,11 @@ const AdminMenu = () => {
           defaultSelectedKeys={["/admins"]}
           selectedKeys={[selectedMenuItem]}
         >
-          <Menu.Item key="/admins" icon={<HomeOutlined />}>
-            <Link to="/admins">Home</Link>
-          </Menu.Item>
-          <Menu.Item key="/admins/users" icon={<TeamOutlined />}>
-            <Link to="/admins/users">Users</Link>
-          </Menu.Item>
-          <Menu.Item key="/admins/footballers" icon={<FaPersonRunning />}>
-            <Link to="/admins/footballers">Footballers</Link>
-          </Menu.Item>
-          <Menu.Item
-            key="/admins/transfers"
-            icon={<MdTransferWithinAStation />}
-          >
-            <Link to="/admins/transfers">Transfers</Link>
-          </Menu.Item>
-          <Menu.Item key="/admins/clubs" icon={<ShopOutlined />}>
-            <Link to="/admins/clubs">Clubs</Link>
-          </Menu.Item>
-          <Menu.Item key="/admins/agents" icon={<UserSwitchOutlined />}>
-            <Link to="/admins/agents">Agents</Link>
-          </Menu.Item>
-          <Menu.Item key="/admins/news" icon={<ReadOutlined />}>
-            <Link to="/admins/news">News</Link>
-          </Menu.Item>
-          <Menu.Item key="/admins/statistics" icon={<BarChartOutlined />}>
-            <Link to="/admins/statistics">Statistics</Link>
-          </Menu.Item>
+          {menuItems.map((menuItem) => (
+            <Menu.Item key={menuItem.key} icon={menuItem.icon}>
+              <Link to={menuItem.key}>{menuItem.label}</Link>
+            </Menu.Item>
+          ))}
         </Menu>
       </Sider>
     </>

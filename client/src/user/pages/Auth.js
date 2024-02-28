@@ -1,9 +1,8 @@
 import React, { useState, useContext } from "react";
-import { Card, Form, Input, Button } from "antd";
+import { Card, Form, Input, Button, Spin } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
-import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
@@ -57,7 +56,7 @@ const Auth = () => {
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
       <Card className="authentication">
-        {isLoading && <LoadingSpinner asOverlay />}
+        {isLoading && <Spin size="large" fullscreen />}
         <h2>{isLoginMode ? "Log In" : "Sign Up"}</h2>
         <Form form={form} onFinish={authSubmitHandler}>
           {!isLoginMode && (

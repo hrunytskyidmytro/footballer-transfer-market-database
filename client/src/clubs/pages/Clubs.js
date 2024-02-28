@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col } from "antd";
+import { Link } from "react-router-dom";
+import { Card, Spin } from "antd";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
-import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../shared/hooks/http-hook";
-
-const { Meta } = Card;
 
 const Clubs = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
@@ -25,16 +23,19 @@ const Clubs = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      {isLoading && <LoadingSpinner />}
-      <Row gutter={[24, 24]}>
-        {!isLoading &&
-          loadedClubs &&
-          loadedClubs.map((club) => (
-            <Col key={club.id} xs={24} sm={12} md={8} lg={6} xl={4}>
-              <Card
-                hoverable
-                style={{ width: "100%", height: "100%" }}
-                cover={
+      {isLoading ? (
+        <Spin size="large" />
+      ) : (
+        <Card title="Clubs">
+          {!isLoading &&
+            loadedClubs &&
+            loadedClubs.map((club) => (
+              <Card.Grid
+                key={club.id}
+                hoverable={true}
+                style={{ width: "25%", textAlign: "center" }}
+              >
+                <Link to={`/clubs/${club.id}`} key={club.id}>
                   <img
                     alt={club.name}
                     src={`http://localhost:5001/${club.image}`}
@@ -44,13 +45,11 @@ const Clubs = () => {
                       objectFit: "contain",
                     }}
                   />
-                }
-              >
-                <Meta title={club.name} />
-              </Card>
-            </Col>
-          ))}
-      </Row>
+                </Link>
+              </Card.Grid>
+            ))}
+        </Card>
+      )}
     </React.Fragment>
   );
 };

@@ -10,7 +10,7 @@ const User = require("../models/user");
 const getFootballers = async (req, res, next) => {
   let footballers;
   try {
-    footballers = await Footballer.find({});
+    footballers = await Footballer.find({}).populate("agent").populate("club");
   } catch (err) {
     const error = new HttpError(
       "Fetching footballers failed, please try again later.",
@@ -31,7 +31,9 @@ const getFootballerById = async (req, res, next) => {
 
   let footballer;
   try {
-    footballer = await Footballer.findById(footballerId);
+    footballer = await Footballer.findById(footballerId)
+      .populate("agent")
+      .populate("club");
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not find a footballer.",

@@ -28,7 +28,7 @@ const clubSchema = new Schema({
   foundationYear: {
     type: Number,
     required: true,
-    min: 1900,
+    min: 1800,
     max: 2024,
   },
 });

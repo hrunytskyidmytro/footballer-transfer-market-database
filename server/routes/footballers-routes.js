@@ -3,7 +3,6 @@ const { check } = require("express-validator");
 
 const footballersController = require("../controllers/footballers-controllers");
 const fileUpload = require("../middleware/file-upload");
-const checkAuth = require("../middleware/check-auth");
 
 const router = express.Router();
 
