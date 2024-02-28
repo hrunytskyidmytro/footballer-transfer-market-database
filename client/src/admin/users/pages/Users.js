@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Table, Space, Flex, Button, Modal, message } from "antd";
+import { Table, Space, Flex, Button, Modal, Tag, message } from "antd";
 import { UserOutlined, EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
 import moment from "moment";
 
@@ -85,6 +85,23 @@ const Users = () => {
       title: "Role",
       dataIndex: "role",
       key: "role",
+      render: (role) => {
+        let tagColor = "";
+        switch (role) {
+          case "user":
+            tagColor = "blue";
+            break;
+          case "admin":
+            tagColor = "green";
+            break;
+          case "football_manager":
+            tagColor = "orange";
+            break;
+          default:
+            tagColor = "blue";
+        }
+        return <Tag color={tagColor}>{role}</Tag>;
+      },
     },
     {
       title: "Date of registration",

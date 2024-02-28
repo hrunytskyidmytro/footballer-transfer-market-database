@@ -36,10 +36,10 @@ const NewFootballer = () => {
   }, [sendRequest]);
 
   const footballerSubmitHandler = async (values) => {
-    if (auth.role !== "admin") {
-      console.log("You do not have permission to perform this action.");
-      return;
-    }
+    // if (auth.role !== "admin") {
+    //   console.log("You do not have permission to perform this action.");
+    //   return;
+    // }
 
     try {
       const imageFile = values.image[0].originFileObj;

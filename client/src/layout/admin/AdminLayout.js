@@ -1,12 +1,11 @@
 import React, { useContext } from "react";
 import { Outlet } from "react-router-dom";
-import { Layout, theme } from "antd";
+import { Layout, theme, Spin } from "antd";
 
 import AdminMenu from "../../admin/adminMenu/components/AdminMenu";
 import AdminHeader from "../../admin/adminHeader/components/AdminHeader";
 
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
-import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 import MainFooter from "../footer/MainFooter";
 
@@ -47,7 +46,7 @@ const AdminLayout = () => {
               <ErrorModal error={error} onClear={clearError} />
               {isLoadingApp && (
                 <div className="center">
-                  <LoadingSpinner />
+                   <Spin size="large" />
                 </div>
               )}
               <Outlet />

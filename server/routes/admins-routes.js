@@ -9,29 +9,22 @@ const checkAdmin = require("../middleware/check-admin");
 const router = express.Router();
 
 router.get("/users", adminsController.getUsers);
-
 router.get("/users/:uid", adminsController.getUserById);
 
 router.get("/footballers", adminsController.getFootballers);
-
 router.get("/footballers/:fid", adminsController.getFootballerById);
-
 router.get("/footballers/user/:uid", adminsController.getFootballersByUserId);
 
 router.get("/transfers", adminsController.getTransfers);
-
 router.get("/transfers/:tid", adminsController.getTransferById);
 
 router.get("/clubs", adminsController.getClubs);
-
 router.get("/clubs/:cid", adminsController.getClubById);
 
-router.get("/agents", adminsController.getAgents)
-
+router.get("/agents", adminsController.getAgents);
 router.get("/agents/:aid", adminsController.getAgentById);
 
-router.get("/news", adminsController.getNews)
-
+router.get("/news", adminsController.getNews);
 router.get("/news/:nid", adminsController.getNewById);
 
 router.use(checkAuth);

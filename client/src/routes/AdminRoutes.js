@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Route, Routes, Navigate, Outlet } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { Route, Routes, Outlet } from "react-router-dom";
+
+import NotFoundPageAdmin from "../admin/notFoundPageAdmin/pages/NotFoundPageAdmin";
 
 import NewFootballer from "../admin/footballers/pages/NewFootballer";
 import UpdateFootballer from "../admin/footballers/pages/UpdateFootballer";
@@ -22,15 +24,20 @@ import News from "../admin/news/pages/News";
 import AdminHome from "../admin/adminHomePage/pages/AdminHome";
 
 import { useHttpClient } from "../shared/hooks/http-hook";
+import { AuthContext } from "../shared/context/auth-context";
 
 const AdminRoutes = () => {
   const { sendRequest } = useHttpClient();
+  const { role } = useContext(AuthContext);
   const [loadedusers, setLoadedUsers] = useState();
   const [loadedFootballers, setLoadedFootballers] = useState();
   const [loadedTransfers, setLoadedTransfers] = useState();
   const [loadedClubs, setLoadedClubs] = useState();
   const [loadedAgents, setLoadedAgents] = useState();
   const [loadedNews, setLoadedNews] = useState();
+
+  const isAdmin = role === "admin";
+  const isFootballManager = role === "football_manager";
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -112,49 +119,79 @@ const AdminRoutes = () => {
 
   return (
     <Routes>
-      <Route
-        index
-        element={
-          <AdminHome
-            numUsers={loadedusers}
-            numFootballers={loadedFootballers}
-            numTransfers={loadedTransfers}
-            numClubs={loadedClubs}
-            numAgents={loadedAgents}
-            numNews={loadedNews}
-          />
-        }
-      />
-      <Route path="/users/" element={<Outlet />}>
-        <Route index element={<Users />} />
-        <Route path=":userId" element={<UpdateUser />} />
-      </Route>
-      <Route path="/footballers/" element={<Outlet />}>
-        <Route index element={<Footballers />} />
-        <Route path="new" element={<NewFootballer />} />
-        <Route path=":footballerId" element={<UpdateFootballer />} />
-      </Route>
-      <Route path="/transfers/" element={<Outlet />}>
-        <Route index element={<Transfers />} />
-        <Route path="new" element={<NewTransfer />} />
-        <Route path=":transferId" element={<UpdateTransfer />} />
-      </Route>
-      <Route path="/clubs/" element={<Outlet />}>
-        <Route index element={<Clubs />} />
-        <Route path="new" element={<NewClub />} />
-        <Route path=":clubId" element={<UpdateClub />} />
-      </Route>
-      <Route path="/agents/" element={<Outlet />}>
-        <Route index element={<Agents />} />
-        <Route path="new" element={<NewAgent />} />
-        <Route path=":agentId" element={<UpdateAgent />} />
-      </Route>
-      <Route path="/news/" element={<Outlet />}>
-        <Route index element={<News />} />
-        <Route path="new" element={<NewNews />} />
-        <Route path=":newId" element={<UpdateNews />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/admins" />} />
+      {(isAdmin || isFootballManager) && (
+        <Route
+          index
+          element={
+            <AdminHome
+              numUsers={loadedusers}
+              numFootballers={loadedFootballers}
+              numTransfers={loadedTransfers}
+              numClubs={loadedClubs}
+              numAgents={loadedAgents}
+              numNews={loadedNews}
+            />
+          }
+        />
+      )}
+      {isAdmin && (
+        <>
+          <Route path="/users/" element={<Outlet />}>
+            <Route index element={<Users />} />
+            <Route path=":userId" element={<UpdateUser />} />
+          </Route>
+          <Route path="/footballers/" element={<Outlet />}>
+            <Route index element={<Footballers />} />
+            <Route path="new" element={<NewFootballer />} />
+            <Route path=":footballerId" element={<UpdateFootballer />} />
+          </Route>
+          <Route path="/transfers/" element={<Outlet />}>
+            <Route index element={<Transfers />} />
+            <Route path="new" element={<NewTransfer />} />
+            <Route path=":transferId" element={<UpdateTransfer />} />
+          </Route>
+          <Route path="/clubs/" element={<Outlet />}>
+            <Route index element={<Clubs />} />
+            <Route path="new" element={<NewClub />} />
+            <Route path=":clubId" element={<UpdateClub />} />
+          </Route>
+          <Route path="/agents/" element={<Outlet />}>
+            <Route index element={<Agents />} />
+            <Route path="new" element={<NewAgent />} />
+            <Route path=":agentId" element={<UpdateAgent />} />
+          </Route>
+          <Route path="/news/" element={<Outlet />}>
+            <Route index element={<News />} />
+            <Route path="new" element={<NewNews />} />
+            <Route path=":newId" element={<UpdateNews />} />
+          </Route>
+        </>
+      )}
+      {isFootballManager && (
+        <>
+          <Route path="/footballers/" element={<Outlet />}>
+            <Route index element={<Footballers />} />
+            <Route path="new" element={<NewFootballer />} />
+            <Route path=":footballerId" element={<UpdateFootballer />} />
+          </Route>
+          <Route path="/transfers/" element={<Outlet />}>
+            <Route index element={<Transfers />} />
+            <Route path="new" element={<NewTransfer />} />
+            <Route path=":transferId" element={<UpdateTransfer />} />
+          </Route>
+          <Route path="/clubs/" element={<Outlet />}>
+            <Route index element={<Clubs />} />
+            <Route path="new" element={<NewClub />} />
+            <Route path=":clubId" element={<UpdateClub />} />
+          </Route>
+          <Route path="/agents/" element={<Outlet />}>
+            <Route index element={<Agents />} />
+            <Route path="new" element={<NewAgent />} />
+            <Route path=":agentId" element={<UpdateAgent />} />
+          </Route>
+        </>
+      )}
+      <Route path="*" element={<NotFoundPageAdmin />} />
     </Routes>
   );
 };

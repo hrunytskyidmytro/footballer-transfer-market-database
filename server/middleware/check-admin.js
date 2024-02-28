@@ -14,7 +14,7 @@ const checkAdmin = async (req, res, next) => {
       return next(error);
     }
 
-    if (user.role !== "admin") {
+    if (user.role !== "admin" && user.role !== "football_manager") {
       const error = new HttpError(
         "Permission denied. Only admins can add, edit or delete.",
         403

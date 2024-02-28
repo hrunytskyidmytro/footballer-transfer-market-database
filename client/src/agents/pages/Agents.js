@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, Spin } from "antd";
+// import moment from "moment";
 
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 
-const Footballers = () => {
+const Agents = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const [loadedFootballers, setLoadedFootballers] = useState();
+  const [loadedAgents, setLoadedAgents] = useState();
 
   useEffect(() => {
-    const fetchFootballers = async () => {
+    const fetchAgents = async () => {
       try {
         const responseData = await sendRequest(
-          "http://localhost:5001/api/footballers/"
+          "http://localhost:5001/api/agents/"
         );
 
-        setLoadedFootballers(responseData.footballers);
+        setLoadedAgents(responseData.agents);
       } catch (err) {}
     };
-    fetchFootballers();
+    fetchAgents();
   }, [sendRequest]);
 
   return (
@@ -32,23 +33,23 @@ const Footballers = () => {
       )}
       <div style={{ display: "flex", flexWrap: "wrap" }}>
         {!isLoading &&
-          loadedFootballers &&
-          loadedFootballers.map((footballer) => (
-            <Link to={`/footballers/${footballer.id}`} key={footballer.id}>
+          loadedAgents &&
+          loadedAgents.map((agent) => (
+            <Link to={`/agents/${agent.id}`} key={agent.id}>
               <Card
-                key={footballer.id}
+                key={agent.id}
                 hoverable
                 style={{ width: 200, margin: 20 }}
                 cover={
                   <img
-                    alt={`${footballer.name} ${footballer.surname}`}
-                    src={`http://localhost:5001/${footballer.image}`}
+                    alt={`${agent.name} ${agent.surname}`}
+                    src={`http://localhost:5001/${agent.image}`}
                   />
                 }
               >
                 <Card.Meta
-                  title={`${footballer.name} ${footballer.surname}`}
-                  description={`Nationality: ${footballer.nationality}`}
+                  title={`${agent.name} ${agent.surname}`}
+                  description={`Country: ${agent.country}`}
                 />
               </Card>
             </Link>
@@ -58,4 +59,4 @@ const Footballers = () => {
   );
 };
 
-export default Footballers;
+export default Agents;

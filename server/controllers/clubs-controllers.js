@@ -20,7 +20,7 @@ const getClubs = async (req, res, next) => {
 };
 
 const getClubById = async (req, res, next) => {
-  const clubId = req.params.fid;
+  const clubId = req.params.cid;
 
   let club;
   try {

@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, Layout, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
@@ -9,29 +9,40 @@ const { Header } = Layout;
 
 const MainNavigation = () => {
   const { user, logout, token, role } = useContext(AuthContext);
+  const location = useLocation();
+  const [selectedMenuItem, setSelectedMenuItem] = useState(location.pathname);
+
+  useEffect(() => {
+    setSelectedMenuItem(location.pathname);
+  }, [location.pathname]);
 
   return (
     <>
-      <Layout>
-        <Header>
+      <Layout style={{ minHeight: "90px" }}>
+        <Header style={{ position: "fixed", zIndex: 1, width: "100%" }}>
           <div className="demo-logo" />
-          <Menu theme="dark" mode="horizontal">
-            <Menu.Item key="home">
+          <Menu
+            theme="dark"
+            mode="horizontal"
+            defaultSelectedKeys={["/"]}
+            selectedKeys={[selectedMenuItem]}
+          >
+            <Menu.Item key="/">
               <Link to="/">Transfer-market</Link>
             </Menu.Item>
-            <Menu.Item key="footballers">
+            <Menu.Item key="/footballers">
               <Link to="/footballers">Footballers</Link>
             </Menu.Item>
-            <Menu.Item key="clubs">
+            <Menu.Item key="/clubs">
               <Link to="/clubs">Clubs</Link>
             </Menu.Item>
-            <Menu.Item key="agents">
+            <Menu.Item key="/agents">
               <Link to="/agents">Agents</Link>
             </Menu.Item>
-            <Menu.Item key="news">
+            <Menu.Item key="/news">
               <Link to="/news">News</Link>
             </Menu.Item>
-            <Menu.Item key="about">
+            <Menu.Item key="/about">
               <Link to="/about">About us</Link>
             </Menu.Item>
             {token ? (
@@ -67,7 +78,11 @@ const MainNavigation = () => {
                 <Menu.Item
                   key="profile"
                   disabled
-                  style={{ height: "100%", padding: "0 20px", textAlign: "center" }}
+                  style={{
+                    height: "100%",
+                    padding: "0 20px",
+                    textAlign: "center",
+                  }}
                 >
                   <div>
                     <div>
@@ -85,8 +100,8 @@ const MainNavigation = () => {
                     </div>
                   </div>
                 </Menu.Item>
-                {role === "admin" && (
-                  <Menu.Item key="admin" style={{ textAlign: "center" }}>
+                {(role === "admin" || role === "football_manager") && (
+                  <Menu.Item key="/admins" style={{ textAlign: "center" }}>
                     <Link to="/admins">Admin Panel</Link>
                   </Menu.Item>
                 )}
@@ -95,11 +110,11 @@ const MainNavigation = () => {
                   onClick={logout}
                   style={{ textAlign: "center" }}
                 >
-                  Logout
+                  Log Out
                 </Menu.Item>
               </Menu.SubMenu>
             ) : (
-              <Menu.Item key="login">
+              <Menu.Item key="/auth">
                 <Link to="/auth">
                   <span
                     style={{
@@ -114,7 +129,7 @@ const MainNavigation = () => {
                       icon={<UserOutlined />}
                       style={{ marginBottom: 5, marginRight: 5 }}
                     />
-                    Login
+                    Log In
                   </span>
                 </Link>
               </Menu.Item>
