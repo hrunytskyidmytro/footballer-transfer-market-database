@@ -4,10 +4,9 @@ import { Layout, theme, Spin } from "antd";
 
 import AdminMenu from "../../admin/adminMenu/components/AdminMenu";
 import AdminHeader from "../../admin/adminHeader/components/AdminHeader";
+import AdminFooter from "../../admin/adminFooter/components/AdminFooter";
 
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
-
-import MainFooter from "../footer/MainFooter";
 
 import { AuthContext } from "../../shared/context/auth-context";
 
@@ -46,13 +45,13 @@ const AdminLayout = () => {
               <ErrorModal error={error} onClear={clearError} />
               {isLoadingApp && (
                 <div className="center">
-                   <Spin size="large" />
+                  <Spin size="large" />
                 </div>
               )}
               <Outlet />
             </div>
           </Content>
-          <MainFooter />
+          <AdminFooter />
         </Layout>
       </Layout>
     </>

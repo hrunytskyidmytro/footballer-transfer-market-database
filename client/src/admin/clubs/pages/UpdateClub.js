@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { message, Form, Input, Button, Card } from "antd";
+import { message, Form, Input, Button, Card, Spin } from "antd";
 import { EuroCircleOutlined } from "@ant-design/icons";
 
-import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 
 import { useHttpClient } from "../../../shared/hooks/http-hook";
@@ -62,7 +61,7 @@ const UpdateClub = () => {
   if (isLoading) {
     return (
       <div className="center">
-        <LoadingSpinner />
+        <Spin size="large" />
       </div>
     );
   }

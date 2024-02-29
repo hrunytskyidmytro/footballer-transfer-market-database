@@ -96,7 +96,24 @@ const AdminMenu = () => {
           bottom: 0,
         }}
       >
-        <div className="demo-logo-vertical" />
+        <Link to="/">
+          <div
+            style={{
+              fontSize: collapsed ? "10px" : "14px",
+              fontWeight: "bold",
+              color: "#fff",
+              display: "flex",
+              justifyContent: "center",
+              padding: collapsed ? 12 : 10,
+              margin: 10,
+              border: "none",
+              borderRadius: 9,
+              backgroundColor: "#35598D",
+            }}
+          >
+            TRANSFER-MARKET
+          </div>
+        </Link>
         <Menu
           theme="dark"
           mode="inline"

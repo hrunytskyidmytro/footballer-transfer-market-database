@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Button, Card, Flex, Typography, Spin } from "antd";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import { useHttpClient } from "../../shared/hooks/http-hook";
@@ -31,7 +30,7 @@ const Clubs = () => {
             <Card
               key={news.id}
               hoverable
-              style={{ width: 950, margin: 10 }}
+              style={{ width: 950, margin: 5 }}
               styles={{
                 body: {
                   padding: 0,
@@ -56,7 +55,6 @@ const Clubs = () => {
                   <Typography.Title level={3} style={{ marginTop: 16 }}>
                     “{news.title}.”
                   </Typography.Title>
-                  {/* <Link to={`news/${news.id}`} key={news.id}> */}
                   <Button
                     type="primary"
                     href={`news/${news.id}`}
@@ -66,7 +64,6 @@ const Clubs = () => {
                   >
                     Read more
                   </Button>
-                  {/* </Link> */}
                 </Flex>
               </Flex>
             </Card>

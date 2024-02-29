@@ -41,8 +41,8 @@ const ClubInfo = () => {
             <h2>{loadedClub.name}</h2>
             <p>Description: {loadedClub.description}</p>
             <p>Country: {loadedClub.country}</p>
-            <p>Cost: {loadedClub.cost} kg</p>
-            <p>Foundation year: {loadedClub.foudationYear} </p>
+            <p>Cost: {loadedClub.cost}</p>
+            <p>Foundation year: {loadedClub.foundationYear} </p>
           </article>
         )}
       </div>

@@ -9,7 +9,7 @@ const NotFoundPage = () => {
       subTitle="Sorry, the page you visited does not exist."
       extra={
         <Button type="primary" href="/admins">
-          Back Home
+          Back to Admin Home
         </Button>
       }
     />

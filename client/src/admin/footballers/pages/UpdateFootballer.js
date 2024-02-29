@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { message, Form, Input, Button, DatePicker, Card } from "antd";
+import { message, Form, Input, Button, DatePicker, Card, Spin } from "antd";
 import { EuroCircleOutlined } from "@ant-design/icons";
 import moment from "moment";
 
-import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
 
 import { useHttpClient } from "../../../shared/hooks/http-hook";
@@ -79,7 +78,7 @@ const UpdateFootballer = () => {
   if (isLoading) {
     return (
       <div className="center">
-        <LoadingSpinner />
+        <Spin size="large" />
       </div>
     );
   }

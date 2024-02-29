@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Table, Space, Flex, Button, Modal, Tag, message } from "antd";
+import { Table, Space, Flex, Button, Modal, Tag, Spin, message } from "antd";
 import { UserOutlined, EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
 import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
-import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
+
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
 
@@ -144,7 +144,7 @@ const Users = () => {
       <ErrorModal error={error} onClear={clearError} />
       {isLoading && (
         <div className="center">
-          <LoadingSpinner />
+          <Spin size="large" />
         </div>
       )}
       <Modal
