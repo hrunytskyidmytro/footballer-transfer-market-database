@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Table, Space, Flex, Button, Modal, Image, message } from "antd";
+import { Table, Space, Flex, Button, Modal, Image, Spin, message } from "antd";
 import { EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
 import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
-import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
 
@@ -124,7 +123,7 @@ const News = () => {
       <ErrorModal error={error} onClear={clearError} />
       {isLoading ? (
         <div className="center">
-          <LoadingSpinner />
+          <Spin size="large" />
         </div>
       ) : (
         <div style={{ display: "flex", justifyContent: "flex-start" }}>

@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, Form, Input, Button, Spin } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 
@@ -10,6 +11,7 @@ import "./Auth.css";
 
 const Auth = () => {
   const auth = useContext(AuthContext);
+  const navigate = useNavigate();
   const [isLoginMode, setIsLoginMode] = useState(true);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [form] = Form.useForm();
@@ -34,6 +36,7 @@ const Auth = () => {
         );
 
         auth.login(responseData.userId, responseData.token, responseData.role);
+        navigate("/");
       } catch (err) {}
     } else {
       try {
@@ -48,6 +51,7 @@ const Auth = () => {
           formData
         );
         auth.login(responseData.userId, responseData.token, responseData.role);
+        navigate("/");
       } catch (err) {}
     }
   };

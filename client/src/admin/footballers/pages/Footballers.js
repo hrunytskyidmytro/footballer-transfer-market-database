@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Space, Table, Image, Button, Modal, Flex, message } from "antd";
+import { Space, Table, Image, Button, Modal, Flex, Spin, message } from "antd";
 import { EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
 import moment from "moment";
 
 import ErrorModal from "../../../shared/components/UIElements/ErrorModal";
-import LoadingSpinner from "../../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 import { AuthContext } from "../../../shared/context/auth-context";
 
@@ -217,7 +216,7 @@ const Footballers = () => {
       <ErrorModal error={error} onClear={clearError} />
       {isLoading ? (
         <div className="center">
-          <LoadingSpinner />
+          <Spin size="large" />
         </div>
       ) : (
         <div style={{ display: "flex", justifyContent: "flex-start" }}>
@@ -243,7 +242,7 @@ const Footballers = () => {
         can't be undone thereafter.
       </Modal>
       {!isLoading && loadedFootballers && (
-        <>
+        <div style={{ width: "100%", overflowX: "auto" }}>
           <Table
             columns={columns}
             dataSource={data.map((footballer, index) => ({
@@ -264,7 +263,7 @@ const Footballers = () => {
               },
             }}
           />
-        </>
+        </div>
       )}
     </React.Fragment>
   );

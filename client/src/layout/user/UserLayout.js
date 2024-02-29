@@ -4,8 +4,8 @@ import { Layout, theme, Spin } from "antd";
 
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 
-import MainHeader from "../header/MainHeader";
-import MainFooter from "../footer/MainFooter";
+import MainHeader from "../header/components/MainHeader";
+import MainFooter from "../footer/components/MainFooter";
 
 import { AuthContext } from "../../shared/context/auth-context";
 
