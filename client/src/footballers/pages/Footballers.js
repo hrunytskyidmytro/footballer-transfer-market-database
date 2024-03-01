@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, Spin } from "antd";
+import { Card, Spin, Image, Typography } from "antd";
 
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import { useHttpClient } from "../../shared/hooks/http-hook";
@@ -30,7 +30,7 @@ const Footballers = () => {
           <Spin size="large" />
         </div>
       )}
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
+      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
         {!isLoading &&
           loadedFootballers &&
           loadedFootballers.map((footballer) => (
@@ -48,7 +48,15 @@ const Footballers = () => {
               >
                 <Card.Meta
                   title={`${footballer.name} ${footballer.surname}`}
-                  description={`Nationality: ${footballer.nationality}`}
+                  description={
+                    <Typography.Title level={4}>
+                      <Image
+                        width={50}
+                        src={`http://localhost:5001/${footballer.club.image}`}
+                        preview={false}
+                      />
+                    </Typography.Title>
+                  }
                 />
               </Card>
             </Link>

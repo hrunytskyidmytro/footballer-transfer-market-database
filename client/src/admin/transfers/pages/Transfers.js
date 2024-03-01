@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Space, Table, Image, Flex, Button, Modal, Spin, message } from "antd";
+import { Space, Table, Image, Flex, Button, Modal, Spin, Tag, message } from "antd";
 import { EditTwoTone, DeleteTwoTone } from "@ant-design/icons";
 import moment from "moment";
 
@@ -129,6 +129,23 @@ const Transfers = () => {
       title: "Transfer type",
       dataIndex: "transferType",
       key: "transferType",
+      render: (type) => {
+        let tagColor = "";
+        switch (type) {
+          case "free":
+            tagColor = "blue";
+            break;
+          case "rent":
+            tagColor = "green";
+            break;
+          case "full_contract":
+            tagColor = "orange";
+            break;
+          default:
+            tagColor = "blue";
+        }
+        return <Tag color={tagColor}>{type}</Tag>;
+      },
     },
     {
       title: "Season",

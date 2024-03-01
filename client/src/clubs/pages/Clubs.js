@@ -26,7 +26,7 @@ const Clubs = () => {
       {isLoading ? (
         <Spin size="large" />
       ) : (
-        <Card title="Clubs">
+        <Card>
           {!isLoading &&
             loadedClubs &&
             loadedClubs.map((club) => (
