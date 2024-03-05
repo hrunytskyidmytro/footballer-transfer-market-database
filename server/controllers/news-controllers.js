@@ -2,8 +2,28 @@ const New = require("../models/new");
 
 const getNews = async (req, res, next) => {
   let news;
+  let totalItems;
+  let totalPages;
+  const searchTerm = req.query.search;
+  const sortBy = req.query.sortBy || "title";
+  const sortDir = req.query.sortDir || "asc";
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 10;
+
   try {
-    news = await New.find({});
+    let query = {};
+
+    if (searchTerm) {
+      query.title = { $regex: searchTerm, $options: "i" };
+    }
+
+    totalItems = await New.countDocuments(query);
+    totalPages = Math.ceil(totalItems / pageSize);
+
+    news = await New.find(query)
+      .sort({ [sortBy]: sortDir === "desc" ? -1 : 1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
   } catch (err) {
     const error = new HttpError(
       "Fetching news failed, please try again later.",
@@ -14,6 +34,10 @@ const getNews = async (req, res, next) => {
 
   res.json({
     news: news.map((n) => n.toObject({ getters: true })),
+    totalItems,
+    totalPages,
+    currentPage: page,
+    pageSize,
   });
 };
 

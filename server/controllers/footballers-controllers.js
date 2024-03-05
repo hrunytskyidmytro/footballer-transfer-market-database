@@ -6,12 +6,113 @@ const mongoose = require("mongoose");
 const HttpError = require("../models/http-error");
 const Footballer = require("../models/footballer");
 const User = require("../models/user");
+const Club = require("../models/club");
 
 const getFootballers = async (req, res, next) => {
   let footballers;
+  let totalItems;
+  let totalPages;
+  const searchTerm = req.query.search;
+  const sortBy = req.query.sortBy || "name";
+  const sortDir = req.query.sortDir || "asc";
+  const foot = req.query.foot;
+  const nationality = req.query.nationality;
+  const mainPosition = req.query.mainPosition;
+  const weightFrom = req.query.weightFrom;
+  const weightTo = req.query.weightTo;
+  const heightFrom = req.query.heightFrom;
+  const heightTo = req.query.heightTo;
+  const ageFrom = req.query.ageFrom;
+  const ageTo = req.query.ageTo;
+  const costFrom = req.query.costFrom;
+  const costTo = req.query.costTo;
+  const club = req.query.club;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 10;
+
   try {
-    footballers = await Footballer.find({}).populate("agent").populate("club");
+    let query = {};
+
+    if (searchTerm) {
+      query.$or = [
+        { name: { $regex: searchTerm, $options: "i" } },
+        { surname: { $regex: searchTerm, $options: "i" } },
+        {
+          $expr: {
+            $regexMatch: {
+              input: { $concat: ["$name", " ", "$surname"] },
+              regex: searchTerm,
+              options: "i",
+            },
+          },
+        },
+      ];
+    }
+
+    if (foot) {
+      query.foot = foot;
+    }
+
+    if (nationality) {
+      query.nationality = nationality;
+    }
+
+    if (mainPosition) {
+      query.mainPosition = mainPosition;
+    }
+
+    if (weightFrom && weightTo) {
+      query.weight = { $gte: weightFrom, $lte: weightTo };
+    } else if (weightFrom) {
+      query.weight = { $gte: weightFrom };
+    } else if (weightTo) {
+      query.weight = { $lte: weightTo };
+    }
+
+    if (heightFrom && heightTo) {
+      query.height = { $gte: heightFrom, $lte: heightTo };
+    } else if (heightFrom) {
+      query.height = { $gte: heightFrom };
+    } else if (heightTo) {
+      query.height = { $lte: heightTo };
+    }
+
+    if (ageFrom && ageTo) {
+      query.age = { $gte: ageFrom, $lte: ageTo };
+    } else if (ageFrom) {
+      query.age = { $gte: ageFrom };
+    } else if (ageTo) {
+      query.age = { $lte: ageTo };
+    }
+
+    if (costFrom && costTo) {
+      query.cost = { $gte: costFrom, $lte: costTo };
+    } else if (costFrom) {
+      query.cost = { $gte: costFrom };
+    } else if (costTo) {
+      query.cost = { $lte: costTo };
+    }
+
+    if (club) {
+      const clubObj = await Club.findOne({ name: club });
+      if (!clubObj) {
+        const error = new HttpError("Club not found.", 404);
+        return next(error);
+      }
+      query.club = clubObj._id;
+    }
+
+    totalItems = await Footballer.countDocuments(query);
+    totalPages = Math.ceil(totalItems / pageSize);
+
+    footballers = await Footballer.find(query)
+      .sort({ [sortBy]: sortDir === "desc" ? -1 : 1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .populate("agent")
+      .populate("club");
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Fetching footballers failed, please try again later.",
       500
@@ -23,6 +124,10 @@ const getFootballers = async (req, res, next) => {
     footballers: footballers.map((footballer) =>
       footballer.toObject({ getters: true })
     ),
+    totalItems,
+    totalPages,
+    currentPage: page,
+    pageSize,
   });
 };
 

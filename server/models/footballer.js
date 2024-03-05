@@ -40,6 +40,7 @@ const footballerSchema = new Schema({
   },
   foot: {
     type: String,
+    enum: ['Left', 'Right'],
     required: true,
   },
   agent: {
@@ -85,5 +86,7 @@ const footballerSchema = new Schema({
     ref: "User",
   },
 });
+
+footballerSchema.index({ name: 1, surname: 1 });
 
 module.exports = mongoose.model("Footballer", footballerSchema);

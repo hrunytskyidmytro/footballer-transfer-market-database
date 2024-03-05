@@ -36,4 +36,6 @@ const userSchema = new Schema({
 
 userSchema.plugin(uniqueValidator);
 
+userSchema.index({ name: 1, surname: 1 });
+
 module.exports = mongoose.model("User", userSchema);

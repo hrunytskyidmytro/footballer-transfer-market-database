@@ -22,8 +22,8 @@ const clubSchema = new Schema({
   cost: {
     type: Number,
     required: true,
-    min: 100000,
-    max: 10000000000,
+    min: 0,
+    max: 1000000000,
   },
   foundationYear: {
     type: Number,
@@ -32,5 +32,7 @@ const clubSchema = new Schema({
     max: 2024,
   },
 });
+
+clubSchema.index({ name: 1 });
 
 module.exports = mongoose.model("Club", clubSchema);

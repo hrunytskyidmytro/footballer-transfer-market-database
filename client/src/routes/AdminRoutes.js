@@ -21,6 +21,7 @@ import Transfers from "../admin/transfers/pages/Transfers";
 import Clubs from "../admin/clubs/pages/Clubs";
 import Agents from "../admin/agents/pages/Agents";
 import News from "../admin/news/pages/News";
+import Statistics from "../admin/statistics/pages/Statistics";
 import AdminHome from "../admin/adminHomePage/pages/AdminHome";
 
 import { useHttpClient } from "../shared/hooks/http-hook";
@@ -165,6 +166,7 @@ const AdminRoutes = () => {
             <Route path="new" element={<NewNews />} />
             <Route path=":newId" element={<UpdateNews />} />
           </Route>
+          <Route path="/statistics/" element={<Statistics />} />
         </>
       )}
       {isFootballManager && (

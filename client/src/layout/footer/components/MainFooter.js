@@ -10,6 +10,7 @@ const MainFooter = () => {
         textAlign: "center",
         backgroundColor: "#0A172A",
         color: "white",
+        marginTop: "25px",
       }}
     >
       ©{new Date().getFullYear()} Created by Dmytro Hrunytskyi

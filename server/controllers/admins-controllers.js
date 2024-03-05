@@ -15,9 +15,109 @@ const New = require("../models/new");
 
 const getFootballers = async (req, res, next) => {
   let footballers;
+  let totalItems;
+  let totalPages;
+  const searchTerm = req.query.search;
+  const sortBy = req.query.sortBy || "name";
+  const sortDir = req.query.sortDir || "asc";
+  const foot = req.query.foot;
+  const nationality = req.query.nationality;
+  const mainPosition = req.query.mainPosition;
+  const weightFrom = req.query.weightFrom;
+  const weightTo = req.query.weightTo;
+  const heightFrom = req.query.heightFrom;
+  const heightTo = req.query.heightTo;
+  const ageFrom = req.query.ageFrom;
+  const ageTo = req.query.ageTo;
+  const costFrom = req.query.costFrom;
+  const costTo = req.query.costTo;
+  const club = req.query.club;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 10;
+
   try {
-    footballers = await Footballer.find({}).populate("agent").populate("club");
+    let query = {};
+
+    if (searchTerm) {
+      query.$or = [
+        { name: { $regex: searchTerm, $options: "i" } },
+        { surname: { $regex: searchTerm, $options: "i" } },
+        {
+          $expr: {
+            $regexMatch: {
+              input: { $concat: ["$name", " ", "$surname"] },
+              regex: searchTerm,
+              options: "i",
+            },
+          },
+        },
+      ];
+    }
+
+    if (foot) {
+      query.foot = foot;
+    }
+
+    if (nationality) {
+      query.nationality = nationality;
+    }
+
+    if (mainPosition) {
+      query.mainPosition = mainPosition;
+    }
+
+    if (weightFrom && weightTo) {
+      query.weight = { $gte: weightFrom, $lte: weightTo };
+    } else if (weightFrom) {
+      query.weight = { $gte: weightFrom };
+    } else if (weightTo) {
+      query.weight = { $lte: weightTo };
+    }
+
+    if (heightFrom && heightTo) {
+      query.height = { $gte: heightFrom, $lte: heightTo };
+    } else if (heightFrom) {
+      query.height = { $gte: heightFrom };
+    } else if (heightTo) {
+      query.height = { $lte: heightTo };
+    }
+
+    if (ageFrom && ageTo) {
+      query.age = { $gte: ageFrom, $lte: ageTo };
+    } else if (ageFrom) {
+      query.age = { $gte: ageFrom };
+    } else if (ageTo) {
+      query.age = { $lte: ageTo };
+    }
+
+    if (costFrom && costTo) {
+      query.cost = { $gte: costFrom, $lte: costTo };
+    } else if (costFrom) {
+      query.cost = { $gte: costFrom };
+    } else if (costTo) {
+      query.cost = { $lte: costTo };
+    }
+
+    if (club) {
+      const clubObj = await Club.findOne({ name: club });
+      if (!clubObj) {
+        const error = new HttpError("Club not found.", 404);
+        return next(error);
+      }
+      query.club = clubObj._id;
+    }
+
+    totalItems = await Footballer.countDocuments(query);
+    totalPages = Math.ceil(totalItems / pageSize);
+
+    footballers = await Footballer.find(query)
+      .sort({ [sortBy]: sortDir === "desc" ? -1 : 1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .populate("agent")
+      .populate("club");
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Fetching footballers failed, please try again later.",
       500
@@ -29,6 +129,10 @@ const getFootballers = async (req, res, next) => {
     footballers: footballers.map((footballer) =>
       footballer.toObject({ getters: true })
     ),
+    totalItems,
+    totalPages,
+    currentPage: page,
+    pageSize,
   });
 };
 
@@ -285,8 +389,53 @@ const deleteFootballer = async (req, res, next) => {
 
 const getTransfers = async (req, res, next) => {
   let transfers;
+  let totalItems;
+  let totalPages;
+  const sortBy = req.query.sortBy || "transferDate";
+  const sortDir = req.query.sortDir || "asc";
+  const feeFrom = req.query.feeFrom;
+  const feeTo = req.query.feeTo;
+  const compAmountFrom = req.query.compAmountFrom;
+  const compAmountTo = req.query.compAmountTo;
+  const transferType = req.query.transferType;
+  const season = req.query.season;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 10;
+
   try {
-    transfers = await Transfer.find({})
+    let query = {};
+
+    if (transferType) {
+      query.transferType = transferType;
+    }
+
+    if (season) {
+      query.season = season;
+    }
+
+    if (feeFrom && feeTo) {
+      query.transferFee = { $gte: feeFrom, $lte: feeTo };
+    } else if (feeFrom) {
+      query.transferFee = { $gte: feeFrom };
+    } else if (feeTo) {
+      query.transferFee = { $lte: feeTo };
+    }
+
+    if (compAmountFrom && compAmountTo) {
+      query.compensationAmount = { $gte: compAmountFrom, $lte: compAmountTo };
+    } else if (compAmountFrom) {
+      query.compensationAmount = { $gte: compAmountFrom };
+    } else if (compAmountTo) {
+      query.compensationAmount = { $lte: compAmountTo };
+    }
+
+    totalItems = await Transfer.countDocuments(query);
+    totalPages = Math.ceil(totalItems / pageSize);
+
+    transfers = await Transfer.find(query)
+      .sort({ [sortBy]: sortDir === "desc" ? -1 : 1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
       .populate("footballer")
       .populate("fromClub")
       .populate("toClub");
@@ -302,6 +451,10 @@ const getTransfers = async (req, res, next) => {
     transfers: transfers.map((transfer) =>
       transfer.toObject({ getters: true })
     ),
+    totalItems,
+    totalPages,
+    currentPage: page,
+    pageSize,
   });
 };
 
@@ -509,9 +662,55 @@ const deleteTransfer = async (req, res, next) => {
 
 const getClubs = async (req, res, next) => {
   let clubs;
+  let totalItems;
+  let totalPages;
+  const searchTerm = req.query.search;
+  const sortBy = req.query.sortBy || "name";
+  const sortDir = req.query.sortDir || "asc";
+  const country = req.query.country;
+  const yearFrom = req.query.yearFrom;
+  const yearTo = req.query.yearTo;
+  const costFrom = req.query.costFrom;
+  const costTo = req.query.costTo;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 10;
+
   try {
-    clubs = await Club.find({});
+    let query = {};
+
+    if (searchTerm) {
+      query.name = { $regex: searchTerm, $options: "i" };
+    }
+
+    if (country) {
+      query.country = country;
+    }
+
+    if (yearFrom && yearTo) {
+      query.foundationYear = { $gte: yearFrom, $lte: yearTo };
+    } else if (yearFrom) {
+      query.foundationYear = { $gte: yearFrom };
+    } else if (yearTo) {
+      query.foundationYear = { $lte: yearTo };
+    }
+
+    if (costFrom && costTo) {
+      query.cost = { $gte: costFrom, $lte: costTo };
+    } else if (costFrom) {
+      query.cost = { $gte: costFrom };
+    } else if (costTo) {
+      query.cost = { $lte: costTo };
+    }
+
+    totalItems = await Club.countDocuments(query);
+    totalPages = Math.ceil(totalItems / pageSize);
+
+    clubs = await Club.find(query)
+      .sort({ [sortBy]: sortDir === "desc" ? -1 : 1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Fetching clubs failed, please try again later.",
       500
@@ -521,6 +720,10 @@ const getClubs = async (req, res, next) => {
 
   res.json({
     clubs: clubs.map((club) => club.toObject({ getters: true })),
+    totalItems,
+    totalPages,
+    currentPage: page,
+    pageSize,
   });
 };
 
@@ -685,8 +888,45 @@ const deleteClub = async (req, res, next) => {
 
 const getAgents = async (req, res, next) => {
   let agents;
+  let totalItems;
+  let totalPages;
+  const searchTerm = req.query.search;
+  const sortBy = req.query.sortBy || "name";
+  const sortDir = req.query.sortDir || "asc";
+  const country = req.query.country;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 10;
+
   try {
-    agents = await Agent.find({});
+    let query = {};
+
+    if (searchTerm) {
+      query.$or = [
+        { name: { $regex: searchTerm, $options: "i" } },
+        { surname: { $regex: searchTerm, $options: "i" } },
+        {
+          $expr: {
+            $regexMatch: {
+              input: { $concat: ["$name", " ", "$surname"] },
+              regex: searchTerm,
+              options: "i",
+            },
+          },
+        },
+      ];
+    }
+
+    if (country) {
+      query.country = country;
+    }
+
+    totalItems = await Agent.countDocuments(query);
+    totalPages = Math.ceil(totalItems / pageSize);
+
+    agents = await Agent.find(query)
+      .sort({ [sortBy]: sortDir === "desc" ? -1 : 1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
   } catch (err) {
     const error = new HttpError(
       "Fetching agents failed, please try again later.",
@@ -697,6 +937,10 @@ const getAgents = async (req, res, next) => {
 
   res.json({
     agents: agents.map((agent) => agent.toObject({ getters: true })),
+    totalItems,
+    totalPages,
+    currentPage: page,
+    pageSize,
   });
 };
 
@@ -874,8 +1118,28 @@ const deleteAgent = async (req, res, next) => {
 
 const getNews = async (req, res, next) => {
   let news;
+  let totalItems;
+  let totalPages;
+  const searchTerm = req.query.search;
+  const sortBy = req.query.sortBy || "title";
+  const sortDir = req.query.sortDir || "asc";
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 10;
+
   try {
-    news = await New.find({}).populate("creator");
+    let query = {};
+
+    if (searchTerm) {
+      query.title = { $regex: searchTerm, $options: "i" };
+    }
+
+    totalItems = await New.countDocuments(query);
+    totalPages = Math.ceil(totalItems / pageSize);
+
+    news = await New.find(query)
+      .sort({ [sortBy]: sortDir === "desc" ? -1 : 1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
   } catch (err) {
     const error = new HttpError(
       "Fetching news failed, please try again later.",
@@ -886,6 +1150,10 @@ const getNews = async (req, res, next) => {
 
   res.json({
     news: news.map((n) => n.toObject({ getters: true })),
+    totalItems,
+    totalPages,
+    currentPage: page,
+    pageSize,
   });
 };
 
@@ -1046,9 +1314,47 @@ const deleteNew = async (req, res, next) => {
 
 const getUsers = async (req, res, next) => {
   let users;
+  let totalItems;
+  let totalPages;
+  const searchTerm = req.query.search;
+  const sortBy = req.query.sortBy || "name";
+  const sortDir = req.query.sortDir || "asc";
+  const role = req.query.role;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 10;
+
   try {
-    users = await User.find({}, "-password");
+    let query = {};
+
+    if (searchTerm) {
+      query.$or = [
+        { name: { $regex: searchTerm, $options: "i" } },
+        { surname: { $regex: searchTerm, $options: "i" } },
+        {
+          $expr: {
+            $regexMatch: {
+              input: { $concat: ["$name", " ", "$surname"] },
+              regex: searchTerm,
+              options: "i",
+            },
+          },
+        },
+      ];
+    }
+
+    if (role) {
+      query.role = role;
+    }
+
+    totalItems = await User.countDocuments(query);
+    totalPages = Math.ceil(totalItems / pageSize);
+
+    users = await User.find(query, "-password")
+      .sort({ [sortBy]: sortDir === "desc" ? -1 : 1 })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
       "Fetching users failed, please try again later.",
       500
@@ -1056,7 +1362,13 @@ const getUsers = async (req, res, next) => {
     return next(error);
   }
 
-  res.json({ users: users.map((user) => user.toObject({ getters: true })) });
+  res.json({
+    users: users.map((user) => user.toObject({ getters: true })),
+    totalItems,
+    totalPages,
+    currentPage: page,
+    pageSize,
+  });
 };
 
 const getUserById = async (req, res, next) => {

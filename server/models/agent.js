@@ -37,4 +37,6 @@ const agentSchema = new Schema({
 
 agentSchema.plugin(uniqueValidator);
 
+agentSchema.index({ name: 1, surname: 1 });
+
 module.exports = mongoose.model("Agent", agentSchema);
