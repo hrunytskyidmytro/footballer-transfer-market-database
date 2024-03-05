@@ -27,4 +27,6 @@ const newsSchema = new Schema({
   },
 });
 
+newsSchema.index({ title: 1 });
+
 module.exports = mongoose.model("News", newsSchema);
