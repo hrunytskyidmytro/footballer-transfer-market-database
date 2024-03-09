@@ -10,6 +10,7 @@ import {
   Tooltip,
   Divider,
   Pagination,
+  Typography,
   Modal,
   Tag,
   Spin,
@@ -176,6 +177,9 @@ const Users = () => {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      render: (email) => {
+        return <Typography.Paragraph copyable>{email}</Typography.Paragraph>;
+      },
     },
     {
       title: "Role",

@@ -27,6 +27,9 @@ router.get("/agents/:aid", adminsController.getAgentById);
 router.get("/news", adminsController.getNews);
 router.get("/news/:nid", adminsController.getNewById);
 
+router.get("/ratings", adminsController.getRatings);
+router.get("/ratings/:rid", adminsController.getRatingById);
+
 router.use(checkAuth);
 
 router.use(checkAdmin);
@@ -189,5 +192,9 @@ router.patch(
 );
 
 router.delete("/users/:uid", adminsController.deleteUser);
+
+router.patch("/ratings/:rid", adminsController.updateRating);
+
+router.delete("/ratings/:rid", adminsController.deleteRating);
 
 module.exports = router;

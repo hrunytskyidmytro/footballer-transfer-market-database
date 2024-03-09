@@ -9,6 +9,7 @@ import {
   UserSwitchOutlined,
   ReadOutlined,
   HomeOutlined,
+  StarOutlined,
 } from "@ant-design/icons";
 
 import { Link, useLocation } from "react-router-dom";
@@ -52,6 +53,7 @@ const AdminMenu = () => {
           icon: <UserSwitchOutlined />,
         },
         { key: "/admins/news", label: "News", icon: <ReadOutlined /> },
+        { key: "/admins/ratings", label: "Ratings", icon: <StarOutlined /> },
         {
           key: "/admins/statistics",
           label: "Statistics",

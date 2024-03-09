@@ -14,6 +14,7 @@ import NewTransfer from "../admin/transfers/pages/NewTransfer";
 import UpdateTransfer from "../admin/transfers/pages/UpdateTransfer";
 import NewClub from "../admin/clubs/pages/NewClub";
 import UpdateClub from "../admin/clubs/pages/UpdateClub";
+import UpdateRating from "../admin/ratings/pages/UpdateRating";
 
 import Users from "../admin/users/pages/Users";
 import Footballers from "../admin/footballers/pages/Footballers";
@@ -22,6 +23,7 @@ import Clubs from "../admin/clubs/pages/Clubs";
 import Agents from "../admin/agents/pages/Agents";
 import News from "../admin/news/pages/News";
 import Statistics from "../admin/statistics/pages/Statistics";
+import Ratings from "../admin/ratings/pages/Ratings";
 import AdminHome from "../admin/adminHomePage/pages/AdminHome";
 
 import { useHttpClient } from "../shared/hooks/http-hook";
@@ -36,6 +38,7 @@ const AdminRoutes = () => {
   const [loadedClubs, setLoadedClubs] = useState();
   const [loadedAgents, setLoadedAgents] = useState();
   const [loadedNews, setLoadedNews] = useState();
+  const [loadedRatings, setLoadedRatings] = useState();
 
   const isAdmin = role === "admin";
   const isFootballManager = role === "football_manager";
@@ -118,6 +121,19 @@ const AdminRoutes = () => {
     fetchNews();
   }, [sendRequest]);
 
+  useEffect(() => {
+    const fetchRatings = async () => {
+      try {
+        const responseData = await sendRequest(
+          "http://localhost:5001/api/admins/ratings"
+        );
+
+        setLoadedRatings(responseData.ratings.length);
+      } catch (err) {}
+    };
+    fetchRatings();
+  }, [sendRequest]);
+
   return (
     <Routes>
       {(isAdmin || isFootballManager) && (
@@ -131,6 +147,7 @@ const AdminRoutes = () => {
               numClubs={loadedClubs}
               numAgents={loadedAgents}
               numNews={loadedNews}
+              numRatings={loadedRatings}
             />
           }
         />
@@ -167,6 +184,10 @@ const AdminRoutes = () => {
             <Route path=":newId" element={<UpdateNews />} />
           </Route>
           <Route path="/statistics/" element={<Statistics />} />
+          <Route path="/ratings/" element={<Outlet />}>
+            <Route index element={<Ratings />} />
+            <Route path=":ratingId" element={<UpdateRating />} />
+          </Route>
         </>
       )}
       {isFootballManager && (

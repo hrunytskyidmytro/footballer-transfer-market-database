@@ -9,4 +9,6 @@ router.get("/", transfersController.getTransfers);
 
 router.get("/:tid", transfersController.getTransferById);
 
+router.get("/footballer/:fid", transfersController.getTransfersByFootballer);
+
 module.exports = router;

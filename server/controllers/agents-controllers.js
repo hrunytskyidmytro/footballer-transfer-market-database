@@ -1,3 +1,4 @@
+const HttpError = require("../models/http-error");
 const Agent = require("../models/agent");
 
 const getAgents = async (req, res, next) => {

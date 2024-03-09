@@ -12,6 +12,8 @@ const transfersRoutes = require("./routes/transfers-routes");
 const clubsRoutes = require("./routes/clubs-routes");
 const agentsRoutes = require("./routes/agents-routes");
 const newsRoutes = require("./routes/news-routes");
+const ratingsRoutes = require("./routes/ratings-routes");
+const statisticsRoutes = require("./routes/statistics-routes");
 const adminsRoutes = require("./routes/admins-routes");
 const HttpError = require("./models/http-error");
 
@@ -46,6 +48,10 @@ app.use("/api/clubs", clubsRoutes);
 app.use("/api/agents", agentsRoutes); 
 
 app.use("/api/news", newsRoutes); 
+
+app.use("/api/ratings", ratingsRoutes); 
+
+app.use("/api/statistics", statisticsRoutes); 
 
 app.use("/api/admins", adminsRoutes); 
 
