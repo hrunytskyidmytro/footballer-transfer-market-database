@@ -1,3 +1,4 @@
+const HttpError = require("../models/http-error");
 const New = require("../models/new");
 
 const getNews = async (req, res, next) => {

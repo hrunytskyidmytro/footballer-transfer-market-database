@@ -12,6 +12,7 @@ import {
   Tooltip,
   Divider,
   Pagination,
+  Typography,
   Spin,
   message,
 } from "antd";
@@ -42,11 +43,10 @@ const Agents = () => {
 
   const [isFilterFormVisible, setIsFilterFormVisible] = useState(false);
   const [isErrorDisplayed, setIsErrorDisplayed] = useState(false);
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-
 
   useEffect(() => {
     const fetchAgents = async () => {
@@ -181,6 +181,9 @@ const Agents = () => {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      render: (email) => {
+        return <Typography.Paragraph copyable>{email}</Typography.Paragraph>;
+      },
     },
     {
       title: "Phone number",

@@ -10,6 +10,7 @@ const Club = require("../models/club");
 const User = require("../models/user");
 const Agent = require("../models/agent");
 const New = require("../models/new");
+const Rating = require("../models/rating");
 
 //Footballers
 
@@ -1139,8 +1140,10 @@ const getNews = async (req, res, next) => {
     news = await New.find(query)
       .sort({ [sortBy]: sortDir === "desc" ? -1 : 1 })
       .skip((page - 1) * pageSize)
-      .limit(pageSize);
+      .limit(pageSize)
+      .populate("creator");
   } catch (err) {
+    console.log(err.message);
     const error = new HttpError(
       "Fetching news failed, please try again later.",
       500
@@ -1472,6 +1475,134 @@ const deleteUser = async (req, res, next) => {
   res.status(200).json({ message: "Deleted user." });
 };
 
+//Ratings
+
+const getRatings = async (req, res, next) => {
+  let ratings;
+  let totalItems;
+  let totalPages;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 10;
+
+  try {
+    let query = {};
+
+    totalItems = await Rating.countDocuments(query);
+    totalPages = Math.ceil(totalItems / pageSize);
+
+    ratings = await Rating.find(query)
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .populate("footballer")
+      .populate("user");
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching ratings failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({
+    ratings: ratings.map((rating) => rating.toObject({ getters: true })),
+    totalItems,
+    totalPages,
+    currentPage: page,
+    pageSize,
+  });
+};
+
+const getRatingById = async (req, res, next) => {
+  const ratingId = req.params.rid;
+
+  let rating;
+  try {
+    rating = await Rating.findById(ratingId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not find a rating.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!rating) {
+    const error = new HttpError(
+      "Could not find a rating for the provided id.",
+      404
+    );
+    return next(error);
+  }
+
+  res.send({ rating: rating.toObject({ getters: true }) });
+};
+
+const updateRating = async (req, res, next) => {
+  const { rating } = req.body;
+  const ratingId = req.params.rid;
+
+  let r;
+  try {
+    r = await Rating.findById(ratingId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update rating.",
+      500
+    );
+    return next(error);
+  }
+
+  r.rating = rating;
+
+  try {
+    await r.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not update rating.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ rating: r.toObject({ getters: true }) });
+};
+
+const deleteRating = async (req, res, next) => {
+  const ratingId = req.params.rid;
+
+  let r;
+  try {
+    r = await Rating.findById(ratingId);
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not delete rating.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!r) {
+    const error = new HttpError("Could not find rating for this id.", 404);
+    return next(error);
+  }
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await r.deleteOne({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    console.log(err.message);
+    const error = new HttpError(
+      "Something went wrong, could not delete rating.",
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ message: "Deleted rating." });
+};
+
 exports.getFootballers = getFootballers;
 exports.getFootballerById = getFootballerById;
 exports.getFootballersByUserId = getFootballersByUserId;
@@ -1502,3 +1633,7 @@ exports.getUsers = getUsers;
 exports.getUserById = getUserById;
 exports.updateUser = updateUser;
 exports.deleteUser = deleteUser;
+exports.getRatings = getRatings;
+exports.getRatingById = getRatingById;
+exports.updateRating = updateRating;
+exports.deleteRating = deleteRating;

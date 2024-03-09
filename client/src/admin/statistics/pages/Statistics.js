@@ -1,90 +1,104 @@
 import React, { useState, useEffect } from "react";
-import { Spin } from "antd";
-import { Column, Line, Pie } from "@ant-design/plots";
-import moment from "moment";
+import { Select, Empty, Spin } from "antd";
+import { Line, Column, Pie } from "@ant-design/plots";
 
 import { useHttpClient } from "../../../shared/hooks/http-hook";
 
+const { Option } = Select;
+
 const Statistics = () => {
   const { isLoading, sendRequest } = useHttpClient();
-  const [loadedTransfers, setLoadedTransfers] = useState();
-  const [loadedFootballers, setLoadedFootballers] = useState();
+  const [statistics, setStatistics] = useState(null);
+  const [selectedData, setSelectedData] = useState(null);
 
   useEffect(() => {
-    const fetchTransfers = async () => {
+    const fetchStatistics = async () => {
       try {
         const response = await sendRequest(
-          "http://localhost:5001/api/admins/transfers/"
+          "http://localhost:5001/api/statistics/"
         );
-        setLoadedTransfers(response.transfers);
+        setStatistics(response.statistics);
+        setSelectedData(response.statistics.transferData);
       } catch (err) {}
     };
-    fetchTransfers();
+    fetchStatistics();
   }, [sendRequest]);
 
-  useEffect(() => {
-    const fetchFootballers = async () => {
-      try {
-        const response = await sendRequest(
-          "http://localhost:5001/api/admins/footballers/"
-        );
-        setLoadedFootballers(response.footballers);
-      } catch (err) {}
-    };
-    fetchFootballers();
-  }, [sendRequest]);
-
-  const columnData = loadedTransfers
-    ? loadedTransfers.map((transfer) => ({
-        footballer: `${transfer.footballer.name} ${transfer.footballer.surname}`,
-        transferFee: transfer.transferFee,
-        transferDate: `${moment(transfer.transferDate).format("MMMM Do YYYY")}`,
-      }))
-    : [];
-
-  const lineData = loadedTransfers
-    ? loadedTransfers.map((transfer) => ({
-        transferDate: moment(transfer.transferDate).format("MMMM Do YYYY"),
-        transferFee: transfer.transferFee,
-      }))
-    : [];
-
-  const columnConfig = {
-    data: columnData,
-    isGroup: true,
-    xField: "footballer",
-    yField: "transferFee",
-    seriesField: "transferDate",
-    columnWidthRatio: 0.5,
-    meta: {
-      footballer: { alias: "Footballer" },
-      transferFee: { alias: "Transfer Fee" },
-      transferDate: { alias: "Transfer Date" },
-    },
-  };
-
-  const lineConfig = {
-    data: lineData,
-    xField: "transferDate",
-    yField: "transferFee",
-    meta: {
-      transferDate: { alias: "Transfer Date" },
-      transferFee: { alias: "Transfer Fee" },
-    },
+  const handleDataChange = (value) => {
+    if (value === "transfers") {
+      setSelectedData(statistics.transferData);
+    } else if (value === "transferCountsByMonth") {
+      setSelectedData(statistics.transferCountsByMonth);
+    } else if (value === "transferCountByType") {
+      setSelectedData(statistics.transferCountByType);
+    }
   };
 
   return (
     <>
       {isLoading && <Spin size="large" />}
-      {!isLoading && loadedTransfers && (
+      {!isLoading && statistics && (
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ flex: 1 }}>
-            <h2>Column Chart</h2>
-            <Column {...columnConfig} />
+          <div style={{ marginBottom: "20px" }}>
+            <Select defaultValue="transfers" onChange={handleDataChange}>
+              <Option value="transfers">Transfers Data</Option>
+              <Option value="transferCountsByMonth">
+                Transfer Counts by Month
+              </Option>
+              <Option value="transferCountByType">
+                Transfer Count by Type
+              </Option>
+            </Select>
           </div>
           <div style={{ flex: 1 }}>
-            <h2>Line Chart</h2>
-            <Line {...lineConfig} />
+            {selectedData && selectedData.length > 0 ? (
+              <>
+                {selectedData[0].transferDate ? (
+                  <h2>Line Diagram of Transfer Data Transfer</h2>
+                ) : (
+                  <>
+                    {selectedData[0].month ? (
+                      <h2>Column Chart of Transfer Counts by Month</h2>
+                    ) : (
+                      <h2>Pie Chart of Transfer Count by Type</h2>
+                    )}
+                  </>
+                )}
+                {selectedData[0].transferDate ? (
+                  <Line
+                    data={selectedData}
+                    xField="transferDate"
+                    yField="transferFee"
+                    meta={{
+                      transferDate: { alias: "Transfer Date" },
+                      transferFee: { alias: "Transfer Fee" },
+                    }}
+                  />
+                ) : selectedData[0].month ? (
+                  <Column
+                    data={selectedData}
+                    xField="month"
+                    yField="count"
+                    meta={{
+                      month: { alias: "Month" },
+                      count: { alias: "Transfer Count" },
+                    }}
+                  />
+                ) : (
+                  <Pie
+                    data={selectedData}
+                    angleField="count"
+                    colorField="transferType"
+                    legend={{
+                      layout: "horizontal",
+                      position: "bottom",
+                    }}
+                  />
+                )}
+              </>
+            ) : (
+              <Empty description="No data available" />
+            )}
           </div>
         </div>
       )}

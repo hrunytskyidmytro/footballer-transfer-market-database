@@ -7,6 +7,7 @@ const HttpError = require("../models/http-error");
 const Footballer = require("../models/footballer");
 const User = require("../models/user");
 const Club = require("../models/club");
+const Rating = require("../models/rating");
 
 const getFootballers = async (req, res, next) => {
   let footballers;
@@ -155,7 +156,9 @@ const getFootballerById = async (req, res, next) => {
     return next(error);
   }
 
-  res.send({ footballer: footballer.toObject({ getters: true }) });
+  res.send({
+    footballer: footballer.toObject({ getters: true }),
+  });
 };
 
 const getFootballersByUserId = async (req, res, next) => {
@@ -177,8 +180,6 @@ const getFootballersByUserId = async (req, res, next) => {
       new HttpError("Could not find footballers for the provided user id.", 404)
     );
   }
-
-  console.log(userWithFootballers);
 
   res.json({
     footballers: userWithFootballers.footballers.map((footballer) =>

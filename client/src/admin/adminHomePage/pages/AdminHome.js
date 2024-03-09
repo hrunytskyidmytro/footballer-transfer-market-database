@@ -9,6 +9,7 @@ import {
   UserSwitchOutlined,
   SwitcherOutlined,
   GlobalOutlined,
+  StarOutlined,
 } from "@ant-design/icons";
 
 import { AuthContext } from "../../../shared/context/auth-context";
@@ -22,6 +23,7 @@ const AdminHome = ({
   numClubs,
   numAgents,
   numNews,
+  numRatings,
 }) => {
   const { user, role } = useContext(AuthContext);
 
@@ -37,6 +39,8 @@ const AdminHome = ({
         <Paragraph>
           Manage your website content efficiently with our powerful admin tools.
         </Paragraph>
+        <br />
+        <br />
         <Row gutter={[16, 16]} justify="center">
           {isAdmin && (
             <>
@@ -46,10 +50,6 @@ const AdminHome = ({
                     <UserOutlined
                       style={{
                         fontSize: "36px",
-                        color: "blue",
-                        backgroundColor: "#E6E6FA",
-                        borderRadius: 30,
-                        padding: 8,
                       }}
                     />
                     <Title level={3}>{numUsers || 0}</Title>
@@ -68,10 +68,6 @@ const AdminHome = ({
                     <GlobalOutlined
                       style={{
                         fontSize: "36px",
-                        color: "white",
-                        backgroundColor: "#12E6B4",
-                        borderRadius: 30,
-                        padding: 8,
                       }}
                     />
                     <Title level={3}>{numFootballers || 0}</Title>
@@ -86,10 +82,6 @@ const AdminHome = ({
                     <DollarOutlined
                       style={{
                         fontSize: "36px",
-                        color: "green",
-                        backgroundColor: "#12E6B4",
-                        borderRadius: 30,
-                        padding: 8,
                       }}
                     />
                     <Title level={3}>{numTransfers || 0}</Title>
@@ -104,10 +96,6 @@ const AdminHome = ({
                     <ShopOutlined
                       style={{
                         fontSize: "36px",
-                        color: "#E6352C",
-                        backgroundColor: "#E6DC4C",
-                        borderRadius: 30,
-                        padding: 8,
                       }}
                     />
                     <Title level={3}>{numClubs || 0}</Title>
@@ -122,10 +110,6 @@ const AdminHome = ({
                     <UserSwitchOutlined
                       style={{
                         fontSize: "36px",
-                        color: "#AAE6E6",
-                        backgroundColor: "#50B6E6",
-                        borderRadius: 30,
-                        padding: 8,
                       }}
                     />
                     <Title level={3}>{numAgents || 0}</Title>
@@ -144,10 +128,6 @@ const AdminHome = ({
                     <SwitcherOutlined
                       style={{
                         fontSize: "36px",
-                        color: "black",
-                        backgroundColor: "#E67000",
-                        borderRadius: 30,
-                        padding: 8,
                       }}
                     />
                     <Title level={3}>{numNews || 0}</Title>
@@ -157,15 +137,25 @@ const AdminHome = ({
                 </Link>
               </Col>
               <Col xs={24} sm={12} md={8} lg={6}>
+                <Link to="/admins/ratings">
+                  <Card hoverable>
+                    <StarOutlined
+                      style={{
+                        fontSize: "36px",
+                      }}
+                    />
+                    <Title level={3}>{numRatings || 0}</Title>
+                    <Title level={4}>Manage Ratings</Title>
+                    <Paragraph>View, edit, and manage ratings.</Paragraph>
+                  </Card>
+                </Link>
+              </Col>
+              <Col xs={24} sm={12} md={8} lg={6}>
                 <Link to="/admins/statistics">
                   <Card hoverable>
                     <LineChartOutlined
                       style={{
                         fontSize: "36px",
-                        color: "orange",
-                        backgroundColor: "#6A00E6",
-                        borderRadius: 30,
-                        padding: 8,
                       }}
                     />
                     <Title level={4}>Manage Statistics</Title>
