@@ -454,9 +454,10 @@ const Transfers = () => {
             borderRadius: 10,
             padding: "20px",
             marginBottom: "20px",
+            backgroundColor: "#f9f9f9",
           }}
         >
-          <Divider>| Type | Season |</Divider>
+          <Divider orientation="left">Type</Divider>
           <Tooltip title="Select the transfer's type" placement="top">
             <Select
               placeholder="Select type"
@@ -475,6 +476,7 @@ const Transfers = () => {
           </Tooltip>
           <br />
           <br />
+          <Divider orientation="left">Season</Divider>
           <Tooltip title="Select the season" placement="top">
             <Select
               placeholder="Select season"
@@ -493,7 +495,7 @@ const Transfers = () => {
           </Tooltip>
           <br />
           <br />
-          <Divider>| Fee |</Divider>
+          <Divider orientation="left">Fee</Divider>
           {feeError && <p style={{ color: "red" }}>{feeError}</p>}
           <Tooltip title="Select the minimum transfer's fee" placement="top">
             <Input
@@ -533,7 +535,7 @@ const Transfers = () => {
           </div>
           <br />
           <br />
-          <Divider>| Compensation Amount |</Divider>
+          <Divider orientation="left">Compensation Amount</Divider>
           {compensationAmountError && (
             <p style={{ color: "red" }}>{compensationAmountError}</p>
           )}

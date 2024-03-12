@@ -82,7 +82,7 @@ const Clubs = () => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <ErrorModal error={error} onClear={clearError} />
       {isLoading && (
         <div className="center">
@@ -121,7 +121,6 @@ const Clubs = () => {
         </Select>
       </Tooltip>
       <br />
-      <br />
       <Flex wrap="wrap" justify="center">
         {!isLoading &&
           loadedNews &&
@@ -129,7 +128,7 @@ const Clubs = () => {
             <Card
               key={news.id}
               hoverable
-              style={{ width: 950, margin: 5 }}
+              style={{ width: 950, margin: 10 }}
               styles={{
                 body: {
                   padding: 0,
@@ -158,7 +157,6 @@ const Clubs = () => {
                     type="primary"
                     href={`news/${news.id}`}
                     key={news.id}
-                    // target="_blank"
                     style={{ marginTop: 16 }}
                   >
                     Read more
@@ -181,7 +179,7 @@ const Clubs = () => {
           onShowSizeChange={handlePageSizeChange}
         />
       </div>
-    </React.Fragment>
+    </>
   );
 };
 

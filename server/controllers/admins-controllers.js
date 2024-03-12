@@ -535,6 +535,12 @@ const createTransfer = async (req, res, next) => {
     return next(error);
   }
 
+  if (!updatedFootballer) {
+    return next(
+      new HttpError("Could not find footballer for the provided id.", 404)
+    );
+  }
+
   updatedFootballer.club = toClub;
   updatedFootballer.cost = transferFee;
   updatedFootballer.contractUntil = contractTransferUntil;

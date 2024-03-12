@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Spin } from "antd";
-import moment from "moment";
+
+import NewsCard from "../components/NewsCard";
 
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import { useHttpClient } from "../../shared/hooks/http-hook";
@@ -19,38 +20,21 @@ const NewsInfo = () => {
         );
 
         setLoadedNews(responseData.n);
-        console.log(responseData.n);
       } catch (err) {}
     };
     fetchNews();
   }, [sendRequest]);
 
   return (
-    <React.Fragment>
+    <>
       <ErrorModal error={error} onClear={clearError} />
       {isLoading && (
         <div className="center">
           <Spin size="large" />
         </div>
       )}
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
-        {loadedNews && (
-          <article>
-            <p>
-              <img
-                alt={loadedNews.title}
-                src={`http://localhost:5001/${loadedNews.image}`}
-              />
-            </p>
-            <h2>{loadedNews.title}</h2>
-            <p>
-              Date publication: {moment(loadedNews.date).format("MMMM Do YYYY")}
-            </p>
-            <p>Description: {loadedNews.description}</p>
-          </article>
-        )}
-      </div>
-    </React.Fragment>
+      {loadedNews && <NewsCard news={loadedNews} />}
+    </>
   );
 };
 

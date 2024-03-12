@@ -17,10 +17,9 @@ const AdminHeader = ({ colorBgContainer, email }) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          // flexDirection: "row-reverse",
         }}
       >
-        <Link to="/">
+        <Link to="/home/">
           <Button
             type="primary"
             danger

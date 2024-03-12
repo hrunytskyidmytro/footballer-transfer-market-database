@@ -4,13 +4,13 @@ import {
   Card,
   Typography,
   Row,
+  Col,
   Avatar,
   Input,
   Select,
   Tooltip,
   message,
   Pagination,
-  Divider,
   Spin,
 } from "antd";
 
@@ -105,7 +105,7 @@ const Agents = () => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <ErrorModal error={error} onClear={clearError} />
       {isLoading && (
         <div className="center">
@@ -145,13 +145,12 @@ const Agents = () => {
       </Tooltip>
       <br />
       <br />
-      <Divider>| Country |</Divider>
       <Tooltip title="Select the agent's country" placement="top">
         <Select
           placeholder="Select country"
           onChange={handleCountryChange}
           value={country}
-          style={{ width: 200 }}
+          style={{ width: 150 }}
         >
           <Select.Option value="">All Countries</Select.Option>
           {countriesList &&
@@ -164,47 +163,39 @@ const Agents = () => {
       </Tooltip>
       <br />
       <br />
-      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-        <Row gutter={[16, 16]}>
-          {!isLoading &&
-            loadedAgents &&
-            loadedAgents.map((agent) => (
-              <div
-                key={agent.id}
-                style={{
-                  width: "300px",
-                  margin: "16px",
-                }}
-              >
-                <Link to={`/agents/${agent.id}`}>
-                  <Card
-                    hoverable
-                    style={{ width: "100%", minHeight: "200px" }}
-                    cover={
-                      <div style={{ textAlign: "center" }}>
-                        <Avatar
-                          size={64}
-                          src={`http://localhost:5001/${agent.image}`}
-                          alt={`${agent.name} ${agent.surname}`}
-                          style={{ margin: 10 }}
-                        />
-                      </div>
+      <br />
+      <Row gutter={[48, 48]} justify="center">
+        {!isLoading &&
+          loadedAgents &&
+          loadedAgents.map((agent) => (
+            <Link key={agent.id} to={`/agents/${agent.id}`}>
+              <Col xs={24} sm={24} md={24} lg={24}>
+                <Card
+                  hoverable
+                  style={{ width: 300, minHeight: "200px" }}
+                  cover={
+                    <div style={{ textAlign: "center" }}>
+                      <Avatar
+                        size={64}
+                        src={`http://localhost:5001/${agent.image}`}
+                        alt={`${agent.name} ${agent.surname}`}
+                        style={{ margin: 10 }}
+                      />
+                    </div>
+                  }
+                >
+                  <Card.Meta
+                    title={`${agent.name} ${agent.surname}`}
+                    description={
+                      <Typography.Text copyable>{agent.email}</Typography.Text>
                     }
-                  >
-                    <Card.Meta
-                      title={`${agent.name} ${agent.surname}`}
-                      description={
-                        <Typography.Text copyable>
-                          {agent.email}
-                        </Typography.Text>
-                      }
-                    />
-                  </Card>
-                </Link>
-              </div>
-            ))}
-        </Row>
-      </div>
+                  />
+                </Card>
+              </Col>
+            </Link>
+          ))}
+      </Row>
+      <br />
       <div style={{ marginTop: "20px", textAlign: "center" }}>
         <Pagination
           current={currentPage}
@@ -218,46 +209,7 @@ const Agents = () => {
           onShowSizeChange={handlePageSizeChange}
         />
       </div>
-      {/* <List
-        grid={{
-          gutter: 16,
-          xs: 1,
-          sm: 2,
-          md: 3,
-          lg: 4,
-          xl: 4,
-          xxl: 4,
-        }}
-        dataSource={loadedAgents}
-        renderItem={(agent) => (
-          <List.Item>
-            <Link to={`/agents/${agent.id}`}>
-              <Card
-                hoverable
-                style={{ width: "100%", minHeight: "200px" }}
-                cover={
-                  <div style={{ textAlign: "center" }}>
-                    <Avatar
-                      size={64}
-                      src={`http://localhost:5001/${agent.image}`}
-                      alt={`${agent.name} ${agent.surname}`}
-                      style={{ margin: 10 }}
-                    />
-                  </div>
-                }
-              >
-                <Card.Meta
-                  title={`${agent.name} ${agent.surname}`}
-                  description={
-                    <Typography.Text copyable>{agent.email}</Typography.Text>
-                  }
-                />
-              </Card>
-            </Link>
-          </List.Item>
-        )}
-      /> */}
-    </React.Fragment>
+    </>
   );
 };
 

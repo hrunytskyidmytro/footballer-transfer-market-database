@@ -565,9 +565,10 @@ const Footballers = () => {
             borderRadius: 10,
             padding: "20px",
             marginBottom: "20px",
+            backgroundColor: "#f9f9f9",
           }}
         >
-          <Divider>| Nationality | Position | Club |</Divider>
+          <Divider orientation="left">Nationality</Divider>
           <Tooltip title="Select the player's nationality" placement="top">
             <Select
               placeholder="Select nationality"
@@ -586,6 +587,7 @@ const Footballers = () => {
           </Tooltip>
           <br />
           <br />
+          <Divider orientation="left">Position</Divider>
           <Tooltip title="Select the player's position" placement="top">
             <Select
               placeholder="Select position"
@@ -604,6 +606,7 @@ const Footballers = () => {
           </Tooltip>
           <br />
           <br />
+          <Divider orientation="left">Club</Divider>
           <Tooltip title="Select the player's club" placement="top">
             <Select
               placeholder="Select club"
@@ -622,7 +625,7 @@ const Footballers = () => {
           </Tooltip>
           <br />
           <br />
-          <Divider>| Characteristics |</Divider>
+          <Divider orientation="left">Characteristics</Divider>
           {weightError && <p style={{ color: "red" }}>{weightError}</p>}
           <Tooltip title="Enter the minimum weight" placement="top">
             <Input
@@ -701,7 +704,7 @@ const Footballers = () => {
             />
           </Tooltip>
           <br />
-          <Divider>| Cost |</Divider>
+          <Divider orientation="left">Cost</Divider>
           {costError && <p style={{ color: "red" }}>{costError}</p>}
           <Tooltip title="Select the minimum player's cost" placement="top">
             <Input
@@ -740,7 +743,7 @@ const Footballers = () => {
             />
           </div>
           <br />
-          <Divider>| Foot |</Divider>
+          <Divider orientation="left">Foot</Divider>
           <Radio.Group onChange={handleFootChange} value={foot}>
             <Radio value="Right">Right Footed</Radio>
             <Radio value="Left">Left Footed</Radio>

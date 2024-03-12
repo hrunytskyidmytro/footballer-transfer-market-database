@@ -20,7 +20,7 @@ export const useAuth = () => {
 
     const tokenExpirationDate =
       expirationDate || new Date(new Date().getTime() + 1000 * 60 * 60);
-    setTokenExpirationDate(tokenExpirationDate); // new Date (was changed)
+    setTokenExpirationDate(tokenExpirationDate);
 
     try {
       localStorage.setItem(
@@ -51,7 +51,7 @@ export const useAuth = () => {
         tokenExpirationDate.getTime() - new Date().getTime();
       logoutTimer = setTimeout(() => {
         logout();
-        navigate("/");
+        navigate("/home/");
         message.warning("Your login time has expired, please log in again.");
       }, remainingTime);
     } else {
