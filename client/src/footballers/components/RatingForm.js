@@ -39,7 +39,6 @@ const RatingForm = ({ footballerId }) => {
       );
       message.success("Rating deleted successfully");
       setRatingByUser(null);
-      // updateAverageRating();
       setTimeout(() => {
         message.info("Please reload the page to update the average rating.");
       }, 4000);
@@ -65,7 +64,6 @@ const RatingForm = ({ footballerId }) => {
         );
         setRatingByUser(responseData.rating);
         message.success("Rating updated successfully");
-        // updateAverageRating();
         setTimeout(() => {
           message.info("Please reload the page to update the average rating.");
         }, 4000);
@@ -84,7 +82,6 @@ const RatingForm = ({ footballerId }) => {
         );
         setRatingByUser(responseData.rating);
         message.success("Rating added successfully");
-        // updateAverageRating();
         setTimeout(() => {
           message.info("Please reload the page to update the average rating.");
         }, 4000);

@@ -98,7 +98,7 @@ const AdminMenu = () => {
           bottom: 0,
         }}
       >
-        <Link to="/">
+        <Link to="/home/">
           <div
             style={{
               fontSize: collapsed ? "10px" : "14px",

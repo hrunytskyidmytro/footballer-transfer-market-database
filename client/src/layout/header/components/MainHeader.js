@@ -35,7 +35,7 @@ const MainHeader = () => {
           flexWrap: "wrap",
         }}
       >
-        <Link to="/">
+        <Link to="/home/">
           <div style={{ fontSize: "24px", fontWeight: "bold", color: "#fff" }}>
             TRANSFER-MARKET
           </div>
@@ -43,7 +43,7 @@ const MainHeader = () => {
         <Menu
           theme="dark"
           mode="horizontal"
-          defaultSelectedKeys={["/"]}
+          defaultSelectedKeys={["/home/"]}
           selectedKeys={[selectedMenuItem]}
           style={{ flex: 17, justifyContent: "center" }}
         >
@@ -72,7 +72,7 @@ const MainHeader = () => {
             justifyContent: "flex-end",
             alignItems: "center",
           }}
-          defaultSelectedKeys={["/"]}
+          defaultSelectedKeys={["/home/"]}
           selectedKeys={[selectedMenuItem]}
         >
           {token ? (

@@ -36,7 +36,7 @@ const Auth = () => {
         );
 
         auth.login(responseData.userId, responseData.token, responseData.role);
-        navigate("/");
+        navigate("/home/");
       } catch (err) {}
     } else {
       try {
@@ -51,7 +51,7 @@ const Auth = () => {
           formData
         );
         auth.login(responseData.userId, responseData.token, responseData.role);
-        navigate("/");
+        navigate("/home/");
       } catch (err) {}
     }
   };

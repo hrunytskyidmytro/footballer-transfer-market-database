@@ -4,6 +4,12 @@ const footballersController = require("../controllers/footballers-controllers");
 
 const router = express.Router();
 
+router.get("/expensive", footballersController.getMostExpensiveFootballers);
+
+router.get("/youngest", footballersController.getYoungestFootballers);
+
+router.get("/oldest", footballersController.getOldestFootballers);
+
 router.get("/", footballersController.getFootballers);
 
 router.get("/:fid", footballersController.getFootballerById);

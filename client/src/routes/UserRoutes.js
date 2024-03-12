@@ -3,6 +3,7 @@ import { Routes, Route, Outlet } from "react-router-dom";
 
 import NotFoundPage from "../layout/notFoundPage/pages/NotFoundPage";
 
+import HomePage from "../mainPage/pages/HomePage";
 import Footballers from "../footballers/pages/Footballers";
 import Clubs from "../clubs/pages/Clubs";
 import Agents from "../agents/pages/Agents";
@@ -17,6 +18,7 @@ import NewsInfo from "../news/pages/NewsInfo";
 const UserRoutes = () => {
   return (
     <Routes>
+      <Route path="/home/" element={<HomePage />} />
       <Route path="/footballers/" element={<Outlet />}>
         <Route index element={<Footballers />} />
         <Route path=":footballerId" element={<FootballerInfo />} />

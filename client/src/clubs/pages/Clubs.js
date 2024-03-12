@@ -14,8 +14,8 @@ import {
 } from "antd";
 import {
   EuroCircleOutlined,
-  DownOutlined,
-  UpOutlined,
+  FilterOutlined,
+  FilterFilled,
 } from "@ant-design/icons";
 
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
@@ -193,7 +193,7 @@ const Clubs = () => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <ErrorModal error={error} onClear={clearError} />
       {isLoading && (
         <div className="center">
@@ -237,11 +237,11 @@ const Clubs = () => {
       <Button onClick={toggleFilterFormVisibility}>
         {isFilterFormVisible ? (
           <>
-            <UpOutlined /> Hide filters
+            <FilterOutlined /> Hide filters
           </>
         ) : (
           <>
-            <DownOutlined /> Show filters
+            <FilterFilled /> Show filters
           </>
         )}
       </Button>
@@ -254,9 +254,10 @@ const Clubs = () => {
             borderRadius: 10,
             padding: "20px",
             marginBottom: "20px",
+            backgroundColor: "#f9f9f9",
           }}
         >
-          <Divider>| Country |</Divider>
+          <Divider orientation="left">Country</Divider>
           <Tooltip title="Select the club's country" placement="top">
             <Select
               placeholder="Select country"
@@ -275,7 +276,7 @@ const Clubs = () => {
           </Tooltip>
           <br />
           <br />
-          <Divider>| Year |</Divider>
+          <Divider orientation="left">Year</Divider>
           {yearError && <p style={{ color: "red" }}>{yearError}</p>}
           <Tooltip title="Enter the minimum year" placement="top">
             <Input
@@ -303,7 +304,7 @@ const Clubs = () => {
           </Tooltip>
           <br />
           <br />
-          <Divider>| Cost |</Divider>
+          <Divider orientation="left">Cost</Divider>
           {costError && <p style={{ color: "red" }}>{costError}</p>}
           <Tooltip title="Enter the minimum cost" placement="top">
             <Input
@@ -384,7 +385,7 @@ const Clubs = () => {
           onShowSizeChange={handlePageSizeChange}
         />
       </div>
-    </React.Fragment>
+    </>
   );
 };
 

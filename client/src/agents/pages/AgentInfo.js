@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Spin } from "antd";
+import { Spin, Modal } from "antd";
+
+import AgentCard from "../components/AgentCard";
 
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import { useHttpClient } from "../../shared/hooks/http-hook";
@@ -8,6 +10,7 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 const AgentInfo = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedAgent, setLoadedAgent] = useState();
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const { agentId } = useParams();
 
   useEffect(() => {
@@ -23,31 +26,42 @@ const AgentInfo = () => {
     fetchAgent();
   }, [sendRequest]);
 
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
   return (
-    <React.Fragment>
+    <>
       <ErrorModal error={error} onClear={clearError} />
       {isLoading && (
         <div className="center">
           <Spin size="large" />
         </div>
       )}
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
-        {loadedAgent && (
-          <article>
-            <p>
+      {loadedAgent && (
+        <>
+          <AgentCard agent={loadedAgent} showModal={showModal} />
+          <Modal
+            open={isModalVisible}
+            onCancel={handleCancel}
+            footer={null}
+            width={700}
+          >
+            {loadedAgent && (
               <img
-                alt={`${loadedAgent.name} ${loadedAgent.surname}`}
                 src={`http://localhost:5001/${loadedAgent.image}`}
+                alt={`${loadedAgent.name} ${loadedAgent.surname}`}
+                style={{ width: "100%" }}
               />
-            </p>
-            <h2>{`${loadedAgent.name} ${loadedAgent.surname}`}</h2>
-            <p>Email: {loadedAgent.email}</p>
-            <p>Phone number: +380-{loadedAgent.phoneNumber}</p>
-            <p>Description: {loadedAgent.description} </p>
-          </article>
-        )}
-      </div>
-    </React.Fragment>
+            )}
+          </Modal>
+        </>
+      )}
+    </>
   );
 };
 

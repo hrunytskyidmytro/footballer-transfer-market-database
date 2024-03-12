@@ -298,9 +298,10 @@ const Agents = () => {
             borderRadius: 10,
             padding: "20px",
             marginBottom: "20px",
+            backgroundColor: "#f9f9f9",
           }}
         >
-          <Divider>| Country |</Divider>
+          <Divider orientation="left">Country</Divider>
           <Tooltip title="Select the agent's country" placement="top">
             <Select
               placeholder="Select country"

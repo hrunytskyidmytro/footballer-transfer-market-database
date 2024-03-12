@@ -304,9 +304,10 @@ const Users = () => {
             borderRadius: 10,
             padding: "20px",
             marginBottom: "20px",
+            backgroundColor: "#f9f9f9",
           }}
         >
-          <Divider>| Role |</Divider>
+          <Divider orientation="left">Role</Divider>
           <Tooltip title="Select the user's role" placement="top">
             <Select
               placeholder="Select role"

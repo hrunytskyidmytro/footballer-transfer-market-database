@@ -67,5 +67,23 @@ const getNewById = async (req, res, next) => {
   res.send({ n: n.toObject({ getters: true }) });
 };
 
+const getLatestNews = async (req, res, next) => {
+  let news;
+  try {
+    news = await New.find().sort({ date: -1 }).limit(3);
+  } catch (err) {
+    const error = new HttpError(
+      "Fetching latest news failed, please try again later.",
+      500
+    );
+    return next(error);
+  }
+
+  res.json({
+    news: news.map((n) => n.toObject({ getters: true })),
+  });
+};
+
 exports.getNews = getNews;
 exports.getNewById = getNewById;
+exports.getLatestNews = getLatestNews;

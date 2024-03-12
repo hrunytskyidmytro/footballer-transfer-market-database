@@ -1,24 +1,12 @@
-import React from "react";
-import {
-  Typography,
-  Divider,
-  Row,
-  Col,
-  Card,
-  Avatar,
-  Space,
-  Tooltip,
-  Watermark,
-  Statistic,
-  Tag,
-  Timeline,
-  Collapse,
-} from "antd";
-import {
-  GithubOutlined,
-  LinkedinOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import React, { useState } from "react";
+import { Typography, Divider, Row, Col } from "antd";
+import UserInfoCard from "../components/UserInfoCard";
+import AddressCard from "../components/AddressCard";
+import HistoryParagraph from "../components/HistoryParagraph";
+import UsefulnessParagraph from "../components/UsefulnessParagraph";
+import AdditionalFeatures from "../components/AdditionalFeatures";
+import MilestonesTimeline from "../components/MilestonesTimeline";
+import MoreInformationCollapse from "../components/MoreInformationCollapse";
 
 const { Title, Paragraph } = Typography;
 
@@ -46,228 +34,130 @@ const AboutMe = () => {
     ],
   };
 
+  const [historyHovered, setHistoryHovered] = useState(false);
+  const [usefulnessHovered, setUsefulnessHovered] = useState(false);
+  const [featuresHovered, setFeaturesHovered] = useState(false);
+  const [milestonesHovered, setMilestonesHovered] = useState(false);
+
+  const toggleHistoryHover = () => {
+    setHistoryHovered(!historyHovered);
+  };
+
+  const toggleUsefulnessHover = () => {
+    setUsefulnessHovered(!usefulnessHovered);
+  };
+
+  const toggleFeaturesHover = () => {
+    setFeaturesHovered(!featuresHovered);
+  };
+
+  const toggleMilestonesHover = () => {
+    setMilestonesHovered(!milestonesHovered);
+  };
+
   return (
-    <Watermark content="About Us">
-      <div
+    <div
+      style={{
+        padding: "20px",
+      }}
+    >
+      <Title level={2} style={{ color: "#1890ff", textAlign: "center" }}>
+        About Me
+      </Title>
+      <Divider />
+      <Paragraph style={{ fontSize: "16px" }}>
+        Hi, there! I'm {myInfo.name}, a passionate web developer and football
+        enthusiast. Welcome to my corner of the internet, where I share my love
+        for coding and football.
+      </Paragraph>
+      <Paragraph style={{ fontSize: "16px" }}>
+        As a dedicated developer, I strive to create engaging and user-friendly
+        web experiences that resonate with my audience. Whether you're here to
+        explore the world of football transfers or learn about the latest web
+        development trends, I've got you covered.
+      </Paragraph>
+      <Divider />
+      <Title level={3} style={{ color: "#1890ff" }}>
+        My Information
+      </Title>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={24} md={12}>
+          <UserInfoCard {...myInfo} />
+        </Col>
+        <Col xs={24} sm={24} md={12}>
+          <AddressCard {...myInfo} />
+        </Col>
+      </Row>
+      <Divider />
+      <Title level={3} style={{ color: "#1890ff", padding: 15 }}>
+        <span
+          onMouseEnter={toggleHistoryHover}
+          onMouseLeave={toggleHistoryHover}
+          style={{ cursor: "pointer" }}
+        >
+          History of Transfer Market🔥🔥🔥
+        </span>
+      </Title>
+      <HistoryParagraph
+        historyText={myInfo.history}
+        historyHovered={historyHovered}
+      />
+      <Divider />
+      <Title level={3} style={{ color: "#1890ff", padding: 15 }}>
+        <span
+          onMouseEnter={toggleUsefulnessHover}
+          onMouseLeave={toggleUsefulnessHover}
+          style={{ cursor: "pointer" }}
+        >
+          Why Transfer Market is Useful?
+        </span>
+      </Title>
+      <UsefulnessParagraph
+        usefulness={myInfo.usefulness}
+        usefulnessHovered={usefulnessHovered}
+      />
+      <Divider />
+      <Title level={3} style={{ color: "#1890ff", padding: 15 }}>
+        <span
+          onMouseEnter={toggleFeaturesHover}
+          onMouseLeave={toggleFeaturesHover}
+          style={{ cursor: "pointer" }}
+        >
+          Additional Features
+        </span>
+      </Title>
+      <AdditionalFeatures featuresHovered={featuresHovered} />
+      <Divider />
+      <Title level={3} style={{ color: "#1890ff", padding: 15 }}>
+        <span
+          onMouseEnter={toggleMilestonesHover}
+          onMouseLeave={toggleMilestonesHover}
+          style={{ cursor: "pointer" }}
+        >
+          Milestones
+        </span>
+      </Title>
+      <MilestonesTimeline milestonesHovered={milestonesHovered} />
+      <Divider />
+      <Title level={3} style={{ color: "#1890ff", padding: 15 }}>
+        More Information
+      </Title>
+      <MoreInformationCollapse />
+      <Divider />
+      <Paragraph
         style={{
-          padding: "20px",
+          fontSize: "16px",
         }}
       >
-        <Title level={2}>About Me</Title>
-        <Divider />
-        <Paragraph style={{ fontSize: "14px" }}>
-          Hi, there! I'm {myInfo.name}, a passionate web developer and football
-          enthusiast. Welcome to my corner of the internet, where I share my
-          love for coding and football.
-        </Paragraph>
-        <Paragraph style={{ fontSize: "14px" }}>
-          As a dedicated developer, I strive to create engaging and
-          user-friendly web experiences that resonate with my audience. Whether
-          you're here to explore the world of football transfers or learn about
-          the latest web development trends, I've got you covered.
-        </Paragraph>
-        <Divider />
-        <Title level={3}>My Information</Title>
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={24} md={12}>
-            <Card>
-              <Space direction="vertical" align="center">
-                <Avatar size={64} src={myInfo.avatar} icon={<UserOutlined />} />
-                <Title level={4}>{myInfo.name}</Title>
-                <Paragraph style={{ fontSize: "14px" }}>
-                  {myInfo.role}
-                </Paragraph>
-                <div>
-                  <Tooltip title="LinkedIn">
-                    <a
-                      href={myInfo.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <LinkedinOutlined
-                        style={{ fontSize: "20px", marginRight: "10px" }}
-                      />
-                    </a>
-                  </Tooltip>
-                  <Tooltip title="GitHub">
-                    <a
-                      href={myInfo.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <GithubOutlined style={{ fontSize: "20px" }} />
-                    </a>
-                  </Tooltip>
-                  <Tooltip title="Additional Link">
-                    <a
-                      href={myInfo.additionalLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        src="/your_additional_icon.png"
-                        alt="Additional Link"
-                        style={{ width: "20px", marginLeft: "10px" }}
-                      />
-                    </a>
-                  </Tooltip>
-                </div>
-              </Space>
-            </Card>
-          </Col>
-          <Col xs={24} sm={24} md={12}>
-            <Card>
-              <Space direction="vertical">
-                <Title level={4}>Address</Title>
-                <Paragraph style={{ fontSize: "14px" }}>
-                  {myInfo.address}
-                </Paragraph>
-                <iframe
-                  title="Map"
-                  src={myInfo.mapUrl}
-                  width="100%"
-                  height="250"
-                  style={{ border: "0" }}
-                  allowFullScreen=""
-                  loading="lazy"
-                ></iframe>
-              </Space>
-            </Card>
-          </Col>
-        </Row>
-        <Divider />
-        <Title level={3} style={{ padding: 15 }}>
-          History of Transfer Market🔥🔥🔥
-        </Title>
-        <Paragraph
-          style={{
-            fontSize: "14px",
-            textAlign: "justify",
-            maxWidth: "1000px",
-            margin: "0 auto",
-          }}
-        >
-          {myInfo.history}
-        </Paragraph>
-        <Divider />
-        <Title level={3} style={{ padding: 15 }}>
-          Why Transfer Market is Useful?
-        </Title>
-        <Paragraph
-          style={{
-            fontSize: "14px",
-          }}
-        >
-          <Paragraph
-            style={{
-              fontSize: "14px",
-            }}
-          >
-            <Typography.Text keyboard>Transfer Market</Typography.Text> offers a
-            wide range of features and services to cater to the diverse needs of
-            our users. Here are some key aspects that make Transfer Market a
-            valuable resource:
-          </Paragraph>
-          {myInfo.usefulness.map((point, index) => (
-            <Paragraph
-              key={index}
-              style={{
-                fontSize: "14px",
-              }}
-            >
-              <Typography.Text strong>{index + 1}</Typography.Text>. {point}
-            </Paragraph>
-          ))}
-        </Paragraph>
-        <Divider />
-        <Paragraph
-          style={{
-            fontSize: "14px",
-          }}
-        >
-          This project was built using Ant Design, a popular React UI library
-          known for its extensive set of components and sleek design. Ant Design
-          played a crucial role in creating the modern and visually appealing
-          user interface of Transfer Market.
-        </Paragraph>
-
-        <Divider />
-        <Title level={3} style={{ padding: 15 }}>
-          Additional Features
-        </Title>
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={24} md={12}>
-            <Card>
-              <Statistic title="Users" value={1000000} />
-            </Card>
-          </Col>
-          <Col xs={24} sm={24} md={12}>
-            <Card>
-              <Tag color="blue">Football</Tag>
-              <Tag color="green">Web Development</Tag>
-              <Tag color="orange">Data Analytics</Tag>
-            </Card>
-          </Col>
-        </Row>
-        <Divider />
-        <Title level={3} style={{ padding: 15 }}>
-          Milestones
-        </Title>
-        <Timeline
-          mode={"left"}
-          items={[
-            {
-              children: "Project Initiated (2024)",
-              color: "green",
-            },
-            {
-              children: "First Beta Release (2025)",
-              color: "green",
-            },
-            {
-              children: "Reached 100,000 Users (2026)",
-              color: "orange",
-            },
-            {
-              children: "Expanded to International Market (2027)",
-              color: "orange",
-            },
-            {
-              children: "Acquired by Major Sports Network (2028)",
-              color: "red",
-            },
-          ]}
-        />
-        <Divider />
-        <Title level={3} style={{ padding: 15 }}>
-          More Information
-        </Title>
-        <Collapse
-          items={[
-            {
-              key: "1",
-              label: "Privacy Policy",
-              children: (
-                <p>
-                  This project respects user privacy and adheres to strict data
-                  protection regulations.
-                </p>
-              ),
-            },
-            {
-              key: "2",
-              label: "Terms of Service",
-              children: (
-                <p>
-                  By using this platform, you agree to abide by our terms and
-                  conditions.
-                </p>
-              ),
-            },
-          ]}
-        />
-      </div>
-    </Watermark>
+        This project was built using{" "}
+        <a href="https://ant.design/" target="_blank" rel="noopener noreferrer">
+          Ant Design
+        </a>
+        , a popular React UI library known for its extensive set of components
+        and sleek design. Ant Design played a crucial role in creating the
+        modern and visually appealing user interface of Transfer Market
+      </Paragraph>
+    </div>
   );
 };
 
