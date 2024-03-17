@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
         "Authentication failed: Authorization header is missing!"
       );
     }
-    const token = authorizationHeader.split(" ")[1]; // Authorization: 'Bearer TOKEN'
+    const token = authorizationHeader.split(" ")[1];
     if (!token) {
       throw new Error("Authentication failed!");
     }

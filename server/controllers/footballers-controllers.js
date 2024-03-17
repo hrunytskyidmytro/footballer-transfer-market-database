@@ -2,7 +2,6 @@ const HttpError = require("../models/http-error");
 const Footballer = require("../models/footballer");
 const User = require("../models/user");
 const Club = require("../models/club");
-const Rating = require("../models/rating");
 
 const getFootballers = async (req, res, next) => {
   let footballers;

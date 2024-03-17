@@ -29,7 +29,6 @@ const clubSchema = new Schema({
     type: Number,
     required: true,
     min: 1800,
-    max: 2024,
   },
 });
 

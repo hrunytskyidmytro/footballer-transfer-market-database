@@ -1,5 +1,4 @@
 const express = require("express");
-const { check } = require("express-validator");
 
 const agentsController = require("../controllers/agents-controllers");
 
