@@ -84,8 +84,6 @@ const signup = async (req, res, next) => {
     return next(error);
   }
 
-  console.log(createdUser);
-
   res.status(201).json({
     userId: createdUser.id,
     email: createdUser.email,
@@ -193,8 +191,6 @@ const login = async (req, res, next) => {
     );
     return next(error);
   }
-
-  console.log(existingUser);
 
   res.json({
     userId: existingUser.id,
