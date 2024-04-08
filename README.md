@@ -1,6 +1,6 @@
-# db-project
+# Footballer transfer market database
 
-
+Node.js, Express.js, React.js, MongoDB.
 
 ## Getting started
 
